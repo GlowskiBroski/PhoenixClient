@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.phoenixclient.mixin.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "MixinAbstractClientPlayer",
+    "MixinAbstractContainerScreen",
+    "MixinConnection",
+    "MixinGameRenderer",
+    "MixinKeyboardHandler",
+    "MixinLivingEntity",
+    "MixinLocalPlayer",
+    "MixinMouseHandler",
+    "MixinOptionInstance"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "MixinBlockCollisions",
+    "MixinEntity",
+    "MixinScreenEffectRenderer",
+    "accessors.AccessorLevel"
+  ]
+}

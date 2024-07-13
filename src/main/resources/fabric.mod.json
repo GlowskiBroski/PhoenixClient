@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "phoenixclient",
+  "version": "${version}",
+
+  "name": "PhoenixClient",
+  "description": "PhoenixClient is a utility client built for the latest version of minecraft",
+  "authors": [
+    "Me"
+  ],
+  "contact": {
+    "homepage": "https://github.com/PhoenixClientDevelopment",
+    "sources": "https://github.com/https://github.com/PhoenixClientDevelopment/ThePhoenixClientProject"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/phoenixclient/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.phoenixclient.PhoenixClient"
+    ]
+  },
+  "mixins": [
+    "phoenixclient.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.17",
+    "minecraft": "~1.20.6",
+    "java": ">=21"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
