@@ -22,7 +22,6 @@
     "MixinBannerItem",
     "MixinBlockCollisions",
     "MixinEntity",
-    "MixinLoomMenu",
     "MixinScreenEffectRenderer",
     "accessors.AccessorLevel"
   ]
