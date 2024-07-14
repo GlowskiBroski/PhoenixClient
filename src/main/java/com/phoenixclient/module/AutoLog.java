@@ -6,6 +6,7 @@ import com.phoenixclient.event.EventAction;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.EnderMan;
@@ -55,7 +56,7 @@ public class AutoLog extends Module {
     }
 
     private void logOut(String reason) {
-        MC.getConnection().onDisconnect(Component.translatable(reason));
+        MC.getConnection().handleDisconnect(new ClientboundDisconnectPacket(Component.translatable(reason)));
         disable();
         PhoenixClient.getModule("AutoWalk").disable();
     }

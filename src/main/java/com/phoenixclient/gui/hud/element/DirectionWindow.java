@@ -53,7 +53,7 @@ public class DirectionWindow extends GuiWindow {
         setSize(new Vector((int) DrawUtil.getFontTextWidth(label + directionString) + 6, getSize().getY()));
 
         Vector pos = new Vector(
-                getPos().getX() + getSize().getX() / 2 - DrawUtil.getFontTextWidth(label + directionString) / 2,
+                getPos().getX() + getSize().getX() / 2 - DrawUtil.getFontTextWidth(label + directionString) / 2 - 1,
                 getPos().getY() + 2);
         DrawUtil.drawDualColorFontText(graphics, label, directionString, pos, ColorUtil.HUD_LABEL, Color.WHITE);
     }

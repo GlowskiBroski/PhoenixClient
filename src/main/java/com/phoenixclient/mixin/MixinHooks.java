@@ -20,4 +20,6 @@ public class MixinHooks {
 
     public static boolean keepElytraOnGround = false;
 
+    public static boolean allowOverloadedBanners = false;
+
 }

@@ -11,6 +11,7 @@
     "MixinKeyboardHandler",
     "MixinLivingEntity",
     "MixinLocalPlayer",
+    "MixinLoomScreen",
     "MixinMouseHandler",
     "MixinOptionInstance"
   ],
@@ -18,8 +19,10 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "MixinBannerItem",
     "MixinBlockCollisions",
     "MixinEntity",
+    "MixinLoomMenu",
     "MixinScreenEffectRenderer",
     "accessors.AccessorLevel"
   ]

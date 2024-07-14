@@ -6,15 +6,20 @@ import com.phoenixclient.event.EventAction;
 import com.phoenixclient.event.events.PacketEvent;
 import com.phoenixclient.mixin.MixinHooks;
 import com.phoenixclient.util.actions.OnChange;
+import com.phoenixclient.util.input.Mouse;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.GameType;
 
 import java.util.UUID;
@@ -28,64 +33,51 @@ public class PacketTest extends Module {
     public PacketTest() {
         super("PacketTest", "Development Packet Mod - DO NOT ENABLE THIS", Category.SERVER, false, -1);
         addEventSubscriber(Event.EVENT_PACKET,this::onPacket);
+        addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
     }
 
     Packet<?> exceptionPacket = null;
 
+    Entity backup = null;
+
     public void onPacket(PacketEvent event) {
         Packet<?> packet = event.getPacket();
+        //if (packet instanceof ServerboundMovePlayerPacket) event.setCancelled(true);
+        //if (packet instanceof ServerboundMoveVehiclePacket) event.setCancelled(true);
+        if (event.getType().equals(PacketEvent.Type.SEND)) System.out.println(packet);
 
-        if (true) return;
+    }
 
-        if (packet.equals(exceptionPacket)) return;
 
-        if (event.getType().equals(PacketEvent.Type.RECEIVE)) System.out.println(packet);
-
-        if (packet instanceof ClientboundPlayerPositionPacket) {
-            event.setCancelled(true);
+    public void onUpdate(Event event) {
+        if (backup != null) {
+            backup.setPos(MC.player.getPosition(0));
+            MC.getConnection().send(new ServerboundMoveVehiclePacket(backup));
         }
-
-        if (packet instanceof ClientboundTeleportEntityPacket) {
-            Vector pos = new Vector(85131,90,347878);
-            MC.getConnection().send(exceptionPacket = new ServerboundMovePlayerPacket.Pos(pos.getX(),pos.getY(),pos.getZ(),false));
-            MC.player.setPosRaw(pos.getX(),pos.getY(),pos.getZ());
-            if (MC.player.getVehicle() != null) MC.player.getVehicle().setPosRaw(pos.getX(),pos.getY(),pos.getZ());
-            event.setCancelled(true);
-        }
-
-        /*
-
-        if (packet instanceof ServerboundMovePlayerPacket.PosRot e) {
-            float yRot = 0;//e.getYRot(0);
-            float xRot = 0;//e.getXRot(0);
-            MC.getConnection().send(exceptionPacket = new ServerboundMovePlayerPacket.PosRot(e.getX(0),e.getY(0),e.getZ(0),yRot,xRot,e.isOnGround()));
-            event.setCancelled(true);
-        }
-        if (packet instanceof ServerboundMovePlayerPacket.Rot e) {
-            float yRot = 0;//e.getYRot(0);
-            float xRot = 0;//e.getXRot(0);
-            MC.getConnection().send(exceptionPacket = new ServerboundMovePlayerPacket.Rot(yRot,xRot,e.isOnGround()));
-            event.setCancelled(true);
-        }
-
-         */
     }
 
     @Override
     public void onEnabled() {
-        /*
-        System.out.println("----------------------------");
-        if (MC.getConnection() == null || MC.player == null) return;
-        Vector pos = new Vector(85131,90,347878);
-        MC.getConnection().send(new ServerboundMovePlayerPacket.Pos(pos.getX(),pos.getY(),pos.getZ(),false));
-        MC.player.setPosRaw(pos.getX(),pos.getY(),pos.getZ());
-        MC.player.setPos(pos.getX(),pos.getY(),pos.getZ());
-
-         */
+        if (MC.player == null) {
+            disable();
+            for (EventAction action : getEventActions()) action.unsubscribe();
+            return;
+        }
+        backup = MC.player.getVehicle();
+        if (backup != null) {
+            MC.player.removeVehicle();
+            backup.remove(Entity.RemovalReason.KILLED);
+        }
     }
 
     @Override
     public void onDisabled() {
+        if (backup != null) {
+            if (!MC.options.keyShift.isDown()) {
+                MC.level.addEntity(backup);
+                MC.player.startRiding(backup, true);
+            }
+        }
+        backup = null;
     }
-
 }

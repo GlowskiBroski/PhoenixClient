@@ -10,6 +10,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.awt.*;
 import java.util.List;
@@ -67,8 +68,10 @@ public class InventoryWindow extends GuiWindow {
                     boolean mouseOverX = mouseX >= itemPos.getX() && mouseX <= itemPos.getX() + itemSize + 1;
                     boolean mouseOverY = mouseY >= itemPos.getY() && mouseY <= itemPos.getY() + itemSize + 1;
                     if (mouseOverX && mouseOverY) {
-                        graphics.fillGradient(RenderType.guiOverlay(), (int)itemPos.getX(), (int)itemPos.getY(), (int)(itemPos.getX() + itemSize), (int)(itemPos.getY() + itemSize), -2130706433, -2130706433, 0);
-                        graphics.renderTooltip(MC.font, AbstractContainerScreen.getTooltipFromItem(MC, list.get(l)), list.get(l).getTooltipImage(), mouseX, mouseY);
+                        if (!list.get(l).getItem().equals(Items.AIR)) {
+                            graphics.fillGradient(RenderType.guiOverlay(), (int) itemPos.getX(), (int) itemPos.getY(), (int) (itemPos.getX() + itemSize), (int) (itemPos.getY() + itemSize), -2130706433, -2130706433, 0);
+                            graphics.renderTooltip(MC.font, AbstractContainerScreen.getTooltipFromItem(MC, list.get(l)), list.get(l).getTooltipImage(), mouseX, mouseY);
+                        }
                     }
                 }
             }
