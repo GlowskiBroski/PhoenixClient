@@ -19,6 +19,8 @@ import java.util.ArrayList;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
+//TODO: Take the description off of this menu and make it a tooltip. I need more room
+
 public class ModuleOptionsMenu extends GuiWidget {
 
     private final FontRenderer descriptionFont = new FontRenderer(PhoenixClient.getFontRenderer().getFont().getFontName(),Font.BOLD);

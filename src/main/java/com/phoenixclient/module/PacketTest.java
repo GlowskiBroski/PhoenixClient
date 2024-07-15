@@ -40,24 +40,44 @@ public class PacketTest extends Module {
 
     Entity backup = null;
 
+    int ticks = 0;
+
     public void onPacket(PacketEvent event) {
         Packet<?> packet = event.getPacket();
         //if (packet instanceof ServerboundMovePlayerPacket) event.setCancelled(true);
-        //if (packet instanceof ServerboundMoveVehiclePacket) event.setCancelled(true);
-        if (event.getType().equals(PacketEvent.Type.SEND)) System.out.println(packet);
+        //if (event.getType().equals(PacketEvent.Type.SEND)) System.out.println(packet);
+
+        if (packet instanceof ServerboundContainerClickPacket) {
+            //event.setCancelled(true);
+            MC.options.keyShift.setDown(true);
+            ticks = 0;
+        }
+
+        if (ticks >=1) { //1 keeps in inventory. 2 keeps in donkey
+            MC.getConnection().handleDisconnect(new ClientboundDisconnectPacket(Component.translatable("Disconnect"))); //I tried lol
+            disable();
+            ticks = -1;
+        }
 
     }
 
 
     public void onUpdate(Event event) {
+        if (ticks >= 0) {
+            ticks ++;
+        }
+        /*
         if (backup != null) {
             backup.setPos(MC.player.getPosition(0));
-            MC.getConnection().send(new ServerboundMoveVehiclePacket(backup));
+            if (MC.options.keySprint.isDown()) MC.getConnection().send(new ServerboundMoveVehiclePacket(backup));
         }
+
+         */
     }
 
     @Override
     public void onEnabled() {
+        /*
         if (MC.player == null) {
             disable();
             for (EventAction action : getEventActions()) action.unsubscribe();
@@ -66,18 +86,23 @@ public class PacketTest extends Module {
         backup = MC.player.getVehicle();
         if (backup != null) {
             MC.player.removeVehicle();
-            backup.remove(Entity.RemovalReason.KILLED);
+            //backup.remove(Entity.RemovalReason.KILLED);
         }
+
+         */
     }
 
     @Override
     public void onDisabled() {
+        /*
         if (backup != null) {
             if (!MC.options.keyShift.isDown()) {
-                MC.level.addEntity(backup);
+                //MC.level.addEntity(backup);
                 MC.player.startRiding(backup, true);
             }
         }
         backup = null;
+
+         */
     }
 }

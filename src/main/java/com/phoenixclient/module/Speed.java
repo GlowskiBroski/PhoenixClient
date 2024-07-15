@@ -38,9 +38,19 @@ public class Speed extends Module {
             100)
             .setSliderData(0, 200, 5).setDependency(mode, "ElytraSprint");
 
+    private final SettingGUI<Integer> esAcc = new SettingGUI<>(
+            this,
+            "Acceleration",
+            "Acceleration for the speed mod",
+            7)
+            .setSliderData(1, 15, 1).setDependency(mode, "ElytraSprint");
+
+    private double step = 0;
+
+
     public Speed() {
         super("Speed", "General Speed Mod", Category.MOTION, false, -1);
-        addSettings(mode, bouncePitch,speedCap);
+        addSettings(mode, bouncePitch,speedCap, esAcc);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
     }
 
@@ -72,8 +82,6 @@ public class Speed extends Module {
             }
         }
     }
-
-    private double step = 0;
 
     public void oldNcpSpeed() {
         double acceleration = 0;
@@ -123,8 +131,6 @@ public class Speed extends Module {
         MotionUtil.moveEntityStrafe(speed, MC.player);
     }
 
-    //TODO: Move elytra speed mods to ElytraFly
-
     /**
      * The code for this is awful because I was experimenting with numbers. I don't want to mess with it because it works. So...
      */
@@ -136,9 +142,6 @@ public class Speed extends Module {
             double hMom = 20 * Math.sqrt(Math.pow(MC.player.getDeltaMovement().x, 2) + Math.pow(MC.player.getDeltaMovement().z, 2));
 
             boolean shouldExtend = hMom >= 18;
-            boolean movingUp = MC.player.getDeltaMovement().y() > 0;
-            boolean movingDown = MC.player.getDeltaMovement().y() < 0;
-            boolean atPeak = Math.abs(MC.player.getDeltaMovement().y()) < .025;
 
             if (MC.player.onGround()) {
                 MC.options.keyJump.setDown(true);
@@ -198,14 +201,12 @@ public class Speed extends Module {
                 MixinHooks.keepElytraOnGround = true;
                 MC.player.setSprinting(false);
 
-                //if (MC.level.getChunkAt(MC.player.chunkPosition().getWorldPosition()).isEmpty()) MC.player.setDeltaMovement(0,0,0);
-
-                double speed = .07f;
+                double acceleration = (double) esAcc.get() / 100;//.07f;
                 double hMom = 20 * Math.sqrt(Math.pow(MC.player.getDeltaMovement().x, 2) + Math.pow(MC.player.getDeltaMovement().z, 2));
                 Angle yaw = new Angle(MC.player.getRotationVector().y, true);
                 Angle pitch = new Angle(10, true);
 
-                if (hMom <= speedCap.get() && !MC.options.keyShift.isDown()) MC.player.addDeltaMovement(new Vector(yaw, pitch, speed).getVec3());
+                if (hMom <= speedCap.get() && !MC.options.keyShift.isDown()) MC.player.addDeltaMovement(new Vector(yaw, pitch, acceleration).getVec3());
             }
 
         } else {

@@ -2,6 +2,7 @@ package com.phoenixclient.module;
 
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
+import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.ClickType;
@@ -15,35 +16,47 @@ public class AutoTotem extends Module {
 
     private int delay;
 
+    private int totemCount = 0;
+
+    private final SettingGUI<Integer> tickDelay = new SettingGUI<>(
+            this,
+            "Delay",
+            "Tick delay of totem replacement",
+            1).setSliderData(0,10,1);
+
     public AutoTotem() {
         super("AutoTotem", "Automatically forces a totem in offhand", Category.COMBAT, false, -1);
+        addSettings(tickDelay);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }
 
     public void onPlayerUpdate(Event event) {
-        if (delay > 0) {
-            delay--;
+        int totCount = 0;
+        for (ItemStack stack : MC.player.inventoryMenu.getItems())
+            if (stack.getItem() == Items.TOTEM_OF_UNDYING) totCount ++;
+        totemCount = totCount;
+
+        if ((MC.player.getItemBySlot(EquipmentSlot.OFFHAND).getItem() == Items.TOTEM_OF_UNDYING) || totemCount == 0) {
+            delay = 0;
             return;
         }
-        NonNullList<ItemStack> inv = MC.player.inventoryMenu.getItems();
-        int inventoryIndex;
-        if ((MC.player.getItemBySlot(EquipmentSlot.OFFHAND).getItem() != Items.TOTEM_OF_UNDYING)) {
-            for (inventoryIndex = 0; inventoryIndex < inv.size(); inventoryIndex++) {
-                if (inv.get(inventoryIndex) != ItemStack.EMPTY) {
-                    if (inv.get(inventoryIndex).getItem() == Items.TOTEM_OF_UNDYING) {
-                        replaceTotem(inventoryIndex);
-                        break;
-                    }
+        delay++;
+
+        if (delay >= tickDelay.get()) {
+            NonNullList<ItemStack> inv = MC.player.inventoryMenu.getItems();
+            for (int i = 0; i < inv.size(); i++) {
+                if (inv.get(i) == ItemStack.EMPTY) continue;
+                if (inv.get(i).getItem() == Items.TOTEM_OF_UNDYING) {
+                    replaceTotem(i);
+                    break;
                 }
             }
-            delay = 3;
         }
     }
 
     @Override
     public String getModTag() {
-        //return totem count here;
-        return "";
+        return String.valueOf(totemCount);
     }
 
     @Override
@@ -51,12 +64,11 @@ public class AutoTotem extends Module {
         delay = 0;
     }
 
-
-    private void replaceTotem(int inventoryIndex) {
+    private void replaceTotem(int i) {
         if (MC.player.containerMenu instanceof InventoryMenu) {
-            MC.gameMode.handleInventoryMouseClick(0, inventoryIndex < 9 ? inventoryIndex + 36 : inventoryIndex, 0, ClickType.PICKUP, MC.player);
+            MC.gameMode.handleInventoryMouseClick(0, i < 9 ? i + 36 : i, 0, ClickType.PICKUP, MC.player);
             MC.gameMode.handleInventoryMouseClick(0, 45, 0, ClickType.PICKUP, MC.player);
-            MC.gameMode.handleInventoryMouseClick(0, inventoryIndex < 9 ? inventoryIndex + 36 : inventoryIndex, 0, ClickType.PICKUP, MC.player);
+            MC.gameMode.handleInventoryMouseClick(0, i < 9 ? i + 36 : i, 0, ClickType.PICKUP, MC.player);
         }
     }
 }
