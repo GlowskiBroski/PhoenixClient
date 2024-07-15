@@ -27,7 +27,7 @@ public class ModuleGUI extends GUI {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        drawHintText(guiGraphics,"Press " + GuiManager.MODULE_KEY_MAPPING.getName() + " to open the HUD menu!");
+        drawHintText(guiGraphics,"Press " + Component.translatable(GuiManager.HUD_KEY_MAPPING.saveString()).getString() + " to open the HUD menu!");
     }
 
 }

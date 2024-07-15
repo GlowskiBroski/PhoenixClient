@@ -1,5 +1,6 @@
 package com.phoenixclient.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
@@ -43,8 +44,10 @@ public class GuiManager {
 
         if (key == Key.KEY_ESC.getId()) PhoenixClient.getSettingManager().saveAll(); //Whenever the GUI closes, save all settings
 
-        if (HUD_KEY_MAPPING.isDown()) getHudGui().toggleOpen();
-        if (MODULE_KEY_MAPPING.isDown()) getModuleGui().toggleOpen();
+        String mapping = InputConstants.getKey(key,action).getName();
+
+        if (HUD_KEY_MAPPING.isDown() || HUD_KEY_MAPPING.saveString().equals(mapping)) getHudGui().toggleOpen();
+        if (MODULE_KEY_MAPPING.isDown() || MODULE_KEY_MAPPING.saveString().equals(mapping)) getModuleGui().toggleOpen();
     });
 
 
@@ -59,7 +62,7 @@ public class GuiManager {
         //Draw Starting Hint
         if (hintFade > 0) {
             hintFade -= .25;
-            String hint = "Press " + "RSHIFT" + " to open the module menu!";
+            String hint = "Press " + Component.translatable(GuiManager.MODULE_KEY_MAPPING.saveString()).getString() + " to open the module menu!";
             DrawUtil.drawFontText(graphics, hint, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue()));
             String hint2 = "Change this in default Minecraft controls menu!";
             DrawUtil.drawFontText(graphics, hint2, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint2) / 2, 2 + DrawUtil.getFontTextHeight() + 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue()));
