@@ -1,14 +1,13 @@
 package com.phoenixclient.gui.module;
 
-import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.gui.GUI;
+import com.phoenixclient.gui.GuiManager;
 import com.phoenixclient.gui.module.element.ModuleOptionsMenu;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.gui.module.element.ModuleMenu;
 import com.phoenixclient.module.Module;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 public class ModuleGUI extends GUI {
 
@@ -28,7 +27,7 @@ public class ModuleGUI extends GUI {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        drawHintText(guiGraphics,"Press " + GLFW.glfwGetKeyName(PhoenixClient.getGuiManager().hudGuiOpenKey.get(),-1).toUpperCase() + " to open the HUD menu!");
+        drawHintText(guiGraphics,"Press " + GuiManager.MODULE_KEY_MAPPING.getName() + " to open the HUD menu!");
     }
 
 }

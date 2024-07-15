@@ -16,6 +16,12 @@ import java.util.*;
  */
 public abstract class ListWindow extends GuiWindow {
 
+    /*
+    These Methods loop through the entire map:
+    drawWindow (equals, full) x2
+    updateAnimation(updateAnimationOffset, ) x1
+    */
+
     protected final SettingGUI<Boolean> label;
     protected final SettingGUI<Double> scale;
     protected final SettingGUI<String> side;

@@ -64,6 +64,14 @@ public class ModuleMenu extends GuiWidget {
         //Buttons
         for (ModuleToggle toggle : buttonList) toggle.draw(graphics,mousePos);
 
+        //Draw Button Tooltips
+        for (ModuleToggle toggle : buttonList) {
+            if (toggle.isMouseOver()) toggle.hoverWatch.start();
+            else toggle.hoverWatch.stop();
+
+            if (toggle.hoverWatch.hasTimePassedS(1)) toggle.drawTooltip(graphics,mousePos);
+        }
+
         graphics.pose().scale(1 / tempScaling,1f,1f);
         graphics.pose().translate(-(1 - tempScaling) * 10,0,0);
 
@@ -77,8 +85,7 @@ public class ModuleMenu extends GuiWidget {
         super.runAnimation(speed);
         mainButton.runAnimation(speed);
         if (open.get()) {
-            for (ModuleToggle toggle : buttonList)
-                toggle.runAnimation(speed);
+            for (ModuleToggle toggle : buttonList) toggle.runAnimation(speed);
         }
         if (open.get() && scaling < 1) scaling += .005f * speed;
         if (!open.get() && scaling > .1f) scaling -= .005f * speed;

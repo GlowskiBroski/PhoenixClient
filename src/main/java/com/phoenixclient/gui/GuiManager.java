@@ -12,22 +12,24 @@ import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.setting.Setting;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.util.ConcurrentModificationException;
+import java.util.Map;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
 public class GuiManager {
 
+    public static final KeyMapping HUD_KEY_MAPPING = new KeyMapping("HUD GUI Toggle", GLFW.GLFW_KEY_RIGHT_ALT, "Phoenix Client");
+    public static final KeyMapping MODULE_KEY_MAPPING = new KeyMapping("Module GUI Toggle", GLFW.GLFW_KEY_RIGHT_CONTROL, "Phoenix Client");
+
     private HUDGUI hudGUI;
     private ModuleGUI moduleGUI;
-
-    public Setting<Integer> hudGuiOpenKey = new Setting<>(PhoenixClient.getSettingManager(), "hudGuiOpenKey", GLFW.GLFW_KEY_SLASH);
-    public Setting<Integer> moduleGuiOpenKey = new Setting<>(PhoenixClient.getSettingManager(), "moduleGuiOpenKey", GLFW.GLFW_KEY_RIGHT_SHIFT);
 
     /**
      * This event action is subscribed ONCE on initialization.
@@ -41,8 +43,8 @@ public class GuiManager {
 
         if (key == Key.KEY_ESC.getId()) PhoenixClient.getSettingManager().saveAll(); //Whenever the GUI closes, save all settings
 
-        if (key == hudGuiOpenKey.get()) getHudGui().toggleOpen();
-        if (key == moduleGuiOpenKey.get()) getModuleGui().toggleOpen();
+        if (HUD_KEY_MAPPING.isDown()) getHudGui().toggleOpen();
+        if (MODULE_KEY_MAPPING.isDown()) getModuleGui().toggleOpen();
     });
 
 
@@ -59,6 +61,8 @@ public class GuiManager {
             hintFade -= .25;
             String hint = "Press " + "RSHIFT" + " to open the module menu!";
             DrawUtil.drawFontText(graphics, hint, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue()));
+            String hint2 = "Change this in default Minecraft controls menu!";
+            DrawUtil.drawFontText(graphics, hint2, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint2) / 2, 2 + DrawUtil.getFontTextHeight() + 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue()));
         }
 
         if (MC.screen == null || !MC.screen.equals(getHudGui())) {
@@ -105,5 +109,4 @@ public class GuiManager {
         animationThread.setDaemon(true);
         animationThread.start();
     }
-
 }

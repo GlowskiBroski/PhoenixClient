@@ -1,6 +1,7 @@
 package com.phoenixclient.gui.module.element;
 
 import com.phoenixclient.PhoenixClient;
+import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
@@ -11,6 +12,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.awt.*;
+
+import static com.phoenixclient.PhoenixClient.MC;
 
 //TODO: Make buttons smaller once more modules are added
 
@@ -25,6 +28,8 @@ public class ModuleToggle extends GuiWidget {
     protected float toggleFade;
     public boolean selectedSettings;
 
+    public final StopWatch hoverWatch;
+
     public ModuleToggle(Screen screen, Module module, Vector pos, Vector size, Color color) {
         super(screen,pos,size);
         this.module = module;
@@ -32,6 +37,7 @@ public class ModuleToggle extends GuiWidget {
         this.color = color;
         this.toggleFade = 0;
         this.selectedSettings = false;
+        this.hoverWatch = new StopWatch();
     }
 
     public int selectionFade = 200;
@@ -52,6 +58,7 @@ public class ModuleToggle extends GuiWidget {
 
         //Draw Selection Blip
         if (selectedSettings) DrawUtil.drawRectangleRound(graphics,pos.get(),size.get(),new Color(255,255,255, MathUtil.getBoundValue(selectionFade,0,255).intValue()));
+
     }
 
 
@@ -80,6 +87,17 @@ public class ModuleToggle extends GuiWidget {
             selectionFade = 200;
         }
         if (selectedSettings) selectionFade -= speed;
+    }
+
+    protected void drawTooltip(GuiGraphics graphics, Vector mousePos) {
+        if (isMouseOver()) {
+            Vector pos = mousePos.getAdded(6, -8).clone();
+            if (pos.getX() + DrawUtil.getFontTextWidth(getModule().getDescription()) + 2 > MC.getWindow().getGuiScaledWidth())
+                pos.setX(MC.getWindow().getGuiScaledWidth() - DrawUtil.getFontTextWidth(getModule().getDescription()) - 2);
+
+            DrawUtil.drawRectangleRound(graphics, pos, new Vector(DrawUtil.getFontTextWidth(getModule().getDescription()) + 4, DrawUtil.getFontTextHeight() + 3), new Color(BGC.getRed(), BGC.getGreen(), BGC.getBlue(), BGC.getAlpha()));
+            DrawUtil.drawFontText(graphics, getModule().getDescription(), pos.getAdded(2, 2), Color.WHITE);
+        }
     }
 
 

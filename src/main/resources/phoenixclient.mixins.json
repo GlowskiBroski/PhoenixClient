@@ -13,7 +13,9 @@
     "MixinLocalPlayer",
     "MixinLoomScreen",
     "MixinMouseHandler",
-    "MixinOptionInstance"
+    "MixinOptionInstance",
+    "MixinOptions",
+    "accessors.AccessorKeyMapping"
   ],
   "injectors": {
     "defaultRequire": 1

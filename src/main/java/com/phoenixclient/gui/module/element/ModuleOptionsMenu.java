@@ -19,8 +19,6 @@ import java.util.ArrayList;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
-//TODO: Take the description off of this menu and make it a tooltip. I need more room
-
 public class ModuleOptionsMenu extends GuiWidget {
 
     private final FontRenderer descriptionFont = new FontRenderer(PhoenixClient.getFontRenderer().getFont().getFontName(),Font.BOLD);
@@ -40,7 +38,7 @@ public class ModuleOptionsMenu extends GuiWidget {
     private final OnChange<Module> onChange = new OnChange<>();
 
     public ModuleOptionsMenu(Screen screen, Vector pos) {
-        super(screen, pos, new Vector(120,30));
+        super(screen, pos, new Vector(120,20));
         this.mainButton = new GuiButton(getScreen(),"", getPos(),getSize(), ColorUtil.getTheme().getBaseColor(),(f) -> {
             retract = true;
             nullify = true;
@@ -64,20 +62,9 @@ public class ModuleOptionsMenu extends GuiWidget {
                 mainButton.draw(graphics, mousePos);
 
                 //Draw Title
-                DrawUtil.drawFontText(graphics, module.getTitle(), getPos().getAdded(getSize().getMultiplied(.5).getSubtracted(DrawUtil.getFontTextWidth(module.getTitle()) / 2, DrawUtil.getFontTextHeight() / 2)).y(6), Color.WHITE);
+                DrawUtil.drawFontText(graphics, module.getTitle(), getPos().getAdded(getSize().getMultiplied(.5).getSubtracted(DrawUtil.getFontTextWidth(module.getTitle()) / 2, DrawUtil.getFontTextHeight() / 2)), Color.WHITE);
 
-                //Draw Description
-                String desc = module.getDescription();
-                float descScale = .5f;
-                float width = descriptionFont.getWidth(desc) * descScale;
-                float height = descriptionFont.getHeight() * descScale;
-                Vector pos = getPos().getAdded(getSize().getMultiplied(descScale).getSubtracted(width / 2, height / 2)).y(20);
-                DrawUtil.drawRectangleRound(graphics,pos.getSubtracted(1,1),new Vector(width,height).getAdded(3,2),new Color(50,50,50,120));
-                graphics.pose().scale(descScale, descScale, 1);
-                descriptionFont.drawString(graphics,desc,pos.getAdded(1,1).getMultiplied(1/descScale),new Color(25, 25, 25, 200));
-                descriptionFont.drawString(graphics,desc,pos.getMultiplied(1/descScale),Color.WHITE);
-                graphics.pose().scale(1 / descScale, 1 / descScale, 1);
-
+                //drawTitleDescription(graphics);
 
                 onChange.run(module,() -> {
                     this.widgetList = WidgetUtil.generateWidgetList(getScreen(), module.getSettings());
@@ -148,6 +135,24 @@ public class ModuleOptionsMenu extends GuiWidget {
             widget.draw(graphics, mousePos);
             yOffset += ySize - 4;
         }
+    }
+
+    @Deprecated
+    private void drawTitleDescription(GuiGraphics graphics) {
+        //Draw Title
+        DrawUtil.drawFontText(graphics, module.getTitle(), getPos().getAdded(getSize().getMultiplied(.5).getSubtracted(DrawUtil.getFontTextWidth(module.getTitle()) / 2, DrawUtil.getFontTextHeight() / 2)).y(6), Color.WHITE);
+
+        //Draw Description
+        String desc = module.getDescription();
+        float descScale = .5f;
+        float width = descriptionFont.getWidth(desc) * descScale;
+        float height = descriptionFont.getHeight() * descScale;
+        Vector pos = getPos().getAdded(getSize().getMultiplied(descScale).getSubtracted(width / 2, height / 2)).y(20);
+        DrawUtil.drawRectangleRound(graphics, pos.getSubtracted(1, 1), new Vector(width, height).getAdded(3, 2), new Color(50, 50, 50, 120));
+        graphics.pose().scale(descScale, descScale, 1);
+        descriptionFont.drawString(graphics, desc, pos.getAdded(1, 1).getMultiplied(1 / descScale), new Color(25, 25, 25, 200));
+        descriptionFont.drawString(graphics, desc, pos.getMultiplied(1 / descScale), Color.WHITE);
+        graphics.pose().scale(1 / descScale, 1 / descScale, 1);
     }
 
     private void runScaling(int speed) {
