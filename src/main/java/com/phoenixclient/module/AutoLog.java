@@ -39,7 +39,7 @@ public class AutoLog extends Module {
             4).setSliderData(1,20,1).setDependency(health,true);
 
     public AutoLog() {
-        super("AutoLog", "Automatically log off from an event", Category.SERVER, false, -1);
+        super("AutoLog", "Automatically log off from a select event occuring", Category.SERVER, false, -1);
         addSettings(minecartTNT,health,healthVal);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }

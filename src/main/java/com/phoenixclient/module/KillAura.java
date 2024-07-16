@@ -32,9 +32,9 @@ public class KillAura extends Module {
             4)
             .setSliderData(0,20,1);
 
-    private int lockOnTicks = 0;
+    private final OnChange<Entity> onChangeTarget = new OnChange<>();
 
-    private OnChange<Entity> onChangeTarget = new OnChange<>();
+    private int lockOnTicks = 0;
 
     public KillAura() {
         super("KillAura", "Automatically attacks entities around you", Category.COMBAT,false, -1);
@@ -77,7 +77,6 @@ public class KillAura extends Module {
         lockOnTicks++;
     }
 
-    //Keep playerPosition a parameter so you can set it to the freecam dummy's location
     private Entity getTarget(Vector playerPosition, Vector playerLook) {
         Entity target = null;
         double shortestDistance = -1;

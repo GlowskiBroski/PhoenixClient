@@ -49,7 +49,7 @@ public class Speed extends Module {
 
 
     public Speed() {
-        super("Speed", "General Speed Mod", Category.MOTION, false, -1);
+        super("Speed", "Makes you go faster", Category.MOTION, false, -1);
         addSettings(mode, bouncePitch,speedCap, esAcc);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
     }

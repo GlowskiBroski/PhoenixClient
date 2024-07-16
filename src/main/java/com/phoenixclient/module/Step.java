@@ -43,7 +43,7 @@ public class Step extends Module {
             true);
 
     public Step() {
-        super("Step", "Automatically steps up blocks", Category.MOTION, false, -1);
+        super("Step", "Automatically steps up or down block edges", Category.MOTION, false, -1);
         addSettings(stepHeight, stepUp, stepDown);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
     }

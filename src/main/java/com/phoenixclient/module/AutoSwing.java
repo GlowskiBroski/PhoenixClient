@@ -42,7 +42,7 @@ public class AutoSwing extends Module {
     private int accelerationStage = 0;
 
     public AutoSwing() {
-        super("AutoSwing", "Swings while holding down the mouse button", Category.COMBAT, false, -1);
+        super("AutoSwing", "Swings at a varied rate while holding the mouse button", Category.COMBAT, false, -1);
         addSettings(lowerBound, upperBound, accelerate);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }

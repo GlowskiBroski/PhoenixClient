@@ -48,7 +48,7 @@ public class YawLock extends Module {
 
 
     public YawLock() {
-        super("YawLock", "Sets the rotation of the player", Category.PLAYER, false, -1);
+        super("YawLock", "Locks the rotation of the player to a desired one", Category.PLAYER, false, -1);
         addSettings(mode,doOnce, customX, customZ, custom);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
     }
