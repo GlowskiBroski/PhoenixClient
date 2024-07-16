@@ -4,6 +4,7 @@ import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
 import com.phoenixclient.event.events.PacketEvent;
+import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.network.protocol.Packet;
@@ -24,16 +25,21 @@ public class KillAura extends Module {
             4.5d)
             .setSliderData(.5,5,.5);
 
+    private final SettingGUI<Integer> lockOnTickCount = new SettingGUI<>(
+            this,
+            "Lock On Ticks",
+            "The amount of ticks waited before attacking when your target changes",
+            4)
+            .setSliderData(0,20,1);
+
+    private int lockOnTicks = 0;
+
+    private OnChange<Entity> onChangeTarget = new OnChange<>();
+
     public KillAura() {
         super("KillAura", "Automatically attacks entities around you", Category.COMBAT,false, -1);
-        addSettings(range);
+        addSettings(range,lockOnTickCount);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
-    }
-
-
-    @Override
-    public String getModTag() {
-        return String.format("%.1f", range.get());
     }
 
     public void onPlayerUpdate(Event event) {
@@ -41,27 +47,35 @@ public class KillAura extends Module {
         Vector eyePos = new Vector(MC.player.getEyePosition());
         Vector playerLook = new Vector(MC.player.getLookAngle());
 
-        Entity target = getTarget(playerPos,playerLook);
-
-        if (target != null) {
-
-            Vector distVec = getCenterAABB(target).getSubtracted(eyePos);
-
-            float yaw = (float)distVec.getYaw().getDegrees();
-            float pitch = (float)distVec.getPitch().getDegrees();
-
-            PhoenixClient.getRotationManager().spoof(yaw,pitch);
-
-            if (MC.player.getAttackStrengthScale(0) >= 1) {
-                MC.gameMode.attack(MC.player, target);
-                MC.player.swing(InteractionHand.MAIN_HAND);
-            }
-        } else {
-            PhoenixClient.getRotationManager().stopSpoofing();
+        FreeCam freeCam = (FreeCam) PhoenixClient.getModule("FreeCam");
+        if (freeCam.isEnabled()) {
+            playerPos = new Vector(freeCam.dummyPlayer.getPosition(0));
+            eyePos = new Vector(freeCam.dummyPlayer.getEyePosition());
+            playerLook = new Vector(freeCam.dummyPlayer.getLookAngle());
         }
-    }
 
-    Vector targetVector = Vector.NULL();
+        Entity target = getTarget(playerPos, playerLook);
+
+        onChangeTarget.run(target, () -> lockOnTicks = 0);
+
+        if (target == null) {
+            PhoenixClient.getRotationManager().stopSpoofing();
+            return;
+        }
+
+        Vector distVec = getCenterAABB(target).getSubtracted(eyePos);
+
+        float yaw = (float) distVec.getYaw().getDegrees();
+        float pitch = (float) distVec.getPitch().getDegrees();
+
+        PhoenixClient.getRotationManager().spoof(yaw, pitch);
+
+        if (MC.player.getAttackStrengthScale(0) >= 1 && lockOnTicks >= lockOnTickCount.get()) {
+            MC.gameMode.attack(MC.player, target);
+            MC.player.swing(InteractionHand.MAIN_HAND);
+        }
+        lockOnTicks++;
+    }
 
     //Keep playerPosition a parameter so you can set it to the freecam dummy's location
     private Entity getTarget(Vector playerPosition, Vector playerLook) {
@@ -86,6 +100,8 @@ public class KillAura extends Module {
     private boolean isTarget(Entity entity, Vector playerPos) {
         if (entity == null) return false;
         if (entity.equals(MC.player)) return false;
+        FreeCam freeCam = (FreeCam) PhoenixClient.getModule("FreeCam");
+        if (entity.equals(freeCam.dummyPlayer)) return false;
         if (!(entity instanceof LivingEntity)) return false;
         return Math.sqrt(entity.distanceToSqr(playerPos.getVec3())) < range.get();
     }
@@ -93,6 +109,11 @@ public class KillAura extends Module {
     public static Vector getCenterAABB(Entity entity) {
         AABB obb = entity.getBoundingBox();
         return new Vector((obb.maxX + obb.minX) / 2, (obb.maxY + obb.minY) / 2, (obb.maxZ + obb.minZ) / 2);
+    }
+
+    @Override
+    public String getModTag() {
+        return String.format("%.1f", range.get());
     }
 
     @Override

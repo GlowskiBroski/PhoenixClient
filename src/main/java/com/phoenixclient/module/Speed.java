@@ -133,7 +133,11 @@ public class Speed extends Module {
 
     public void elytraBounce() {
         MixinHooks.keepElytraOnGround = true;
-        if (MotionUtil.isInputActive(false)) {
+        if (!MC.player.isFallFlying()) {
+            MC.player.startFallFlying();
+            MC.getConnection().send(new ServerboundPlayerCommandPacket(MC.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING));
+        }
+        if (MotionUtil.isInputActive(false) && MC.player.isFallFlying()) {
             MC.player.setXRot(bouncePitch.get());//Potential good pitched: 20, 45, 70
             if (MC.player.onGround()) MC.options.keyJump.setDown(true);
         }

@@ -15,7 +15,7 @@ public class FullBright extends Module {
             this,
             "Fade Speed",
             "Speed of light fading in/out",
-            1d)
+            3d)
             .setSliderData( .1, 3, .1);
 
     private double gammaFade = 0;

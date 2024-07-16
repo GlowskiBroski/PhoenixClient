@@ -25,7 +25,8 @@ import static com.phoenixclient.PhoenixClient.MC;
 public class FreeCam extends Module {
 
     private final OnChange<Vector> onChangeView = new OnChange<>();
-    private AbstractClientPlayer dummyPlayer;
+    private final OnChange<Vector> onChangeSpoofedView = new OnChange<>();
+    public AbstractClientPlayer dummyPlayer;
     private GameType gameMode;
     private ServerboundMovePlayerPacket interactRotationPacket = null;
 
@@ -33,7 +34,7 @@ public class FreeCam extends Module {
             this,
             "Mode",
             "Mode of FreeCam",
-            "Ghost")
+            "Interact")
             .setModeData("Ghost", "Interact");
 
     private final SettingGUI<Double> speed = new SettingGUI<>(
@@ -76,15 +77,24 @@ public class FreeCam extends Module {
 
     public void onPacket(PacketEvent event) {
         Packet<?> packet = event.getPacket();
-        if (packet instanceof ServerboundMovePlayerPacket.Rot
-                || packet instanceof ServerboundMovePlayerPacket.PosRot
+
+        if (packet instanceof ServerboundMovePlayerPacket.Rot) {
+            if (!packet.equals(interactRotationPacket)) event.setCancelled(true);
+        }
+
+        if (packet instanceof ClientboundPlayerPositionPacket c) {
+            dummyPlayer.setPos(new Vector(c.getX(),c.getY(),c.getZ()).getVec3());
+            event.setCancelled(true);
+        }
+        if (packet instanceof ServerboundMovePlayerPacket.PosRot
                 || packet instanceof ServerboundMovePlayerPacket.Pos
                 || packet instanceof ServerboundAcceptTeleportationPacket
                 || packet instanceof ServerboundPlayerInputPacket
                 || packet instanceof ClientboundPlayerLookAtPacket
-                || packet instanceof ClientboundPlayerPositionPacket) {
-            if (!packet.equals(interactRotationPacket)) event.setCancelled(true);
+        ) {
+            event.setCancelled(true);
         }
+
     }
 
     @Override
@@ -177,13 +187,20 @@ public class FreeCam extends Module {
         Vector lookVec = new Vector(MC.hitResult.getLocation()).getSubtracted(new Vector(dummyPlayer.getEyePosition()));
         float y = (float) lookVec.getYaw().getDegrees();
         float p = (float) lookVec.getPitch().getDegrees();
-        if (!Float.isNaN(y) && !Float.isNaN(p)) {
+        if (!Float.isNaN(y) && !Float.isNaN(p) && !PhoenixClient.getRotationManager().isSpoofing()) {
             dummyPlayer.setYHeadRot(y);
             dummyPlayer.setYRot(y);
             dummyPlayer.setXRot(p);
 
             //After time, the server realizes we are "AFK", then the rotation packets are no longer accepted
             onChangeView.run(lookVec, () -> MC.getConnection().send(interactRotationPacket = new ServerboundMovePlayerPacket.Rot(y, p, true)));
+        } else {
+            float yS = PhoenixClient.getRotationManager().getSpoofedYaw();
+            float pS = PhoenixClient.getRotationManager().getSpoofedPitch();
+            dummyPlayer.setYHeadRot(yS);
+            dummyPlayer.setYRot(yS);
+            dummyPlayer.setXRot(pS);
+            onChangeSpoofedView.run(new Vector(yS,pS), () -> MC.getConnection().send(interactRotationPacket = new ServerboundMovePlayerPacket.Rot(yS, pS, true)));
         }
     }
 
