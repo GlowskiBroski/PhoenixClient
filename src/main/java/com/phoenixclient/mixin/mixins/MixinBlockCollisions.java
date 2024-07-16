@@ -22,7 +22,7 @@ public abstract class MixinBlockCollisions<T> extends AbstractIterator<T>  {
     @Shadow @Final private CollisionContext context;
 
     @Inject(method = "computeNext", at = @At(value = "HEAD"), cancellable = true)
-    private void send(CallbackInfoReturnable<T> cir) {
+    private void computeNext(CallbackInfoReturnable<T> cir) {
         if (context instanceof EntityCollisionContext e) {
             boolean playerNoClip = MixinHooks.noClip && Objects.equals(e.getEntity(), MC.player);
             boolean mountNoClip = MixinHooks.mountNoClip && Objects.equals(e.getEntity(), MC.player != null ? MC.player.getVehicle() : null);

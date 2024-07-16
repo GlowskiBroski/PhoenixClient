@@ -15,6 +15,10 @@ import static com.phoenixclient.PhoenixClient.MC;
 @Mixin(AbstractClientPlayer.class)
 public abstract class MixinAbstractClientPlayer {
 
+    /**
+     * I need this for FreeCam ghost mode
+     * @param cir
+     */
     @Inject(method = "isSpectator", at = @At(value = "HEAD"), cancellable = true)
     private void isSpectator(CallbackInfoReturnable<Boolean> cir) {
         if (getClass().cast(this).equals(MC.player)) {

@@ -1,6 +1,7 @@
 package com.phoenixclient.gui.element;
 
 import com.phoenixclient.gui.GUI;
+import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorUtil;
@@ -30,6 +31,8 @@ public abstract class GuiWidget {
 
     protected float hoverFade;
 
+    public final StopWatch hoverWatch;
+
     public GuiWidget(Screen screen, Vector pos, Vector size) {
         this.screen = screen;
         this.pos = new Container<>(pos);
@@ -37,6 +40,7 @@ public abstract class GuiWidget {
         this.drawTooltip = true;
         this.drawHoverHighlight = true;
         this.hoverFade = 0;
+        this.hoverWatch = new StopWatch();
     }
 
     public void draw(GuiGraphics graphics, Vector mousePos) {
@@ -45,7 +49,11 @@ public abstract class GuiWidget {
         drawWidget(graphics, mousePos);
 
         if (drawHoverHighlight) drawHoverHighlight(graphics, mousePos);
-        if (drawTooltip) drawTooltip(graphics,mousePos);
+        if (drawTooltip) {
+            if (isMouseOver()) hoverWatch.start();
+            else hoverWatch.stop();
+            if (hasSetting()) drawTooltip(graphics,mousePos,getSetting().getDescription());
+        }
     }
 
 
@@ -77,14 +85,14 @@ public abstract class GuiWidget {
         DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(255, 255, 255, (int) hoverFade));
     }
 
-    private void drawTooltip(GuiGraphics graphics, Vector mousePos) {
-        if (hasSetting() && isMouseOver()) {
+    public void drawTooltip(GuiGraphics graphics, Vector mousePos, String description) {
+        if (isMouseOver() && hoverWatch.hasTimePassedS(.5)) {
             Vector pos = mousePos.getAdded(6, -8).clone();
-            if (pos.getX() + DrawUtil.getFontTextWidth(getSetting().getDescription()) + 2 > MC.getWindow().getGuiScaledWidth())
-                pos.setX(MC.getWindow().getGuiScaledWidth() - DrawUtil.getFontTextWidth(getSetting().getDescription()) - 2);
+            if (pos.getX() + DrawUtil.getFontTextWidth(description) + 2 > MC.getWindow().getGuiScaledWidth())
+                pos.setX(MC.getWindow().getGuiScaledWidth() - DrawUtil.getFontTextWidth(description) - 2);
 
-            DrawUtil.drawRectangleRound(graphics, pos, new Vector(DrawUtil.getFontTextWidth(getSetting().getDescription()) + 4, DrawUtil.getFontTextHeight() + 3), new Color(BGC.getRed(), BGC.getGreen(), BGC.getBlue(), BGC.getAlpha() * 2 / 3));
-            DrawUtil.drawFontText(graphics, getSetting().getDescription(), pos.getAdded(2, 2), Color.WHITE);
+            DrawUtil.drawRectangleRound(graphics, pos, new Vector(DrawUtil.getFontTextWidth(description) + 4, DrawUtil.getFontTextHeight() + 3), new Color(BGC.getRed(), BGC.getGreen(), BGC.getBlue(), BGC.getAlpha()));
+            DrawUtil.drawFontText(graphics, description, pos.getAdded(2, 2), Color.WHITE);
         }
     }
 

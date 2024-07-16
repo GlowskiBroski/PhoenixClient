@@ -9,13 +9,13 @@
     "MixinConnection",
     "MixinGameRenderer",
     "MixinKeyboardHandler",
+    "MixinKeyMapping",
     "MixinLivingEntity",
     "MixinLocalPlayer",
     "MixinLoomScreen",
     "MixinMouseHandler",
     "MixinOptionInstance",
-    "MixinOptions",
-    "accessors.AccessorKeyMapping"
+    "MixinOptions"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -25,6 +25,7 @@
     "MixinBlockCollisions",
     "MixinEntity",
     "MixinScreenEffectRenderer",
+    "MixinServerboundMovePlayerPacket",
     "accessors.AccessorLevel"
   ]
 }

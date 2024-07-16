@@ -17,12 +17,10 @@ public abstract class MixinGameRenderer {
         Event.EVENT_RENDER_HUD.post();
     }
 
-
     @Inject(method = "render", at = @At(value = "INVOKE",target = "Lnet/minecraft/client/gui/screens/Screen;handleDelayedNarration()V"), cancellable = true)
     private void onRenderScreen(CallbackInfo ci) {
         Event.EVENT_RENDER_SCREEN.post();
     }
-
 
     @Inject(method = "bobHurt", at = @At(value = "HEAD"), cancellable = true)
     private void onHurt(PoseStack poseStack, float f, CallbackInfo ci) {

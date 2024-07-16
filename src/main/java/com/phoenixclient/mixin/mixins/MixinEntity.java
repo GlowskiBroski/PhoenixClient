@@ -15,7 +15,7 @@ import static com.phoenixclient.PhoenixClient.MC;
 public abstract class MixinEntity {
 
     @Inject(method = "push(Lnet/minecraft/world/entity/Entity;)V", at = @At(value = "HEAD"), cancellable = true)
-    private void isSpectator(Entity entity, CallbackInfo ci) {
+    private void push(Entity entity, CallbackInfo ci) {
         if (MixinHooks.noPush) ci.cancel();
     }
 }

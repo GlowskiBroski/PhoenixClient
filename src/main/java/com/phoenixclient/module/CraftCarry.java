@@ -8,6 +8,8 @@ import net.minecraft.network.protocol.game.*;
 
 public class CraftCarry extends Module {
 
+    //TODO: This doesn't seem to work
+
     public CraftCarry() {
         super("CraftCarry", "Allows the crafting grid to be inventory space", Category.SERVER, false, -1);
         addEventSubscriber(Event.EVENT_PACKET, this::onPacket);

@@ -26,8 +26,8 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 public class GuiManager {
 
-    public static final KeyMapping HUD_KEY_MAPPING = new KeyMapping("HUD GUI Toggle", GLFW.GLFW_KEY_RIGHT_ALT, "Phoenix Client");
     public static final KeyMapping MODULE_KEY_MAPPING = new KeyMapping("Module GUI Toggle", GLFW.GLFW_KEY_RIGHT_CONTROL, "Phoenix Client");
+    public static final KeyMapping HUD_KEY_MAPPING = new KeyMapping("HUD GUI Toggle", GLFW.GLFW_KEY_RIGHT_ALT, "Phoenix Client");
 
     private HUDGUI hudGUI;
     private ModuleGUI moduleGUI;
@@ -45,9 +45,8 @@ public class GuiManager {
         if (key == Key.KEY_ESC.getId()) PhoenixClient.getSettingManager().saveAll(); //Whenever the GUI closes, save all settings
 
         String mapping = InputConstants.getKey(key,action).getName();
-
-        if (HUD_KEY_MAPPING.isDown() || HUD_KEY_MAPPING.saveString().equals(mapping)) getHudGui().toggleOpen();
-        if (MODULE_KEY_MAPPING.isDown() || MODULE_KEY_MAPPING.saveString().equals(mapping)) getModuleGui().toggleOpen();
+        if (HUD_KEY_MAPPING.saveString().equals(mapping)) getHudGui().toggleOpen();
+        if (MODULE_KEY_MAPPING.saveString().equals(mapping)) getModuleGui().toggleOpen();
     });
 
 
@@ -79,22 +78,6 @@ public class GuiManager {
         }
     });
 
-    public void instantiateHUDGUI() {
-        hudGUI = new HUDGUI(Component.translatable("HUDGUI"));
-    }
-
-    public void instantiateModuleGUI() {
-        moduleGUI = new ModuleGUI(Component.translatable("ModuleGUI"));
-    }
-
-    public HUDGUI getHudGui() {
-        return hudGUI;
-    }
-
-    public ModuleGUI getModuleGui() {
-        return moduleGUI;
-    }
-
     public void startAnimationThread() {
         Thread animationThread = new Thread(() -> {
             while (true) {
@@ -111,5 +94,19 @@ public class GuiManager {
         animationThread.setName("Animation Thread");
         animationThread.setDaemon(true);
         animationThread.start();
+    }
+
+    public void instantiateHUDGUI() {
+        hudGUI = new HUDGUI(Component.translatable("HUDGUI"));
+    }
+    public void instantiateModuleGUI() {
+        moduleGUI = new ModuleGUI(Component.translatable("ModuleGUI"));
+    }
+
+    public HUDGUI getHudGui() {
+        return hudGUI;
+    }
+    public ModuleGUI getModuleGui() {
+        return moduleGUI;
     }
 }

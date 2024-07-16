@@ -55,7 +55,6 @@ public class ModuleOptionsMenu extends GuiWidget {
 
         float tempScaling = scaling; //Clones the scaling to prevent animation thread from de-syncing
         graphics.pose().scale(1f,tempScaling,1f);
-
         if (module != null) {
             try {
                 //Draw Head
@@ -63,8 +62,6 @@ public class ModuleOptionsMenu extends GuiWidget {
 
                 //Draw Title
                 DrawUtil.drawFontText(graphics, module.getTitle(), getPos().getAdded(getSize().getMultiplied(.5).getSubtracted(DrawUtil.getFontTextWidth(module.getTitle()) / 2, DrawUtil.getFontTextHeight() / 2)), Color.WHITE);
-
-                //drawTitleDescription(graphics);
 
                 onChange.run(module,() -> {
                     this.widgetList = WidgetUtil.generateWidgetList(getScreen(), module.getSettings());

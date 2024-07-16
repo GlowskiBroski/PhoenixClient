@@ -1,5 +1,6 @@
 package com.phoenixclient.module;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
 import com.phoenixclient.event.events.PacketEvent;
@@ -27,7 +28,6 @@ public class KillAura extends Module {
         super("KillAura", "Automatically attacks entities around you", Category.COMBAT,false, -1);
         addSettings(range);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
-        addEventSubscriber(Event.EVENT_PACKET,this::onPacket);
     }
 
 
@@ -50,15 +50,14 @@ public class KillAura extends Module {
             float yaw = (float)distVec.getYaw().getDegrees();
             float pitch = (float)distVec.getPitch().getDegrees();
 
-            //TODO: Add rotation spoofing here
-            //MC.player.setYRot(yaw);
-            //MC.player.setXRot(pitch);
+            PhoenixClient.getRotationManager().spoof(yaw,pitch);
 
             if (MC.player.getAttackStrengthScale(0) >= 1) {
-                MC.getConnection().send(new ServerboundMovePlayerPacket.Rot(yaw,pitch,MC.player.onGround()));
                 MC.gameMode.attack(MC.player, target);
                 MC.player.swing(InteractionHand.MAIN_HAND);
             }
+        } else {
+            PhoenixClient.getRotationManager().stopSpoofing();
         }
     }
 
@@ -96,27 +95,8 @@ public class KillAura extends Module {
         return new Vector((obb.maxX + obb.minX) / 2, (obb.maxY + obb.minY) / 2, (obb.maxZ + obb.minZ) / 2);
     }
 
-    private Packet<?> exceptionPacket = null;
-
-    public void onPacket(PacketEvent event) {
-        /*
-        PacketEvent event = Event.EVENT_PACKET;
-        Packet<?> packet = event.getPacket();
-
-        if (packet.equals(exceptionPacket)) return;
-
-        float yRot = (float)targetVector.getYaw().getDegrees();
-        float xRot = (float)targetVector.getPitch().getDegrees();
-
-        if (packet instanceof ServerboundMovePlayerPacket.PosRot e) {
-            MC.getConnection().send(exceptionPacket = new ServerboundMovePlayerPacket.PosRot(e.getX(0),e.getY(0),e.getZ(0),yRot,xRot,e.isOnGround()));
-            event.setCancelled(true);
-        }
-        if (packet instanceof ServerboundMovePlayerPacket.Rot e) {
-            MC.getConnection().send(exceptionPacket = new ServerboundMovePlayerPacket.Rot(yRot,xRot,e.isOnGround()));
-            event.setCancelled(true);
-        }
-        */
+    @Override
+    public void onDisabled() {
+        PhoenixClient.getRotationManager().stopSpoofing();
     }
-
 }

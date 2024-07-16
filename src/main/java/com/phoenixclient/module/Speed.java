@@ -131,10 +131,16 @@ public class Speed extends Module {
         MotionUtil.moveEntityStrafe(speed, MC.player);
     }
 
-    /**
-     * The code for this is awful because I was experimenting with numbers. I don't want to mess with it because it works. So...
-     */
     public void elytraBounce() {
+        MixinHooks.keepElytraOnGround = true;
+        if (MotionUtil.isInputActive(false)) {
+            MC.player.setXRot(bouncePitch.get());//Potential good pitched: 20, 45, 70
+            if (MC.player.onGround()) MC.options.keyJump.setDown(true);
+        }
+    }
+
+    @Deprecated
+    public void elytraBounceOld() {
         MixinHooks.keepElytraOnGround = true;
         if (MotionUtil.isInputActive(false)) {
             MC.player.setXRot(bouncePitch.get());//Potential good pitched: 20, 45, 70
@@ -201,11 +207,11 @@ public class Speed extends Module {
                 MixinHooks.keepElytraOnGround = true;
                 MC.player.setSprinting(false);
 
-                double acceleration = (double) esAcc.get() / 100;//.07f;
-                double hMom = 20 * Math.sqrt(Math.pow(MC.player.getDeltaMovement().x, 2) + Math.pow(MC.player.getDeltaMovement().z, 2));
+                double acceleration = (double) esAcc.get() / 100;
                 Angle yaw = new Angle(MC.player.getRotationVector().y, true);
                 Angle pitch = new Angle(10, true);
 
+                double hMom = 20 * Math.sqrt(Math.pow(MC.player.getDeltaMovement().x, 2) + Math.pow(MC.player.getDeltaMovement().z, 2));
                 if (hMom <= speedCap.get() && !MC.options.keyShift.isDown()) MC.player.addDeltaMovement(new Vector(yaw, pitch, acceleration).getVec3());
             }
 

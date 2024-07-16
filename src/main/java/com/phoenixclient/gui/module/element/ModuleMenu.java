@@ -65,12 +65,7 @@ public class ModuleMenu extends GuiWidget {
         for (ModuleToggle toggle : buttonList) toggle.draw(graphics,mousePos);
 
         //Draw Button Tooltips
-        for (ModuleToggle toggle : buttonList) {
-            if (toggle.isMouseOver()) toggle.hoverWatch.start();
-            else toggle.hoverWatch.stop();
-
-            if (toggle.hoverWatch.hasTimePassedS(1)) toggle.drawTooltip(graphics,mousePos);
-        }
+        for (ModuleToggle toggle : buttonList) toggle.drawTooltip(graphics,mousePos,toggle.getModule().getDescription());
 
         graphics.pose().scale(1 / tempScaling,1f,1f);
         graphics.pose().translate(-(1 - tempScaling) * 10,0,0);

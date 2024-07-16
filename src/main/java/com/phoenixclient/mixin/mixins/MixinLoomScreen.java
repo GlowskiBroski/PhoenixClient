@@ -14,7 +14,7 @@ public abstract class MixinLoomScreen {
     @Shadow private boolean hasMaxPatterns;
 
     @Inject(method = "containerChanged", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screens/inventory/LoomScreen;hasMaxPatterns:Z"), cancellable = true)
-    protected void maxPatterns(CallbackInfo ci) {
+    protected void onUpdateOverloadedBanners(CallbackInfo ci) {
         if (MixinHooks.allowOverloadedBanners) hasMaxPatterns = false;
     }
 

@@ -18,7 +18,7 @@ public abstract class MixinLivingEntity  {
     private boolean prevFlying = false;
 
     @Inject(method = "isFallFlying", at = @At("TAIL"), cancellable = true)
-    public void recastOnLand(CallbackInfoReturnable<Boolean> cir) {
+    public void tryReFlyOnLand(CallbackInfoReturnable<Boolean> cir) {
         boolean flying = cir.getReturnValue();
         boolean stoppedFlying = prevFlying && !flying;
         if (MixinHooks.keepElytraOnGround && stoppedFlying) {

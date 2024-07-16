@@ -55,7 +55,6 @@ public class PhoenixClient implements ModInitializer {
                 new AutoTotem(),
                 new DeathSpot(),
                 new AntiPackets(),
-                new ElytraJump(),
                 new AutoLog(),
                 new Banners()
         );
@@ -73,7 +72,7 @@ public class PhoenixClient implements ModInitializer {
         GUI_MANAGER.guiOpenAction.subscribe();
         GUI_MANAGER.renderHudAction.subscribe();
 
-        //ROTATION_MANAGER.setSpoofedAngles.subscribe();
+        ROTATION_MANAGER.updateSpoofedAngles.subscribe();
 
         //I'm worried this causes a performance impact.
         //I've moved the animation calculations back to the render thread, which is now dependent on FPS

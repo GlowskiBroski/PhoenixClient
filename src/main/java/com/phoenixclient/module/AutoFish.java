@@ -31,6 +31,7 @@ public class AutoFish extends Module {
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE, this::onPlayerUpdate);
     }
 
+    //TODO: Make sure to detect if its YOUR splash packet to avoid reeling in another persons rod
     public void onPacket(PacketEvent event) {
         Packet<?> packet = event.getPacket();
         if (packet instanceof ClientboundSoundPacket soundPacket) {

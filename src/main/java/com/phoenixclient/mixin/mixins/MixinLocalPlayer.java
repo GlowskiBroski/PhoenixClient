@@ -19,7 +19,7 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer {
     }
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;tick()V"))
-    protected void channelRead0(CallbackInfo ci) {
+    protected void onPlayerTick(CallbackInfo ci) {
         Event.EVENT_PLAYER_UPDATE.post();
     }
 

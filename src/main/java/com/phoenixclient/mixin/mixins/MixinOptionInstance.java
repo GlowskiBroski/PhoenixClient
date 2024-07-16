@@ -22,15 +22,16 @@ public abstract class MixinOptionInstance<T> {
     @Shadow
     T value;
 
+    /**
+     * Settings Saving fix for FullBright
+     * @param object
+     * @param ci
+     */
     @Inject(method = "set", at = @At(value = "HEAD"), cancellable = true)
-    public void thing(T object, CallbackInfo ci) {
+    public void setSettings(T object, CallbackInfo ci) {
         if (MC.player != null && OptionInstance.class.cast(this).equals(MC.options.gamma())) {
-            if (!Minecraft.getInstance().isRunning()) {
-                this.value = object;
-            }
-            if (!Objects.equals(this.value, object)) {
-                this.value = object;
-            }
+            if (!Minecraft.getInstance().isRunning()) this.value = object;
+            if (!Objects.equals(this.value, object)) this.value = object;
             ci.cancel();
         }
     }
