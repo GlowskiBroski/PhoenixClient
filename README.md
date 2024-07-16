@@ -9,8 +9,8 @@ Is the client safe? Yes. You are free to look through all of the code and assess
 
 The client has 2 GUIs
 
-1) The Module GUI. Modules can be enabled/disabled in this menu. (Default Keybind: RSHIFT)
+1) The Module GUI. Modules can be enabled/disabled in this menu. (Default Keybind: RCTRL)
 ![Screenshot](pictures/mainGUI.jpg)
 
-2) The HUD GUI. HUD elements can be dragged around, pinned, and edited (Default Keybind: /)
+2) The HUD GUI. HUD elements can be dragged around, pinned, and edited (Default Keybind: RALT)
 ![Screenshot](pictures/hudGUI.jpg)
