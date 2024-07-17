@@ -25,7 +25,6 @@
     "MixinBlockCollisions",
     "MixinEntity",
     "MixinScreenEffectRenderer",
-    "MixinServerboundMovePlayerPacket",
-    "accessors.AccessorLevel"
+    "MixinServerboundMovePlayerPacket"
   ]
 }

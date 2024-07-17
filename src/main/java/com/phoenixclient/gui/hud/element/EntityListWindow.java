@@ -5,6 +5,7 @@ import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,11 +17,13 @@ import static com.phoenixclient.PhoenixClient.MC;
 public class EntityListWindow extends ListWindow {
 
     private final SettingGUI<Integer> range;
+    private final SettingGUI<Boolean> combineItems;
 
     public EntityListWindow(Screen screen, Vector pos) {
         super(screen, "EntityListWindow", pos);
         this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",64).setSliderData(1,200,1);
-        addSettings(range);
+        this.combineItems = new SettingGUI<>(this,"Combine Items","Combines items into 1 category",true);
+        addSettings(range,combineItems);
     }
 
     @Override
@@ -39,6 +42,10 @@ public class EntityListWindow extends ListWindow {
             if (entity instanceof LocalPlayer) continue;
             String rawName = entity.getType().toShortString();
             String entityName = rawName.replaceFirst(String.valueOf(rawName.charAt(0)), String.valueOf(rawName.charAt(0)).toUpperCase()).replace("_"," ");
+
+            if (!combineItems.get() && entity instanceof ItemEntity e) {
+                entityName = "Item: " + e.getName().getString();
+            }
 
             if (currentList.containsKey(entityName)) {
                 ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + 1) + ")",Color.WHITE,Color.CYAN);

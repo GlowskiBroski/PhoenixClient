@@ -83,7 +83,7 @@ public class FreeCam extends Module {
         }
 
         if (packet instanceof ClientboundPlayerPositionPacket c) {
-            dummyPlayer.setPos(new Vector(c.getX(),c.getY(),c.getZ()).getVec3());
+            if (dummyPlayer != null) dummyPlayer.setPos(new Vector(c.getX(),c.getY(),c.getZ()).getVec3());
             event.setCancelled(true);
         }
         if (packet instanceof ServerboundMovePlayerPacket.PosRot
@@ -200,6 +200,8 @@ public class FreeCam extends Module {
             dummyPlayer.setYHeadRot(yS);
             dummyPlayer.setYRot(yS);
             dummyPlayer.setXRot(pS);
+
+            //It doesn't really matter what the angles are that I send here, as they are overwritten by the rotation manager
             onChangeSpoofedView.run(new Vector(yS,pS), () -> MC.getConnection().send(interactRotationPacket = new ServerboundMovePlayerPacket.Rot(yS, pS, true)));
         }
     }

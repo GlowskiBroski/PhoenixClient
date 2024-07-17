@@ -1,19 +1,13 @@
 package com.phoenixclient.module;
 
 import com.phoenixclient.event.Event;
-import com.phoenixclient.event.EventAction;
 import com.phoenixclient.mixin.MixinHooks;
 import com.phoenixclient.util.MotionUtil;
 import com.phoenixclient.util.math.Angle;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.setting.SettingGUI;
-import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
-import net.minecraft.world.entity.monster.EnderMan;
-import net.minecraft.world.entity.vehicle.MinecartTNT;
+import net.minecraft.world.item.Items;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
@@ -45,8 +39,7 @@ public class Speed extends Module {
             7)
             .setSliderData(1, 15, 1).setDependency(mode, "ElytraSprint");
 
-    private double step = 0;
-
+    private int step = 0;
 
     public Speed() {
         super("Speed", "Makes you go faster", Category.MOTION, false, -1);
@@ -145,6 +138,7 @@ public class Speed extends Module {
 
     @Deprecated
     public void elytraBounceOld() {
+        if (!MC.player.inventoryMenu.getSlot(6).getItem().getItem().equals(Items.ELYTRA)) return;
         MixinHooks.keepElytraOnGround = true;
         if (MotionUtil.isInputActive(false)) {
             MC.player.setXRot(bouncePitch.get());//Potential good pitched: 20, 45, 70
@@ -201,7 +195,7 @@ public class Speed extends Module {
      * Doesn't require jumping to work. Still bypasses GRIM
      */
     public void elytraSprint() {
-        if (MC.options.keyUp.isDown()) {
+        if (MC.options.keyUp.isDown() && MC.player.inventoryMenu.getSlot(6).getItem().getItem().equals(Items.ELYTRA)) {
             if (!MC.player.isFallFlying()) {
                 MC.player.startFallFlying();
                 MC.getConnection().send(new ServerboundPlayerCommandPacket(MC.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING));
@@ -217,6 +211,8 @@ public class Speed extends Module {
 
                 double hMom = 20 * Math.sqrt(Math.pow(MC.player.getDeltaMovement().x, 2) + Math.pow(MC.player.getDeltaMovement().z, 2));
                 if (hMom <= speedCap.get() && !MC.options.keyShift.isDown()) MC.player.addDeltaMovement(new Vector(yaw, pitch, acceleration).getVec3());
+
+                if (MC.player.touchingUnloadedChunk()) MC.player.setDeltaMovement(0,0,0);
             }
 
         } else {

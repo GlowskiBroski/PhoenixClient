@@ -86,7 +86,7 @@ public abstract class ListWindow extends GuiWindow {
             index ++;
         }
         this.previousList = getListMap();
-        setSize(new Vector(72 * scale, yOff == 0 ? (int)(DrawUtil.getFontTextHeight(scale) + 2 * scale) : yOff));
+        setSize(new Vector(72 * scale, yOff == 0 ? (int)(DrawUtil.getFontTextHeight(scale) + 2 * scale) : yOff + 1));
         graphics.pose().scale(1 / scale, 1 / scale, 1f);
     }
 

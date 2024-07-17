@@ -56,7 +56,7 @@ public class PhoenixClient implements ModInitializer {
                 new DeathSpot(),
                 new AntiPackets(),
                 new AutoLog(),
-                new Banners()
+                new Banners()//, new Chunks()
         );
 
         GUI_MANAGER.instantiateHUDGUI();
@@ -69,8 +69,8 @@ public class PhoenixClient implements ModInitializer {
 
 		Module.MODULE_KEYBIND_ACTION.subscribe();
 
-        GUI_MANAGER.guiOpenAction.subscribe();
-        GUI_MANAGER.renderHudAction.subscribe();
+        GUI_MANAGER.updateGuiOpen.subscribe();
+        GUI_MANAGER.updateRenderHUD.subscribe();
 
         ROTATION_MANAGER.updateSpoofedAngles.subscribe();
 

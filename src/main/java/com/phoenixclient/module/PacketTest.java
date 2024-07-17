@@ -36,6 +36,7 @@ public class PacketTest extends Module {
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
     }
 
+
     Packet<?> exceptionPacket = null;
 
     Entity backup = null;
@@ -66,18 +67,17 @@ public class PacketTest extends Module {
         if (ticks >= 0) {
             ticks ++;
         }
-        /*
+
         if (backup != null) {
             backup.setPos(MC.player.getPosition(0));
             if (MC.options.keySprint.isDown()) MC.getConnection().send(new ServerboundMoveVehiclePacket(backup));
         }
 
-         */
+
     }
 
     @Override
     public void onEnabled() {
-        /*
         if (MC.player == null) {
             disable();
             for (EventAction action : getEventActions()) action.unsubscribe();
@@ -86,15 +86,12 @@ public class PacketTest extends Module {
         backup = MC.player.getVehicle();
         if (backup != null) {
             MC.player.removeVehicle();
-            //backup.remove(Entity.RemovalReason.KILLED);
+            backup.remove(Entity.RemovalReason.KILLED);
         }
-
-         */
     }
 
     @Override
     public void onDisabled() {
-        /*
         if (backup != null) {
             if (!MC.options.keyShift.isDown()) {
                 //MC.level.addEntity(backup);
@@ -102,7 +99,7 @@ public class PacketTest extends Module {
             }
         }
         backup = null;
-
-         */
     }
+
+
 }

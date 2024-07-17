@@ -12,7 +12,6 @@ import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
-import com.phoenixclient.util.setting.Setting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -20,7 +19,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.util.ConcurrentModificationException;
-import java.util.Map;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
@@ -36,7 +34,7 @@ public class GuiManager {
      * This event action is subscribed ONCE on initialization.
      * The action will check, every key press, whether to open the HUDGUI or ModuleGUI
      */
-    public EventAction guiOpenAction = new EventAction(Event.EVENT_KEY_PRESS, () -> {
+    public EventAction updateGuiOpen = new EventAction(Event.EVENT_KEY_PRESS, () -> {
         int key = Event.EVENT_KEY_PRESS.getKey();
         int action = Event.EVENT_KEY_PRESS.getState();
 
@@ -55,7 +53,7 @@ public class GuiManager {
      * This event action is subscribed ONCE on initialization.
      * The action will draw all windows when the HUD is closed
      */
-    public EventAction renderHudAction = new EventAction(Event.EVENT_RENDER_HUD, () -> {
+    public EventAction updateRenderHUD = new EventAction(Event.EVENT_RENDER_HUD, () -> {
         GuiGraphics graphics = new GuiGraphics(MC, MC.renderBuffers().bufferSource());
 
         //Draw Starting Hint

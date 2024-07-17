@@ -1,20 +1,18 @@
 package com.phoenixclient.module;
 
-import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
-import com.phoenixclient.gui.hud.element.SpeedWindow;
 import com.phoenixclient.util.MotionUtil;
 import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.math.Angle;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.setting.SettingGUI;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
@@ -31,7 +29,7 @@ public class ElytraFly extends Module {
     private final SettingGUI<Double> speed = new SettingGUI<>(
             this,
             "Speed",
-            "Speed of ElytaFly",
+            "Speed of ElytaFly Boost Mode",
             1d)
             .setSliderData(.1, 2, .1).setDependency(mode, "Boost");
 
@@ -49,17 +47,24 @@ public class ElytraFly extends Module {
             120)
             .setSliderData(0, 200, 5).setDependency(mode, "Hold");
 
+    private final SettingGUI<Boolean> useRockets = new SettingGUI<>(
+            this,
+            "Use Rockets",
+            "Automatically uses rockets every 2 seconds",
+            true).setDependency(mode, "Hold");
+
 
     public ElytraFly() {
         super("ElytraFly", "Allows control of the Elytra", Category.MOTION, false, -1);
-        addSettings(mode, speed, glideSpeed, speedCap);
+        addSettings(mode, speed, glideSpeed, speedCap, useRockets);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }
 
-    int step = 0;
+    private int step = 0;
     private final StopWatch watch = new StopWatch();
 
     public void onPlayerUpdate(Event event) {
+        if (!MC.player.inventoryMenu.getSlot(6).getItem().getItem().equals(Items.ELYTRA)) return;
         switch (mode.get()) {
             case "Boost" -> {
                 if (MC.player.isFallFlying()) {
@@ -77,7 +82,7 @@ public class ElytraFly extends Module {
                     if (MC.options.keyUp.isDown()) {
                         watch.start();
                         if (watch.hasTimePassedS(2) && MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem) {
-                            startUseItem();
+                            if (useRockets.get()) startUseItem();
                             watch.restart();
                         }
                         //Add Auto Rocket Code Here, when W is down
@@ -89,8 +94,8 @@ public class ElytraFly extends Module {
 
                     if (MC.options.keyDown.isDown()) MC.player.setDeltaMovement(0, 0, 0);
 
-
                     MC.player.setDeltaMovement(MC.player.getDeltaMovement().x(), .4 / 20 + -glideSpeed.get() / 20, MC.player.getDeltaMovement().z());
+                    if (MC.player.touchingUnloadedChunk()) MC.player.setDeltaMovement(0,0,0);
                 }
             }
         }
@@ -98,7 +103,18 @@ public class ElytraFly extends Module {
 
     @Override
     public void onEnabled() {
-        watch.restart();
+        if (MC.player == null) {
+            disable();
+            for (EventAction action : getEventActions()) action.unsubscribe();
+            return;
+        }
+
+        switch (mode.get()) {
+            case "Hold" -> {
+                if (MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem && useRockets.get()) startUseItem();
+                watch.restart();
+            }
+        }
     }
 
     //TODO: Replace this with a mixin accessor

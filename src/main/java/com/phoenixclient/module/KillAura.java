@@ -101,6 +101,7 @@ public class KillAura extends Module {
         if (entity.equals(MC.player)) return false;
         FreeCam freeCam = (FreeCam) PhoenixClient.getModule("FreeCam");
         if (entity.equals(freeCam.dummyPlayer)) return false;
+        if (entity.equals(MC.player.getVehicle())) return false;
         if (!(entity instanceof LivingEntity)) return false;
         return Math.sqrt(entity.distanceToSqr(playerPos.getVec3())) < range.get();
     }
