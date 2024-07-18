@@ -1,8 +1,8 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
-import com.phoenixclient.util.render.ColorUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -55,7 +55,7 @@ public class DirectionWindow extends GuiWindow {
         Vector pos = new Vector(
                 getPos().getX() + getSize().getX() / 2 - DrawUtil.getFontTextWidth(label + directionString) / 2 - 1,
                 getPos().getY() + 2);
-        DrawUtil.drawDualColorFontText(graphics, label, directionString, pos, ColorUtil.HUD_LABEL, Color.WHITE);
+        DrawUtil.drawDualColorFontText(graphics, label, directionString, pos, colorManager.getHudLabelColor(), Color.WHITE);
     }
 
 }

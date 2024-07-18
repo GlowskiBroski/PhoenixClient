@@ -54,6 +54,8 @@ public class StorageListWindow extends ListWindow {
 
             if (!isStorage) continue;
 
+            if (entityName.contains("shulker box")) entityName = "Shulker box";
+
             if (currentList.containsKey(entityName)) {
                 ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + 1) + ")",Color.WHITE,Color.CYAN);
                 currentList.put(entityName, count);

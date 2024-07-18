@@ -1,8 +1,8 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
-import com.phoenixclient.util.render.ColorUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -52,7 +52,7 @@ public class CoordinatesWindow extends GuiWindow {
         float zLength = (float) DrawUtil.getFontTextWidth(zLabel + z);
 
         Color color = Color.WHITE;
-        Color labelColor = ColorUtil.HUD_LABEL;
+        Color labelColor = colorManager.getHudLabelColor();
 
         Vector startPos;
 

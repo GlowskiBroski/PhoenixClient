@@ -1,5 +1,6 @@
 package com.phoenixclient.gui.module.element;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 
@@ -15,21 +16,18 @@ public class ModuleKeyBindSelector extends GuiWidget {
 
     private Module module;
 
-    private Color color;
-
     private boolean accepting;
 
     public ModuleKeyBindSelector(Screen screen, Module module, Vector pos, Vector size, Color color) {
         super(screen,pos,size);
         this.module = module;
-        this.color = color;
         this.accepting = false;
     }
 
     @Override
     protected void drawWidget(GuiGraphics graphics, Vector mousePos) {
         //Draw Background
-        DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), BGC);
+        DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), colorManager.getBackgroundColor());
 
         //Draw Text
         double scale = 1;
@@ -43,8 +41,7 @@ public class ModuleKeyBindSelector extends GuiWidget {
                 msg = msg.concat("Bound (Null Key Name)");
             }
         }
-
-        if (DrawUtil.getFontTextWidth(msg) + 2 > getSize().getX()) scale = getSize().getX()/(DrawUtil.getFontTextWidth(msg) + 2);
+        if (DrawUtil.getFontTextWidth(msg) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(msg) + 2);
         DrawUtil.drawFontText(graphics, msg, getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,true,(float)scale);
     }
 
@@ -76,19 +73,11 @@ public class ModuleKeyBindSelector extends GuiWidget {
         //TODO: Add a fade animation of select key out, and the new keybind name in
     }
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
     public void setModule(Module module) {
         this.module = module;
         accepting = false;
     }
 
-
-    public Color getColor() {
-        return color;
-    }
 
     public Module getModule() {
         return module;

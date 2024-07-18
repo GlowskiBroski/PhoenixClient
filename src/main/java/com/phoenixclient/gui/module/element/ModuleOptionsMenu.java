@@ -5,11 +5,11 @@ import com.phoenixclient.gui.WidgetUtil;
 import com.phoenixclient.util.ConsoleUtil;
 import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.gui.element.GuiButton;
 import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.module.Module;
-import com.phoenixclient.util.render.ColorUtil;
 import com.phoenixclient.util.render.FontRenderer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import static com.phoenixclient.PhoenixClient.MC;
 
 public class ModuleOptionsMenu extends GuiWidget {
-
-    private final FontRenderer descriptionFont = new FontRenderer(PhoenixClient.getFontRenderer().getFont().getFontName(),Font.BOLD);
 
     private ArrayList<GuiWidget> widgetList = new ArrayList<>();
 
@@ -39,7 +37,7 @@ public class ModuleOptionsMenu extends GuiWidget {
 
     public ModuleOptionsMenu(Screen screen, Vector pos) {
         super(screen, pos, new Vector(120,20));
-        this.mainButton = new GuiButton(getScreen(),"", getPos(),getSize(), ColorUtil.getTheme().getBaseColor(),(f) -> {
+        this.mainButton = new GuiButton(getScreen(),"", getPos(),getSize(), colorManager,(f) -> {
             retract = true;
             nullify = true;
             setHoverHighlightVisible(false);
@@ -75,6 +73,7 @@ public class ModuleOptionsMenu extends GuiWidget {
                     if (!widget.shouldDrawSetting()) continue;
                     backgroundHeight += 16;
                 }
+                Color BGC = colorManager.getBackgroundColor();
                 DrawUtil.drawRectangleRound(graphics, getPos().getAdded(0, getSize().getY()), new Vector(getSize().getX(), backgroundHeight), new Color(BGC.getRed(), BGC.getGreen(), BGC.getBlue(), BGC.getAlpha() / 2));
 
                 drawWidgets(graphics, mousePos);
@@ -133,6 +132,9 @@ public class ModuleOptionsMenu extends GuiWidget {
             yOffset += ySize - 4;
         }
     }
+
+    @Deprecated
+    private final FontRenderer descriptionFont = new FontRenderer(PhoenixClient.getFontRenderer().getFont().getFontName(),Font.BOLD);
 
     @Deprecated
     private void drawTitleDescription(GuiGraphics graphics) {

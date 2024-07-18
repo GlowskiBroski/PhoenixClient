@@ -3,17 +3,11 @@ package com.phoenixclient.gui.hud.element;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.math.Vector;
-import com.phoenixclient.util.render.ColorUtil;
-import com.phoenixclient.util.render.DrawUtil;
-import com.phoenixclient.util.setting.SettingGUI;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 
 public class ModuleKeybindListWindow extends ListWindow {

@@ -5,6 +5,7 @@ import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.module.Module;
@@ -23,16 +24,14 @@ public class ModuleToggle extends GuiWidget {
 
     private final Module module;
 
-    private Color color;
-
     protected float toggleFade;
     public boolean selectedSettings;
 
-    public ModuleToggle(Screen screen, Module module, Vector pos, Vector size, Color color) {
+    public ModuleToggle(Screen screen, Module module, Vector pos, Vector size, ColorManager colorManager) {
         super(screen,pos,size);
         this.module = module;
         this.title = module.getTitle();
-        this.color = color;
+        this.colorManager = colorManager;
         this.toggleFade = 0;
         this.selectedSettings = false;
     }
@@ -42,15 +41,16 @@ public class ModuleToggle extends GuiWidget {
     @Override
     protected void drawWidget(GuiGraphics graphics, Vector mousePos) {
         //Draw Background
-        Color bgc = BGC;
+        Color bgc = colorManager.getBackgroundColor();
         DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(bgc.getRed()/2,bgc.getGreen()/2,bgc.getBlue()/2,100));
 
         //Draw Fill
-        DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(getColor().getRed(),getColor().getGreen(),getColor().getBlue(),(int) toggleFade));
+        Color wColor = colorManager.getWidgetColor();
+        DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(wColor.getRed(),wColor.getGreen(),wColor.getBlue(),(int) toggleFade));
 
         //Draw Text
         double scale = 1;
-        if (DrawUtil.getFontTextWidth(getTitle()) + 2 > getSize().getX()) scale = getSize().getX()/(DrawUtil.getFontTextWidth(getTitle()) + 2);
+        if (DrawUtil.getFontTextWidth(getTitle()) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(getTitle()) + 2);
         DrawUtil.drawFontText(graphics, getTitle(), getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,true,(float)scale);
 
         //Draw Selection Blip
@@ -87,17 +87,9 @@ public class ModuleToggle extends GuiWidget {
     }
 
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
 
     public String getTitle() {
         return title;
-    }
-
-    public Color getColor() {
-        return color;
     }
 
     public Module getModule() {

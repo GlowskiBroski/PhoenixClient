@@ -64,6 +64,7 @@ public class FreeCam extends Module {
                     MC.player.getAbilities().flying = true;
                     MotionUtil.moveEntityStrafe(speed.get() + .052,MC.player);
                     Vector deltaM = new Vector(MC.player.getDeltaMovement());
+                    MC.player.setDeltaMovement(deltaM.getX(), 0, deltaM.getZ());
                     if (MC.options.keyJump.isDown()) MC.player.setDeltaMovement(deltaM.getX(), speed.get(), deltaM.getZ());
                     if (MC.options.keyShift.isDown()) MC.player.setDeltaMovement(deltaM.getX(), -speed.get(), deltaM.getZ());
                     if (!MotionUtil.isInputActive(true)) MC.player.setDeltaMovement(0,0,0);

@@ -1,7 +1,9 @@
 package com.phoenixclient.gui.element;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import com.phoenixclient.util.setting.Setting;
@@ -11,7 +13,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
-//TODO: This is ugly, clean it up
 public class GuiTextField extends GuiWidget {
 
     private final SettingGUI<String> setting;
@@ -19,7 +20,6 @@ public class GuiTextField extends GuiWidget {
 
     private final StopWatch cursorTimer = new StopWatch();
     private boolean typing;
-
 
     private GuiTextField(Screen screen, String title, SettingGUI<String> setting, Vector pos, Vector size) {
         super(screen, pos, size);
@@ -36,7 +36,7 @@ public class GuiTextField extends GuiWidget {
     @Override
     protected void drawWidget(GuiGraphics graphics, Vector mousePos) {
         //Draw Background
-        DrawUtil.drawRectangleRound(graphics,getPos(), getSize(), BGC);
+        DrawUtil.drawRectangleRound(graphics,getPos(), getSize(), colorManager.getBackgroundColor());
 
         //Draw Underline
         DrawUtil.drawRectangle(graphics,
@@ -60,7 +60,7 @@ public class GuiTextField extends GuiWidget {
 
         //Draw Text
         double scale = 1;
-        if (DrawUtil.getFontTextWidth(title.concat(msg)) + 2 > getSize().getX()) scale = getSize().getX()/(DrawUtil.getFontTextWidth(title.concat(msg)) + 2);
+        if (DrawUtil.getFontTextWidth(title.concat(msg)) > getSize().getX() - 2) scale = (getSize().getX() - 2 - DrawUtil.getFontTextWidth(title))/(DrawUtil.getFontTextWidth(msg));
         DrawUtil.drawDualColorFontText(graphics,title,msg,getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,typing ? Color.GREEN : Color.WHITE,true,1,(float)scale);
     }
 

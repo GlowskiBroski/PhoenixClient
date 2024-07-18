@@ -1,8 +1,8 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
-import com.phoenixclient.util.render.ColorUtil;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
@@ -51,7 +51,7 @@ public abstract class ListWindow extends GuiWindow {
     protected void drawWindow(GuiGraphics graphics, Vector mousePos) {
         int yOff = 0;
         if (label.get()) {
-            DrawUtil.drawFontText(graphics, getLabel() + ": ", getPos().getAdded(2, 2), ColorUtil.HUD_LABEL);
+            DrawUtil.drawFontText(graphics, getLabel() + ": ", getPos().getAdded(2, 2), colorManager.getHudLabelColor());
             yOff += 12;
         }
 

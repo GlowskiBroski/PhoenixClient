@@ -1,10 +1,10 @@
 package com.phoenixclient.gui;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.gui.element.*;
 
 import com.phoenixclient.util.setting.SettingGUI;
 import com.phoenixclient.util.math.Vector;
-import com.phoenixclient.util.render.ColorUtil;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.ArrayList;
@@ -22,13 +22,13 @@ public class WidgetUtil {
         ArrayList<GuiWidget> widgetList = new ArrayList<>();
         for (SettingGUI setting : settings) {
             if (!setting.getModes().isEmpty()) {
-                widgetList.add(new GuiModeCycle<>(screen, setting, Vector.NULL(), Vector.NULL(), ColorUtil.getTheme().getWidgetColor()));
+                widgetList.add(new GuiModeCycle<>(screen, setting, Vector.NULL(), Vector.NULL(), PhoenixClient.getColorManager()));
                 continue;
             }
             switch (setting.getType()) {
-                case "boolean" -> widgetList.add(new GuiToggle(screen, setting, Vector.NULL(), Vector.NULL(), ColorUtil.getTheme().getWidgetColor()));
-                case "integer" -> widgetList.add(new GuiSlider<Integer>(screen, setting, Vector.NULL(), Vector.NULL(), ColorUtil.getTheme().getWidgetColor()));
-                case "double", "float" -> widgetList.add(new GuiSlider<Double>(screen, setting, Vector.NULL(), Vector.NULL(), ColorUtil.getTheme().getWidgetColor()));
+                case "boolean" -> widgetList.add(new GuiToggle(screen, setting, Vector.NULL(), Vector.NULL(), PhoenixClient.getColorManager()));
+                case "integer" -> widgetList.add(new GuiSlider<Integer>(screen, setting, Vector.NULL(), Vector.NULL(), PhoenixClient.getColorManager()));
+                case "double", "float" -> widgetList.add(new GuiSlider<Double>(screen, setting, Vector.NULL(), Vector.NULL(), PhoenixClient.getColorManager()));
                 case "string" -> widgetList.add(new GuiTextField(screen, setting, Vector.NULL(), Vector.NULL()));
             }
         }

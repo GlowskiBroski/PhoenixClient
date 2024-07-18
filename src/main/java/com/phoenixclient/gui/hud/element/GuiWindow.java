@@ -2,7 +2,7 @@ package com.phoenixclient.gui.hud.element;
 
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.input.Mouse;
-import com.phoenixclient.util.render.ColorUtil;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.setting.ISettingParent;
 import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.math.Vector;
@@ -211,7 +211,7 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
 
     private void drawPin(GuiGraphics graphics, Vector mousePos) {
         if (MC.screen == PhoenixClient.getGuiManager().getHudGui() && shouldDrawPin()) {
-            Color pinColor = ColorUtil.getRedGreenScaledColor(pinFade);
+            Color pinColor = ColorManager.getRedGreenScaledColor(pinFade);
             DrawUtil.drawRectangleRound(graphics, getPos(), new Vector(10, 10), new Color(pinColor.getRed(), pinColor.getGreen(), pinColor.getBlue(), 125));
         }
     }

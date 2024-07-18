@@ -1,8 +1,8 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
-import com.phoenixclient.util.render.ColorUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -31,7 +31,7 @@ public class SpeedWindow extends GuiWindow {
 
         setSize(new Vector((int) DrawUtil.getFontTextWidth(label + currentSpeed) + 6, 13));
 
-        DrawUtil.drawDualColorFontText(graphics, label, currentSpeed, getPos().getAdded(new Vector(2, 2)), ColorUtil.HUD_LABEL, Color.WHITE);
+        DrawUtil.drawDualColorFontText(graphics, label, currentSpeed, getPos().getAdded(new Vector(2, 2)), colorManager.getHudLabelColor(), Color.WHITE);
     }
 
     public static double getEntitySpeed(Entity entity, boolean includeY) {

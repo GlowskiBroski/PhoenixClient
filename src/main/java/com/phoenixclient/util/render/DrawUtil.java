@@ -24,13 +24,14 @@ public class DrawUtil {
     // -------------------- TEXT ----------------------
 
     public static void drawFontText(GuiGraphics graphics, String text, Vector pos, Color color, boolean drawShadow, float scale) {
-        float x = (float) pos.getX();
-        float y = (float) pos.getY();
         graphics.pose().scale(scale, scale, 1);
         graphics.setColor(1, 1, 1, color.getAlpha() / 255f);
-        if (drawShadow) PhoenixClient.getFontRenderer().drawString(graphics,text,pos.getAdded(1,1).getMultiplied(1/scale),new Color(25, 25, 25, MathUtil.getBoundValue(color.getAlpha() - 50,0,255).intValue()));
+        if (drawShadow) {
+            int damp = 175;
+            Color shadowColor = new Color(MathUtil.getBoundValue(color.getRed() - damp,0,255).intValue(), MathUtil.getBoundValue(color.getGreen() - damp,0,255).intValue(), MathUtil.getBoundValue(color.getBlue() - damp,0,255).intValue(), MathUtil.getBoundValue(color.getAlpha() - 50,0,255).intValue());
+            PhoenixClient.getFontRenderer().drawString(graphics,text,pos.getAdded(1,1).getMultiplied(1/scale),shadowColor);
+        }
         PhoenixClient.getFontRenderer().drawString(graphics,text,pos.getMultiplied(1/scale),color);
-        //MC.font.drawInBatch(text, x * 1 / scale, y * 1 / scale, color.hashCode(), drawShadow, stack.last().pose(), graphics.bufferSource(), Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
         graphics.pose().scale(1 / scale, 1 / scale, 1);
         graphics.setColor(1f, 1f, 1f, 1f);
     }
@@ -65,7 +66,6 @@ public class DrawUtil {
 
     public static double getFontTextWidth(String text, double scale) {
         return PhoenixClient.getFontRenderer().getWidth(text) * scale;
-        //return MC.font.width(text) * scale;
     }
 
     public static double getFontTextWidth(String text) {
@@ -74,7 +74,6 @@ public class DrawUtil {
 
     public static double getFontTextHeight(double scale) {
         return PhoenixClient.getFontRenderer().getHeight() * scale;
-        //return MC.font.lineHeight * scale;
     }
 
     public static double getFontTextHeight() {

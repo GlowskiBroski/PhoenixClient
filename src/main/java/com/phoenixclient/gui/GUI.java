@@ -96,8 +96,7 @@ public class GUI extends Screen {
             hintFade = 255;
         }
 
-        if (hintFadeIn) hintFade += 3;
-        else hintFade -= 3;
+        hintFade = hintFadeIn ? hintFade + 3 : hintFade - 3;
 
         DrawUtil.drawFontText(guiGraphics,hint,new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, MC.getWindow().getGuiScaledHeight() - 14), new Color(255,255,255, MathUtil.getBoundValue(hintFade,0,255).intValue()));
     }

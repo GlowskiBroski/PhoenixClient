@@ -1,11 +1,12 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.gui.WidgetUtil;
 import com.phoenixclient.gui.element.GuiButton;
 import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
-import com.phoenixclient.util.render.ColorUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -22,7 +23,8 @@ public class SettingsWindow extends GuiWindow {
     public SettingsWindow(Screen screen, GuiWindow parentWindow, Vector pos) {
         super(screen, parentWindow.getTitle() + "_settings", pos, new Vector(100, 20));
         this.parentWindow = parentWindow;
-        this.closeButton = new GuiButton(getScreen(), "X", getPos(), getSize(), new Color(200, 0, 0), (args) -> {
+        ColorManager closeButtonManager = new ColorManager(new Color(200, 0, 0));
+        this.closeButton = new GuiButton(getScreen(), "X", getPos(), getSize(), closeButtonManager, (args) -> {
             parentWindow.setSettingsOpen(false);
         });
 
@@ -32,7 +34,7 @@ public class SettingsWindow extends GuiWindow {
     @Override
     protected void drawWindow(GuiGraphics graphics, Vector mousePos) {
         //Draw Header
-        DrawUtil.drawRectangleRound(graphics,getPos(),getSize(), ColorUtil.getTheme().getBaseColor());
+        DrawUtil.drawRectangleRound(graphics,getPos(),getSize(), PhoenixClient.getColorManager().getBaseColor());
 
         updateXButton(graphics, mousePos);
 
@@ -45,6 +47,7 @@ public class SettingsWindow extends GuiWindow {
             if (!widget.shouldDrawSetting()) continue;
             backgroundHeight += 18;
         }
+        Color BGC = colorManager.getBackgroundColor();
         DrawUtil.drawRectangleRound(graphics,getPos().getAdded(0,getSize().getY()),new Vector(getSize().getX(),backgroundHeight),new Color(BGC.getRed(), BGC.getGreen(), BGC.getBlue(), BGC.getAlpha() / 2));
 
         drawWidgets(graphics, mousePos);

@@ -3,10 +3,10 @@ package com.phoenixclient.gui.module.element;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.gui.element.GuiButton;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.module.Module;
-import com.phoenixclient.util.render.ColorUtil;
 import com.phoenixclient.util.setting.Setting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -27,11 +27,11 @@ public class ModuleMenu extends GuiWidget {
         this.scaling = 0;
         this.buttonList = new ArrayList<>();
         this.open = new Setting<>(PhoenixClient.getSettingManager(), category.getName() + "_open", false);
-        this.mainButton = new GuiButton(getScreen(), category.getName(), getPos(),getSize(), ColorUtil.getTheme().getBaseColor(),(f) -> open.set(!open.get())) {
+        this.mainButton = new GuiButton(getScreen(), category.getName(), getPos(),getSize(), colorManager,(f) -> open.set(!open.get())) {
             @Override
             protected void drawWidget(GuiGraphics graphics, Vector mousePos) {
                 DrawUtil.drawArrow(graphics, getPos(), (float) getSize().getY(), getColor(),false);
-                DrawUtil.drawArrow(graphics, getPos().getAdded(getSize().getMultiplied(.25/1.5)).getAdded(2,0), (float) getSize().getY() / 1.5f, ColorUtil.getTheme().getBorderColor(),false);
+                DrawUtil.drawArrow(graphics, getPos().getAdded(getSize().getMultiplied(.25/1.5)).getAdded(2,0), (float) getSize().getY() / 1.5f, colorManager.getDepthColor(),false);
 
                 double scale = 1;
                 if (DrawUtil.getFontTextWidth(getTitle()) > getSize().getX()) scale = getSize().getX() / DrawUtil.getFontTextWidth(getTitle());
@@ -57,7 +57,8 @@ public class ModuleMenu extends GuiWidget {
         //Window Background
         Vector backgroundPos = getPos().getAdded(getPos().getX() + getSize().getX() - 9,3);
         Vector backgroundSize = new Vector((double) (62 * (buttonList.size() % 2 == 0 ? buttonList.size() : buttonList.size()+1)) / 2 + 9 + 4,getSize().getY() - 6);
-        Color backgroundColor = new Color(ColorUtil.getTheme().getBorderColor().getRed(),ColorUtil.getTheme().getBorderColor().getGreen(),ColorUtil.getTheme().getBorderColor().getBlue(),180);
+        ColorManager cm = colorManager;
+        Color backgroundColor = new Color(cm.getDepthColor().getRed(),cm.getDepthColor().getGreen(),cm.getDepthColor().getBlue(),180);
         DrawUtil.drawRectangleRound(graphics,backgroundPos,backgroundSize,backgroundColor,1.5,false);
         DrawUtil.drawArrowHead(graphics,backgroundPos.getAdded(backgroundSize).y(getPos().getY() + 3),(float)getSize().getY() - 6,backgroundColor,false,false);
 
@@ -115,7 +116,7 @@ public class ModuleMenu extends GuiWidget {
         for (Module module : PhoenixClient.getModules()) {
             if (module.getCategory().equals(category)) {
                 even = j % 2 == 0;
-                buttonList.add(new ModuleToggle(getScreen(), module, getPos().getAdded(getPos().getX() + getSize().getX() + 4 + (62 * (even ? j - i : i)), even ? 5 : 26), new Vector(60, 19), ColorUtil.getTheme().getWidgetColor()));
+                buttonList.add(new ModuleToggle(getScreen(), module, getPos().getAdded(getPos().getX() + getSize().getX() + 4 + (62 * (even ? j - i : i)), even ? 5 : 26), new Vector(60, 19), colorManager));
                 j++;
                 if (!even) i++;
             }

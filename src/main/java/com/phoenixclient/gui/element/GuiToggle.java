@@ -2,6 +2,7 @@ package com.phoenixclient.gui.element;
 
 import com.phoenixclient.util.input.Mouse;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,31 +17,29 @@ public class GuiToggle extends GuiWidget {
 
     protected float toggleFade = 0;
 
-    private Color color;
-
-    public GuiToggle(Screen screen, String title, SettingGUI<Boolean> setting, Vector pos, Vector size, Color color) {
+    public GuiToggle(Screen screen, String title, SettingGUI<Boolean> setting, Vector pos, Vector size, ColorManager colorManager) {
         super(screen,pos,size);
         this.setting = setting;
         this.title = title;
-        this.color = color;
+        this.colorManager = colorManager;
     }
 
-    public GuiToggle(Screen screen, SettingGUI<Boolean> setting, Vector pos, Vector size, Color color) {
-        this(screen,setting.getName(),setting,pos,size,color);
+    public GuiToggle(Screen screen, SettingGUI<Boolean> setting, Vector pos, Vector size, ColorManager colorManager) {
+        this(screen,setting.getName(),setting,pos,size,colorManager);
     }
 
 
     @Override
     protected void drawWidget(GuiGraphics graphics, Vector mousePos) {
         //Draw Background
-        DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), BGC);
+        DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), colorManager.getBackgroundColor());
 
         //Draw Fill
-        DrawUtil.drawRectangleRound(graphics, getPos(), getSize(),new Color(getColor().getRed(),getColor().getGreen(),getColor().getBlue(),(int) toggleFade));
+        DrawUtil.drawRectangleRound(graphics, getPos(), getSize(),new Color(colorManager.getWidgetColor().getRed(),colorManager.getWidgetColor().getGreen(),colorManager.getWidgetColor().getBlue(),(int) toggleFade));
 
         //Draw Text
         double scale = 1;
-        if (DrawUtil.getFontTextWidth(getTitle()) + 2 > getSize().getX()) scale = getSize().getX()/(DrawUtil.getFontTextWidth(getTitle()) + 2);
+        if (DrawUtil.getFontTextWidth(getTitle()) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(getTitle()) + 2);
         DrawUtil.drawFontText(graphics, getTitle(), getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,true,(float)scale);
     }
 
@@ -65,17 +64,8 @@ public class GuiToggle extends GuiWidget {
     }
 
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-
     public String getTitle() {
         return title;
-    }
-
-    public Color getColor() {
-        return color;
     }
 
     @Override

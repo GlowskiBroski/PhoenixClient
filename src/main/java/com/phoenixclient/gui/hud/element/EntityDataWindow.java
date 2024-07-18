@@ -1,9 +1,10 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
-import com.phoenixclient.util.render.ColorUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -50,14 +51,14 @@ public class EntityDataWindow extends GuiWindow {
         int yOff = 0;
 
         if (label.get()) {
-            DrawUtil.drawFontText(graphics, "Entity Data:", getPos().getAdded(2, 2), ColorUtil.HUD_LABEL);
+            DrawUtil.drawFontText(graphics, "Entity Data:", getPos().getAdded(2, 2), colorManager.getHudLabelColor());
             yOff += 12;
         }
         if (entity == null) return;
 
         if (entity instanceof LivingEntity living) {
             float healthPercent = living.getHealth() / living.getMaxHealth();
-            Color healthColor = healthPercent <= 1 ? ColorUtil.getRedGreenScaledColor(healthPercent) : new Color(255, 255, 0);
+            Color healthColor = healthPercent <= 1 ? ColorManager.getRedGreenScaledColor(healthPercent) : new Color(255, 255, 0);
             DrawUtil.drawDualColorFontText(graphics, "\"" + entity.getName().getString() + "\"", " (" + MathUtil.roundDouble(living.getHealth(), 2) + "/" + MathUtil.roundDouble(living.getMaxHealth(),2) + ")", getPos().getAdded(2, 2 + yOff), Color.WHITE, healthColor);
         } else {
             DrawUtil.drawFontText(graphics, "\"" + entity.getName().getString() + "\"", getPos().getAdded(2, 2 + yOff), Color.WHITE);
@@ -75,8 +76,8 @@ public class EntityDataWindow extends GuiWindow {
 
             double speedPercent = (speed - (.1125 * 42.16)) / ((.3375 - .1125) * 42.16);
             double jumpPercent = (jump - .4) / (1 - .4);
-            Color speedColor = ColorUtil.getRedGreenScaledColor(speedPercent);
-            Color jumpColor = ColorUtil.getRedGreenScaledColor(jumpPercent);
+            Color speedColor = ColorManager.getRedGreenScaledColor(speedPercent);
+            Color jumpColor = ColorManager.getRedGreenScaledColor(jumpPercent);
 
             DrawUtil.drawDualColorFontText(graphics, " Speed: ", speed + " m/s", getPos().getAdded(2, 2 + yOff), Color.WHITE, speedColor);
             yOff += 12;
@@ -94,6 +95,7 @@ public class EntityDataWindow extends GuiWindow {
         }
 
         this.prevHoveredEntity = entity;
+        //System.out.println(entity.getEntityData().getNonDefaultValues());
         setSize(new Vector(100, yOff));
     }
 

@@ -64,6 +64,8 @@ public class ShulkerView extends Module {
     public void onRenderTooltip(RenderItemTooltipEvent event) {
         ItemStack hoveredItem = event.getItemStack();
 
+        //System.out.println(hoveredItem.save(MC.level.registryAccess()));
+
         if (tooltipView.get()) {
             if (shouldHold && holdStack != null) event.setCancelled(true);
             if (hoveredItem.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof ShulkerBoxBlock) {

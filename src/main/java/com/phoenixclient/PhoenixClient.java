@@ -7,6 +7,7 @@ import com.phoenixclient.util.RotationManager;
 import com.phoenixclient.util.file.CSVFile;
 import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.input.Mouse;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.FontRenderer;
 import com.phoenixclient.util.setting.SettingManager;
 import net.fabricmc.api.ModInitializer;
@@ -22,15 +23,16 @@ public class PhoenixClient implements ModInitializer {
 
     private static final SettingManager SETTING_MANAGER = new SettingManager(new CSVFile("PhoenixClient", "settings"));
     private static final GuiManager GUI_MANAGER = new GuiManager();
+    private static final ColorManager COLOR_MANAGER = new ColorManager(ColorManager.Theme.SEABLUE);
     private static final RotationManager ROTATION_MANAGER = new RotationManager();
-    private static final FontRenderer FONT_RENDERER = new FontRenderer("Segoe Print", Font.PLAIN);
-
+    private static FontRenderer FONT_RENDERER = new FontRenderer("Verdana", Font.PLAIN);
     private static final LinkedHashMap<String,Module> MODULES_LIST = new LinkedHashMap<>(); //Key value pair: ModName, Module
 
 
     @Override
     public void onInitialize() {
         addModules(
+                GUI_MANAGER,
                 new AutoFish(),
                 new FullBright(),
                 new ElytraFly(),
@@ -56,7 +58,7 @@ public class PhoenixClient implements ModInitializer {
                 new DeathSpot(),
                 new AntiPackets(),
                 new AutoLog(),
-                new Banners()//, new Chunks()
+                new Banners()
         );
 
         GUI_MANAGER.instantiateHUDGUI();
@@ -69,13 +71,12 @@ public class PhoenixClient implements ModInitializer {
 
 		Module.MODULE_KEYBIND_ACTION.subscribe();
 
-        GUI_MANAGER.updateGuiOpen.subscribe();
-        GUI_MANAGER.updateRenderHUD.subscribe();
+        GUI_MANAGER.constUpdateGuiOpen.subscribe();
+        GUI_MANAGER.constUpdateRenderStartingHint.subscribe();
 
         ROTATION_MANAGER.updateSpoofedAngles.subscribe();
 
-        //I'm worried this causes a performance impact.
-        //I've moved the animation calculations back to the render thread, which is now dependent on FPS
+        //I'm worried this causes a performance impact. I've moved the animation calculations back to the render thread, which is now dependent on FPS
         //getGuiManager().startAnimationThread();
 
         //Toggle all mods that are saved as "Enabled"
@@ -92,6 +93,9 @@ public class PhoenixClient implements ModInitializer {
         for (Module module : moduleList) MODULES_LIST.put(module.getTitle(),module);
     }
 
+    public static void setFontRenderer(FontRenderer fontRenderer) {
+        FONT_RENDERER = fontRenderer;
+    }
 
     public static SettingManager getSettingManager() {
         return SETTING_MANAGER;
@@ -99,6 +103,10 @@ public class PhoenixClient implements ModInitializer {
 
     public static GuiManager getGuiManager() {
         return GUI_MANAGER;
+    }
+
+    public static ColorManager getColorManager() {
+        return COLOR_MANAGER;
     }
 
     public static RotationManager getRotationManager() {

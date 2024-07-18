@@ -65,6 +65,10 @@ public abstract class Module implements ISettingParent, Comparable<Module> {
         return "";
     }
 
+    public boolean showInList() {
+        return true;
+    }
+
     public void onEnabled(){
     }
 

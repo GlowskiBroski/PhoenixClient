@@ -1,10 +1,11 @@
 package com.phoenixclient.gui.element;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.gui.GUI;
 import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
-import com.phoenixclient.util.render.ColorUtil;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import com.phoenixclient.util.setting.Container;
@@ -16,8 +17,6 @@ import java.awt.*;
 import static com.phoenixclient.PhoenixClient.MC;
 
 public abstract class GuiWidget {
-
-    protected static final Color BGC = ColorUtil.getTheme().getBackgroundColor();
 
     private final Screen screen;
 
@@ -32,6 +31,8 @@ public abstract class GuiWidget {
     protected float hoverFade;
 
     public final StopWatch hoverWatch;
+
+    protected ColorManager colorManager = PhoenixClient.getColorManager();
 
     public GuiWidget(Screen screen, Vector pos, Vector size) {
         this.screen = screen;
@@ -91,7 +92,7 @@ public abstract class GuiWidget {
             if (pos.getX() + DrawUtil.getFontTextWidth(description) + 2 > MC.getWindow().getGuiScaledWidth())
                 pos.setX(MC.getWindow().getGuiScaledWidth() - DrawUtil.getFontTextWidth(description) - 2);
 
-            DrawUtil.drawRectangleRound(graphics, pos, new Vector(DrawUtil.getFontTextWidth(description) + 4, DrawUtil.getFontTextHeight() + 3), new Color(BGC.getRed(), BGC.getGreen(), BGC.getBlue(), BGC.getAlpha()));
+            DrawUtil.drawRectangleRound(graphics, pos, new Vector(DrawUtil.getFontTextWidth(description) + 4, DrawUtil.getFontTextHeight() + 3), colorManager.getBackgroundColor());
             DrawUtil.drawFontText(graphics, description, pos.getAdded(2, 2), Color.WHITE);
         }
     }

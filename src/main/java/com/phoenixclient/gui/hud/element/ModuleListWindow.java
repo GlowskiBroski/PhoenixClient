@@ -6,8 +6,6 @@ import com.phoenixclient.util.render.DrawUtil;
 
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.setting.SettingGUI;
-import com.phoenixclient.util.render.ColorUtil;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.awt.*;
@@ -39,7 +37,7 @@ public class ModuleListWindow extends ListWindow {
 
         ArrayList<Module> sortedDisplayList = new ArrayList<>();
         for (Module module : PhoenixClient.getModules())
-            if (module.isEnabled()) sortedDisplayList.add(module);
+            if (module.isEnabled() && module.showInList()) sortedDisplayList.add(module);
         Module[] mods = sortedDisplayList.toArray(new Module[0]);
         Arrays.sort(mods, new ModuleComparator());
         sortedDisplayList = new ArrayList<>(Arrays.asList(mods));
@@ -55,7 +53,7 @@ public class ModuleListWindow extends ListWindow {
                     default -> throw new IllegalStateException("Unexpected value: " + vert.get());
                 };
             } else {
-                map.put(module.getTitle(),new ListInfo(tag,ColorUtil.getTheme().getBaseColor(),Color.WHITE));
+                map.put(module.getTitle(),new ListInfo(tag,colorManager.getBaseColor(), Color.WHITE));
             }
         }
 

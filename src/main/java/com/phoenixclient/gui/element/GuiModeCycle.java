@@ -3,6 +3,7 @@ package com.phoenixclient.gui.element;
 import com.phoenixclient.util.input.Mouse;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,54 +16,44 @@ public class GuiModeCycle<T> extends GuiWidget {
 
     private final SettingGUI<T> setting;
 
-    private Color baseColor;
-    private Color colorR;
-    private Color colorL;
+    private boolean pressingR;
+    private boolean pressingL;
 
     private int arrayNumber;
 
-    public GuiModeCycle(Screen screen, SettingGUI<T> setting, Vector pos, Vector size, Color color) {
+    public GuiModeCycle(Screen screen, SettingGUI<T> setting, Vector pos, Vector size, ColorManager colorManager) {
         super(screen, pos, size);
         this.setting = setting;
-        this.baseColor = color;
-        this.colorL = color;
-        this.colorR = color;
+        this.colorManager = colorManager;
     }
 
     @Override
     protected void drawWidget(GuiGraphics graphics, Vector mousePos) {
         //Draw Background
-        DrawUtil.drawRectangleRound(graphics,getPos(),getSize(), BGC);
+        DrawUtil.drawRectangleRound(graphics,getPos(),getSize(), colorManager.getBackgroundColor());
 
         //Draw Mode Arrows
-        DrawUtil.drawArrowHead(graphics,getPos().getAdded(2,2),(float)getSize().getY()-4,colorL,false,true);
-        DrawUtil.drawArrowHead(graphics,getPos().getAdded(-2 + getSize().getX() - 3,2),(float)getSize().getY()-4,colorR,false,false);
+        DrawUtil.drawArrowHead(graphics,getPos().getAdded(2,2),(float)getSize().getY()-4,getColorL(),false,true);
+        DrawUtil.drawArrowHead(graphics,getPos().getAdded(-2 + getSize().getX() - 3,2),(float)getSize().getY()-4,getColorR(),false,false);
 
         //Draw the text
         double scale = 1;
         String text = getSetting().getName() + ": " + getSetting().get();
-        if (DrawUtil.getFontTextWidth(text) > getSize().getX()) scale = getSize().getX()/DrawUtil.getFontTextWidth(text);
+        if (DrawUtil.getFontTextWidth(text) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(text) + 2);
         DrawUtil.drawFontText(graphics,text,getPos().getAdded(getSize().getX()/2 - DrawUtil.getFontTextWidth(text)/2,1 + getSize().getY()/2 - DrawUtil.getFontTextHeight()/2),Color.WHITE,true,(float)scale);
     }
 
     @Override
     public void mousePressed(int button, int action, Vector mousePos) {
-        int[] pressColor = {getColor().getRed(), getColor().getGreen(), getColor().getBlue()};
-        for (int i = 0; i < pressColor.length; i++) {
-            int col = pressColor[i] - 50;
-            col = MathUtil.getBoundValue(col, 0, 255).intValue();
-            pressColor[i] = col;
-        }
-
         switch (button) {
             case GLFW.GLFW_MOUSE_BUTTON_RIGHT -> {
                 switch (action) {
                     case Mouse.ACTION_CLICK -> {
-                        if (isMouseOver()) colorR = new Color(pressColor[0], pressColor[1], pressColor[2], getColor().getAlpha());
+                        if (isMouseOver()) pressingR = true;
                     }
                     case Mouse.ACTION_RELEASE -> {
                         if (isMouseOver()) switchMode(true);
-                        colorR = baseColor;
+                        pressingR = false;
                     }
                 }
             }
@@ -70,11 +61,11 @@ public class GuiModeCycle<T> extends GuiWidget {
             case GLFW.GLFW_MOUSE_BUTTON_LEFT -> {
                 switch (action) {
                     case Mouse.ACTION_CLICK -> {
-                        if (isMouseOver()) colorL = new Color(pressColor[0], pressColor[1], pressColor[2], getColor().getAlpha());
+                        if (isMouseOver()) pressingL = true;
                     }
                     case Mouse.ACTION_RELEASE -> {
                         if (isMouseOver()) switchMode(false);
-                        colorL = baseColor;
+                        pressingL = false;
                     }
                 }
             }
@@ -100,12 +91,28 @@ public class GuiModeCycle<T> extends GuiWidget {
         //TODO: Add a left/right scroll animation when changing modes
     }
 
-    public void setColor(Color color) {
-        this.baseColor = color;
+    public Color getColorR() {
+        if (pressingR) {
+            int[] colVal = {colorManager.getBaseColor().getRed(), colorManager.getBaseColor().getGreen(), colorManager.getBaseColor().getBlue()};
+            for (int i = 0; i < colVal.length; i++) {
+                colVal[i] = (int)MathUtil.getBoundValue(colVal[i] - 50,0,255);
+            }
+            return new Color(colVal[0],colVal[1],colVal[2],colorManager.getBaseColor().getAlpha());
+        } else {
+            return colorManager.getBaseColor();
+        }
     }
 
-    public Color getColor() {
-        return baseColor;
+    public Color getColorL() {
+        if (pressingL) {
+            int[] colVal = {colorManager.getBaseColor().getRed(), colorManager.getBaseColor().getGreen(), colorManager.getBaseColor().getBlue()};
+            for (int i = 0; i < colVal.length; i++) {
+                colVal[i] = (int)MathUtil.getBoundValue(colVal[i] - 50,0,255);
+            }
+            return new Color(colVal[0],colVal[1],colVal[2],colorManager.getBaseColor().getAlpha());
+        } else {
+            return colorManager.getBaseColor();
+        }
     }
 
     @Override

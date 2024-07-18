@@ -3,6 +3,7 @@ package com.phoenixclient.gui.element;
 import com.phoenixclient.util.input.Mouse;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,22 +16,20 @@ public class GuiSlider<T extends Number> extends GuiWidget {
     private final SettingGUI<T> setting;
     private final String title;
 
-    private Color color;
-
     private boolean sliding;
 
-    private GuiSlider(Screen screen, String title, SettingGUI<T> setting, Vector pos, Vector size, Color color) {
+    private GuiSlider(Screen screen, String title, SettingGUI<T> setting, Vector pos, Vector size, ColorManager colorManager) {
         super(screen, pos, size);
         this.setting = setting;
         this.title = title;
 
-        this.color = color;
+        this.colorManager = colorManager;
 
         this.sliding = false;
     }
 
-    public GuiSlider(Screen screen, SettingGUI<T> setting, Vector pos, Vector size, Color color) {
-        this(screen, setting.getName(), setting, pos, size, color);
+    public GuiSlider(Screen screen, SettingGUI<T> setting, Vector pos, Vector size, ColorManager colorManager) {
+        this(screen, setting.getName(), setting, pos, size, colorManager);
     }
 
 
@@ -40,26 +39,25 @@ public class GuiSlider<T extends Number> extends GuiWidget {
         if (sliding) updateSliderValue(mousePos);
 
         //Draw the background
-        DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), BGC);
+        DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), colorManager.getBackgroundColor());
 
         //Draw the slider fill
         double valueRange = getSetting().getMax() - getSetting().getMin();
         double sliderWidth = getSize().getX() / valueRange * (getSetting().get().doubleValue() - getSetting().getMin());
         int border = (int) getSize().getX() / 40;
-        DrawUtil.drawRectangleRound(graphics, getPos().getAdded(new Vector(border, border)), new Vector(sliderWidth - (sliderWidth > border ? border : 0), getSize().getY() - border * 2), new Color(getColor().getRed(), getColor().getGreen(), getColor().getBlue(), 150), 1.5, false);
+        DrawUtil.drawRectangleRound(graphics, getPos().getAdded(new Vector(border, border)), new Vector(sliderWidth - (sliderWidth > border ? border : 0), getSize().getY() - border * 2), new Color(colorManager.getWidgetColor().getRed(), colorManager.getWidgetColor().getGreen(), colorManager.getWidgetColor().getBlue(), 150), 1.5, false);
 
         //Draw the slider node
         int nodeWidth = (int) getSize().getY() / 4;
         double nodeX = sliderWidth - nodeWidth / 2f;
         if (nodeX + nodeWidth > getSize().getX()) nodeX = getSize().getX() - nodeWidth;
         if (nodeX < 0) nodeX = 0;
-        DrawUtil.drawRectangleRound(graphics, getPos().getAdded(new Vector(nodeX, 0)), new Vector(nodeWidth, getSize().getY()), new Color(getColor().getRed(), getColor().getGreen(), getColor().getBlue(), 255), 1.5, false);
+        DrawUtil.drawRectangleRound(graphics, getPos().getAdded(new Vector(nodeX, 0)), new Vector(nodeWidth, getSize().getY()), new Color(colorManager.getWidgetColor().getRed(), colorManager.getWidgetColor().getGreen(), colorManager.getWidgetColor().getBlue(), 255), 1.5, false);
 
         //Draw the slider text
         double scale = 1;
         String title = getTitle() + ": " + (getSetting().getType().equals("integer") ? getSetting().get().intValue() : String.format("%.2f", getSetting().get()));
-        if (DrawUtil.getFontTextWidth(title) + border + 1 > getSize().getX())
-            scale = getSize().getX() / (DrawUtil.getFontTextWidth(title) + border + 1);
+        if (DrawUtil.getFontTextWidth(title) + border + 1 > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(title) + border + 2);
         DrawUtil.drawFontText(graphics, title, getPos().getAdded(new Vector(border + 1, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE, true, (float) scale);
     }
 
@@ -99,17 +97,8 @@ public class GuiSlider<T extends Number> extends GuiWidget {
         this.sliding = sliding;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-
     public String getTitle() {
         return title;
-    }
-
-    public Color getColor() {
-        return color;
     }
 
     @Override
