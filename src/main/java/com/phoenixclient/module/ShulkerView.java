@@ -11,6 +11,7 @@ import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -117,7 +118,7 @@ public class ShulkerView extends Module {
                 if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof ShulkerBoxBlock) {
 
                     renderShulkerTooltip(stack, pos.getMultiplied(scale), scale, .5f);
-                    DrawUtil.drawDefaultText(graphics, "(" + ((i / 9) + 1) + "," + (i - 9 * (i / 9) + 1) + ")", pos.getAdded(148, 5), Color.WHITE);
+                    TextBuilder.start("(" + ((i / 9) + 1) + "," + (i - 9 * (i / 9) + 1) + ")", pos.getAdded(148, 5), Color.WHITE).defaultFont().draw(graphics);
 
                     switch (orient) {
                         case "Vertical" -> {

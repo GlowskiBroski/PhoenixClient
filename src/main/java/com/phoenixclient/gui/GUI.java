@@ -7,6 +7,7 @@ import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.gui.element.GuiWidget;
+import com.phoenixclient.util.render.TextBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -98,7 +99,7 @@ public class GUI extends Screen {
 
         hintFade = hintFadeIn ? hintFade + 3 : hintFade - 3;
 
-        DrawUtil.drawFontText(guiGraphics,hint,new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, MC.getWindow().getGuiScaledHeight() - 14), new Color(255,255,255, MathUtil.getBoundValue(hintFade,0,255).intValue()));
+        TextBuilder.start(hint,new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, MC.getWindow().getGuiScaledHeight() - 14), new Color(255,255,255, MathUtil.getBoundValue(hintFade,0,255).intValue())).draw(guiGraphics);
     }
 
     public void toggleOpen() {

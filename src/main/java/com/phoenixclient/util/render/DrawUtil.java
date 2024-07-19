@@ -19,50 +19,26 @@ import java.awt.*;
 import static com.phoenixclient.PhoenixClient.MC;
 
 //TODO: Organize this class its ugly
+//TODO: Try and phase out using the drawFontText and switch to using FontRenderer.drawString methods everywhere. Make this class a shape drawer, not text and shape
 public class DrawUtil {
 
     // -------------------- TEXT ----------------------
 
-    public static void drawFontText(GuiGraphics graphics, String text, Vector pos, Color color, boolean drawShadow, float scale) {
-        graphics.pose().scale(scale, scale, 1);
-        graphics.setColor(1, 1, 1, color.getAlpha() / 255f);
-        if (drawShadow) {
-            int damp = 175;
-            Color shadowColor = new Color(MathUtil.getBoundValue(color.getRed() - damp,0,255).intValue(), MathUtil.getBoundValue(color.getGreen() - damp,0,255).intValue(), MathUtil.getBoundValue(color.getBlue() - damp,0,255).intValue(), MathUtil.getBoundValue(color.getAlpha() - 50,0,255).intValue());
-            PhoenixClient.getFontRenderer().drawString(graphics,text,pos.getAdded(1,1).getMultiplied(1/scale),shadowColor);
-        }
-        PhoenixClient.getFontRenderer().drawString(graphics,text,pos.getMultiplied(1/scale),color);
-        graphics.pose().scale(1 / scale, 1 / scale, 1);
-        graphics.setColor(1f, 1f, 1f, 1f);
+    //TODO: Remove dual color text from this class and rout it to TextBuilder
+    public static void drawDualColorFontText(GuiGraphics graphics, String text1, String text2, Vector pos, Color color1, Color color2, boolean drawShadow, float scale1, float scale2, boolean dynamic) {
+        TextBuilder.start(text1,pos,color1).shadow(drawShadow).scale(scale1).dynamic(dynamic).draw(graphics);
+        TextBuilder.start(text2, pos.getAdded(new Vector(getFontTextWidth(text1) + 1, 0)), color2).shadow(drawShadow).scale(scale2).dynamic(dynamic).draw(graphics);
     }
 
-    public static void drawDefaultText(GuiGraphics graphics, String text, Vector pos, Color color, boolean drawShadow, float scale) {
-        float x = (float) pos.getX();
-        float y = (float) pos.getY();
-        graphics.pose().scale(scale, scale, 1);
-        graphics.setColor(1, 1, 1, color.getAlpha() / 255f);
-        MC.font.drawInBatch(text, x * 1 / scale, y * 1 / scale, color.hashCode(), drawShadow, graphics.pose().last().pose(), graphics.bufferSource(), Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
-        graphics.pose().scale(1 / scale, 1 / scale, 1);
-        graphics.setColor(1f, 1f, 1f, 1f);
-    }
-
-    public static void drawFontText(GuiGraphics graphics, String text, Vector pos, Color color) {
-        drawFontText(graphics, text, pos, color, true, 1);
-    }
-
-    public static void drawDefaultText(GuiGraphics graphics, String text, Vector pos, Color color) {
-        drawDefaultText(graphics, text, pos, color, true, 1);
+    public static void drawDualColorFontText(GuiGraphics graphics, String text1, String text2, Vector pos, Color color1, Color color2, boolean dynamic) {
+        TextBuilder.start(text1,pos,color1).dynamic(dynamic).draw(graphics);
+        TextBuilder.start(text2, pos.getAdded(new Vector(getFontTextWidth(text1) + 1, 0)), color2).dynamic(dynamic).draw(graphics);
     }
 
     public static void drawDualColorFontText(GuiGraphics graphics, String text1, String text2, Vector pos, Color color1, Color color2) {
-        drawFontText(graphics, text1, pos, color1);
-        drawFontText(graphics, text2, pos.getAdded(new Vector(getFontTextWidth(text1) + 1, 0)), color2);
+        drawDualColorFontText(graphics,text1,text2,pos,color1,color2,false);
     }
 
-    public static void drawDualColorFontText(GuiGraphics graphics, String text1, String text2, Vector pos, Color color1, Color color2, boolean drawShadow, float scale1, float scale2) {
-        drawFontText(graphics, text1, pos, color1,drawShadow,scale1);
-        drawFontText(graphics, text2, pos.getAdded(new Vector(getFontTextWidth(text1) + 1, 0)), color2,drawShadow,scale2);
-    }
 
     public static double getFontTextWidth(String text, double scale) {
         return PhoenixClient.getFontRenderer().getWidth(text) * scale;
@@ -186,6 +162,7 @@ public class DrawUtil {
     }
 
     public static void drawTexturedRect(GuiGraphics graphics, ResourceLocation texture, Vector pos, Vector size, Vector texturePos, Vector textureSize) {
+        //drawRectangle(graphics,pos,size,Color.WHITE,true); //Debug See Outline Code
         float x = (float) pos.getX();
         float y = (float) pos.getY();
         float width = (float) size.getX();
@@ -212,7 +189,6 @@ public class DrawUtil {
 
         BufferBuilder.RenderedBuffer buff = bufferbuilder.end();
         BufferUploader.drawWithShader(buff);
-
     }
 
     /**

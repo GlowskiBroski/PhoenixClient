@@ -5,6 +5,7 @@ import com.phoenixclient.event.EventAction;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.event.events.PacketEvent;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -34,7 +35,7 @@ public class PacketInflowListWindow extends GuiWindow {
     protected void drawWindow(GuiGraphics graphics, Vector mousePos) {
         int yOff = 0;
         for (Packet<?> packet : packetList) {
-            DrawUtil.drawFontText(graphics, packet.type().id().toString(), getPos().getAdded(0, yOff), Color.WHITE);
+            TextBuilder.start(packet.type().id().toString(), getPos().getAdded(0, yOff), Color.WHITE).draw(graphics);
             yOff += 12;
         }
         setSize(new Vector(72, yOff + 12));

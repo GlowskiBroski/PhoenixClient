@@ -5,12 +5,12 @@ import com.phoenixclient.gui.WidgetUtil;
 import com.phoenixclient.util.ConsoleUtil;
 import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.math.Vector;
-import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.gui.element.GuiButton;
 import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.render.FontRenderer;
+import com.phoenixclient.util.render.TextBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -59,7 +59,7 @@ public class ModuleOptionsMenu extends GuiWidget {
                 mainButton.draw(graphics, mousePos);
 
                 //Draw Title
-                DrawUtil.drawFontText(graphics, module.getTitle(), getPos().getAdded(getSize().getMultiplied(.5).getSubtracted(DrawUtil.getFontTextWidth(module.getTitle()) / 2, DrawUtil.getFontTextHeight() / 2)), Color.WHITE);
+                TextBuilder.start(module.getTitle(), getPos().getAdded(getSize().getMultiplied(.5).getSubtracted(DrawUtil.getFontTextWidth(module.getTitle()) / 2, DrawUtil.getFontTextHeight() / 2)), Color.WHITE).draw(graphics);
 
                 onChange.run(module,() -> {
                     this.widgetList = WidgetUtil.generateWidgetList(getScreen(), module.getSettings());
@@ -139,7 +139,7 @@ public class ModuleOptionsMenu extends GuiWidget {
     @Deprecated
     private void drawTitleDescription(GuiGraphics graphics) {
         //Draw Title
-        DrawUtil.drawFontText(graphics, module.getTitle(), getPos().getAdded(getSize().getMultiplied(.5).getSubtracted(DrawUtil.getFontTextWidth(module.getTitle()) / 2, DrawUtil.getFontTextHeight() / 2)).y(6), Color.WHITE);
+        TextBuilder.start( module.getTitle(), getPos().getAdded(getSize().getMultiplied(.5).getSubtracted(DrawUtil.getFontTextWidth(module.getTitle()) / 2, DrawUtil.getFontTextHeight() / 2)).y(6), Color.WHITE).draw(graphics);
 
         //Draw Description
         String desc = module.getDescription();
@@ -149,8 +149,8 @@ public class ModuleOptionsMenu extends GuiWidget {
         Vector pos = getPos().getAdded(getSize().getMultiplied(descScale).getSubtracted(width / 2, height / 2)).y(20);
         DrawUtil.drawRectangleRound(graphics, pos.getSubtracted(1, 1), new Vector(width, height).getAdded(3, 2), new Color(50, 50, 50, 120));
         graphics.pose().scale(descScale, descScale, 1);
-        descriptionFont.drawString(graphics, desc, pos.getAdded(1, 1).getMultiplied(1 / descScale), new Color(25, 25, 25, 200));
-        descriptionFont.drawString(graphics, desc, pos.getMultiplied(1 / descScale), Color.WHITE);
+        descriptionFont.drawDynamicString(graphics, desc, pos.getAdded(1, 1).getMultiplied(1 / descScale), new Color(25, 25, 25, 200));
+        descriptionFont.drawDynamicString(graphics, desc, pos.getMultiplied(1 / descScale), Color.WHITE);
         graphics.pose().scale(1 / descScale, 1 / descScale, 1);
     }
 

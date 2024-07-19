@@ -31,7 +31,7 @@ public class SpeedWindow extends GuiWindow {
 
         setSize(new Vector((int) DrawUtil.getFontTextWidth(label + currentSpeed) + 6, 13));
 
-        DrawUtil.drawDualColorFontText(graphics, label, currentSpeed, getPos().getAdded(new Vector(2, 2)), colorManager.getHudLabelColor(), Color.WHITE);
+        DrawUtil.drawDualColorFontText(graphics, label, currentSpeed, getPos().getAdded(new Vector(2, 2)), colorManager.getHudLabelColor(), Color.WHITE,true);
     }
 
     public static double getEntitySpeed(Entity entity, boolean includeY) {

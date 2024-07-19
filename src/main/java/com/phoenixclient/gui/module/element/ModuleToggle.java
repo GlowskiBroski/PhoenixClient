@@ -9,6 +9,7 @@ import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.module.Module;
+import com.phoenixclient.util.render.TextBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -51,7 +52,11 @@ public class ModuleToggle extends GuiWidget {
         //Draw Text
         double scale = 1;
         if (DrawUtil.getFontTextWidth(getTitle()) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(getTitle()) + 2);
-        DrawUtil.drawFontText(graphics, getTitle(), getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,true,(float)scale);
+        //DrawUtil.drawFontText(graphics, getTitle(), getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,true,(float)scale,false);
+
+        TextBuilder.start(getTitle(),getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE)
+                .scale((float)scale)
+                .draw(graphics);
 
         //Draw Selection Blip
         if (selectedSettings) DrawUtil.drawRectangleRound(graphics,pos.get(),size.get(),new Color(255,255,255, MathUtil.getBoundValue(selectionFade,0,255).intValue()));

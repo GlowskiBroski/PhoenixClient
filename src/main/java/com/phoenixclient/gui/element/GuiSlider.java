@@ -5,6 +5,7 @@ import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -58,7 +59,7 @@ public class GuiSlider<T extends Number> extends GuiWidget {
         double scale = 1;
         String title = getTitle() + ": " + (getSetting().getType().equals("integer") ? getSetting().get().intValue() : String.format("%.2f", getSetting().get()));
         if (DrawUtil.getFontTextWidth(title) + border + 1 > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(title) + border + 2);
-        DrawUtil.drawFontText(graphics, title, getPos().getAdded(new Vector(border + 1, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE, true, (float) scale);
+        TextBuilder.start( title, getPos().getAdded(new Vector(border + 1, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE).scale((float) scale).dynamic(true).draw(graphics);
     }
 
 

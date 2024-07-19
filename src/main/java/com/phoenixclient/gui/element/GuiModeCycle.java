@@ -5,6 +5,7 @@ import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -40,7 +41,7 @@ public class GuiModeCycle<T> extends GuiWidget {
         double scale = 1;
         String text = getSetting().getName() + ": " + getSetting().get();
         if (DrawUtil.getFontTextWidth(text) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(text) + 2);
-        DrawUtil.drawFontText(graphics,text,getPos().getAdded(getSize().getX()/2 - DrawUtil.getFontTextWidth(text)/2,1 + getSize().getY()/2 - DrawUtil.getFontTextHeight()/2),Color.WHITE,true,(float)scale);
+        TextBuilder.start(text,getPos().getAdded(getSize().getX()/2 - DrawUtil.getFontTextWidth(text)/2,1 + getSize().getY()/2 - DrawUtil.getFontTextHeight()/2),Color.WHITE).scale((float)scale).draw(graphics);
     }
 
     @Override

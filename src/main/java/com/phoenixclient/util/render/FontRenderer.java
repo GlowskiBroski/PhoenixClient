@@ -1,15 +1,11 @@
 package com.phoenixclient.util.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
 import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.texture.TextureUtil;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix4f;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,11 +14,10 @@ import java.util.UUID;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
-//TODO: Custom fonts do cause a good chunk of lag. Try and figure this out
 public class FontRenderer {
 
-    private final HashMap<String, ResourceLocation> bakedStringList = new HashMap<>();
-    private final HashMap<Character, ResourceLocation> bakedCharList = new HashMap<>();
+    private final HashMap<String, ResourceLocation> bakedStaticStringList = new HashMap<>();
+    private final HashMap<Character, ResourceLocation> bakedDynamicCharList = new HashMap<>();
 
     protected final OnChange<Double> onGuiScaleChanged = new OnChange<>();
 
@@ -41,34 +36,29 @@ public class FontRenderer {
     /**
      * Draws using baked characters, but draws more textures. It has its advantages, but drawbacks.
      * If we can figure out to streamline this, it is optimal.
+     * This method is much more efficient for strings that are constantly changing
      */
-    public void drawString(GuiGraphics graphics, String text, Vector pos, Color color) {
+    public void drawDynamicString(GuiGraphics graphics, String text, Vector pos, Color color) {
         if (font == null) {
             MC.font.drawInBatch(text, ((float) pos.getX()), ((float) pos.getY()), color.hashCode(), false, graphics.pose().last().pose(), graphics.bufferSource(), net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
             graphics.flush();
             return;
         }
 
-        ResourceLocation resourceLocation;
-
         double guiScale = MC.getWindow().getGuiScale();
-
         onGuiScaleChanged.run(MC.getWindow().getGuiScale(), () -> {
-            bakedCharList.clear();
+            bakedDynamicCharList.clear();
             setFont(new Font(font.getFontName(), font.getStyle(), (int) (10 * guiScale)));
         });
 
         graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
 
-        //Draws each character individually
+        //Draws each character individually using their own resource locations and textured rectangles
         pos = pos.clone();
-        for (int i = 0; i < text.toCharArray().length; i++) {
-            char c = text.toCharArray()[i];
-            float width = (float) fontMetrics.stringWidth(String.valueOf(c));
-            float height = (float) fontMetrics.getHeight();
-
-            if (bakedCharList.containsKey(c)) {
-                resourceLocation = bakedCharList.get(c);
+        for (char c : text.toCharArray()) {
+            ResourceLocation resourceLocation;
+            if (bakedDynamicCharList.containsKey(c)) {
+                resourceLocation = bakedDynamicCharList.get(c);
             } else {
                 resourceLocation = new ResourceLocation("phoenixclient", UUID.randomUUID().toString());
                 BufferedImage img = getBufferedImage(String.valueOf(c));
@@ -77,45 +67,45 @@ public class FontRenderer {
                     tex.upload();
                     MC.getTextureManager().register(resourceLocation, tex);
                 }
-                bakedCharList.put(c, resourceLocation);
+                bakedDynamicCharList.put(c, resourceLocation);
             }
+
+            float width = (float) fontMetrics.stringWidth(String.valueOf(c));
+            float height = (float) fontMetrics.getHeight();
             int yOff = switch (getFont().getFontName()) {
                 case "Segoe Print" -> 5;
                 case "Arial" -> 2;
                 default -> 3;
             };
-
-            //If you can combine all of the resource locations into 1 texture, then call drawTexturedRect once, it will be very good
             DrawUtil.drawTexturedRect(graphics, resourceLocation, pos.getSubtracted(0, yOff), new Vector(width / guiScale, height / guiScale));
             pos.add(new Vector(width / guiScale, 0));
         }
     }
 
     /**
-     * Renders a new texture for each string created. It draws less textures, but has to render more and never has a full baked list of chars
-     *
+     * Renders a new texture for each string created. It draws less textures, but has to render more and never has a full baked list of chars.
+     * This method is much more efficient for strings that do not change.
      * @param graphics
      * @param text
      * @param pos
      * @param color
      */
-    public void drawStringAlt(GuiGraphics graphics, String text, Vector pos, Color color) {
+    public void drawStaticString(GuiGraphics graphics, String text, Vector pos, Color color) {
         if (getFont() == null) {
             MC.font.drawInBatch(text, ((float) pos.getX()), ((float) pos.getY()), color.hashCode(), false, graphics.pose().last().pose(), graphics.bufferSource(), net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
             graphics.flush();
             return;
         }
-        ResourceLocation resourceLocation;
 
         double guiScale = MC.getWindow().getGuiScale();
-
         onGuiScaleChanged.run(MC.getWindow().getGuiScale(), () -> {
-            bakedStringList.clear();
+            bakedStaticStringList.clear();
             setFont(new Font(getFont().getFontName(), getFont().getStyle(), (int) (10 * guiScale)));
         });
 
-        if (bakedStringList.containsKey(text)) {
-            resourceLocation = bakedStringList.get(text);
+        ResourceLocation resourceLocation;
+        if (bakedStaticStringList.containsKey(text)) {
+            resourceLocation = bakedStaticStringList.get(text);
         } else {
             resourceLocation = new ResourceLocation("phoenixclient", UUID.randomUUID().toString());
             BufferedImage img = getBufferedImage(text);
@@ -124,7 +114,7 @@ public class FontRenderer {
                 tex.upload();
                 MC.getTextureManager().register(resourceLocation, tex);
             }
-            bakedStringList.put(text, resourceLocation);
+            bakedStaticStringList.put(text, resourceLocation);
         }
 
         int width = getFontMetrics().stringWidth(text);
@@ -150,7 +140,11 @@ public class FontRenderer {
             graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            graphics.drawString(text, 0, fontMetrics.getAscent());
+            int x = 0;
+            for (char c : text.toCharArray()) { //Drawing each character individually fixed the text spacing issue
+                graphics.drawString(String.valueOf(c), x, fontMetrics.getAscent());
+                x += fontMetrics.stringWidth(String.valueOf(c));
+            }
         });
     }
 

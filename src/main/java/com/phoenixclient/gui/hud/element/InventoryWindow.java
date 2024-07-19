@@ -2,6 +2,7 @@ package com.phoenixclient.gui.hud.element;
 
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
@@ -91,7 +92,7 @@ public class InventoryWindow extends GuiWindow {
         DrawUtil.drawTexturedRect(graphics,GUI_TEXTURE,pos.getAdded(new Vector(0,74)),new Vector(176,6),new Vector(0,160), new Vector(256,256));
         DrawUtil.drawTexturedRect(graphics,GUI_TEXTURE,pos,new Vector(176,74),Vector.NULL(), new Vector(256,256));
         //DrawUtil.drawDefaultText(graphics, title, new Vector(x + 7, y + 5), new Color(175, 175, 175, 220));
-        DrawUtil.drawDefaultText(graphics, title, new Vector(x + 7, y + 6), new Color(50, 50, 50, 255),false,1);
+        TextBuilder.start(title, new Vector(x + 7, y + 6), new Color(50, 50, 50, 255)).shadow(false).defaultFont().draw(graphics);
         RenderSystem.disableBlend();
     }
 

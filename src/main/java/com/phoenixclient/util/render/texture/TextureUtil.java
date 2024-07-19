@@ -20,6 +20,10 @@ public class TextureUtil {
     }
 
     public static DynamicTexture getDynamicTexture(BufferedImage bufferedImage) {
+        return new DynamicTexture(getNativeImage(bufferedImage));
+    }
+
+    public static NativeImage getNativeImage(BufferedImage bufferedImage) {
         if (bufferedImage == null) return null;
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
@@ -51,7 +55,7 @@ public class TextureUtil {
                 image.setPixelRGBA(x,y,hash);
             }
         }
-        return new DynamicTexture(image);
+        return image;
     }
 
     @FunctionalInterface

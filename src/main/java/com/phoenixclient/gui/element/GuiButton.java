@@ -5,6 +5,7 @@ import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -33,7 +34,7 @@ public class GuiButton extends GuiWidget {
         double scale = 1;
         if (DrawUtil.getFontTextWidth(getTitle()) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(getTitle()) + 2);
         Vector pos = getPos().getAdded(new Vector(getSize().getX() / 2 - DrawUtil.getFontTextWidth(getTitle()) / 2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2));
-        DrawUtil.drawFontText(graphics, getTitle(), pos, Color.WHITE,true,(float)scale);
+        TextBuilder.start(getTitle(),pos,Color.WHITE).scale((float)scale).draw(graphics);
     }
 
     @Override

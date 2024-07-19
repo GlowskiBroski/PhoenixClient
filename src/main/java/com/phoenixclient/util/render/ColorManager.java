@@ -56,7 +56,7 @@ public class ColorManager {
     public enum Theme {
 
         ORANGE(new Color(225,100,0), new Color(129, 41, 12),new Color(250,120,0),new Color(50,50,50,200)),
-        BLUE(new Color(0,120,255),new Color(5, 37, 171),new Color(0, 125, 200),new Color(50,50,50,200)),
+        BLUE(new Color(50, 150, 255),new Color(5, 37, 171),new Color(50, 175, 250),new Color(50,50,50,200)),
         SEABLUE(new Color(40,215,165),new Color(17,56,88),new Color(40,215,215),new Color(50,50,50,200));
 
         final Color baseColor;

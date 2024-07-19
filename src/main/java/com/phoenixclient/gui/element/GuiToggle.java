@@ -4,6 +4,7 @@ import com.phoenixclient.util.input.Mouse;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -40,7 +41,7 @@ public class GuiToggle extends GuiWidget {
         //Draw Text
         double scale = 1;
         if (DrawUtil.getFontTextWidth(getTitle()) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(getTitle()) + 2);
-        DrawUtil.drawFontText(graphics, getTitle(), getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,true,(float)scale);
+        TextBuilder.start(getTitle(), getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE).scale((float)scale).draw(graphics);
     }
 
 

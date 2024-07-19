@@ -27,7 +27,7 @@ public class FPSWindow extends GuiWindow {
 
         setSize(new Vector((int) DrawUtil.getFontTextWidth(label + text) + 6,13));
 
-        DrawUtil.drawDualColorFontText(graphics,label,text,getPos().getAdded(new Vector(2,2)), colorManager.getHudLabelColor(), Color.WHITE);
+        DrawUtil.drawDualColorFontText(graphics,label,text,getPos().getAdded(new Vector(2,2)), colorManager.getHudLabelColor(), Color.WHITE,true);
     }
 
 }

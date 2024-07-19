@@ -5,6 +5,7 @@ import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -51,7 +52,7 @@ public class EntityDataWindow extends GuiWindow {
         int yOff = 0;
 
         if (label.get()) {
-            DrawUtil.drawFontText(graphics, "Entity Data:", getPos().getAdded(2, 2), colorManager.getHudLabelColor());
+            TextBuilder.start("Entity Data:", getPos().getAdded(2, 2), colorManager.getHudLabelColor()).draw(graphics);
             yOff += 12;
         }
         if (entity == null) return;
@@ -59,12 +60,12 @@ public class EntityDataWindow extends GuiWindow {
         if (entity instanceof LivingEntity living) {
             float healthPercent = living.getHealth() / living.getMaxHealth();
             Color healthColor = healthPercent <= 1 ? ColorManager.getRedGreenScaledColor(healthPercent) : new Color(255, 255, 0);
-            DrawUtil.drawDualColorFontText(graphics, "\"" + entity.getName().getString() + "\"", " (" + MathUtil.roundDouble(living.getHealth(), 2) + "/" + MathUtil.roundDouble(living.getMaxHealth(),2) + ")", getPos().getAdded(2, 2 + yOff), Color.WHITE, healthColor);
+            DrawUtil.drawDualColorFontText(graphics, "\"" + entity.getName().getString() + "\"", " (" + MathUtil.roundDouble(living.getHealth(), 2) + "/" + MathUtil.roundDouble(living.getMaxHealth(),2) + ")", getPos().getAdded(2, 2 + yOff), Color.WHITE, healthColor,true);
         } else {
-            DrawUtil.drawFontText(graphics, "\"" + entity.getName().getString() + "\"", getPos().getAdded(2, 2 + yOff), Color.WHITE);
+            TextBuilder.start( "\"" + entity.getName().getString() + "\"", getPos().getAdded(2, 2 + yOff), Color.WHITE).dynamic(true).draw(graphics);
         }
         yOff += 12;
-        DrawUtil.drawFontText(graphics, " " + entity.getType().toShortString(), getPos().getAdded(2, 2 + yOff), Color.WHITE);
+        TextBuilder.start( " " + entity.getType().toShortString(), getPos().getAdded(2, 2 + yOff), Color.WHITE).dynamic(true).draw(graphics);
         yOff += 12;
         if (entity instanceof AbstractHorse horse) {
             double speed = MathUtil.roundDouble(horse.getAttributes().getInstance(Attributes.MOVEMENT_SPEED).getValue() * 42.16, 2);
@@ -79,9 +80,9 @@ public class EntityDataWindow extends GuiWindow {
             Color speedColor = ColorManager.getRedGreenScaledColor(speedPercent);
             Color jumpColor = ColorManager.getRedGreenScaledColor(jumpPercent);
 
-            DrawUtil.drawDualColorFontText(graphics, " Speed: ", speed + " m/s", getPos().getAdded(2, 2 + yOff), Color.WHITE, speedColor);
+            DrawUtil.drawDualColorFontText(graphics, " Speed: ", speed + " m/s", getPos().getAdded(2, 2 + yOff), Color.WHITE, speedColor,true);
             yOff += 12;
-            DrawUtil.drawDualColorFontText(graphics, " Jump: ", blockHeight + " m", getPos().getAdded(2, 2 + yOff), Color.WHITE, jumpColor);
+            DrawUtil.drawDualColorFontText(graphics, " Jump: ", blockHeight + " m", getPos().getAdded(2, 2 + yOff), Color.WHITE, jumpColor,true);
             yOff += 12;
         }
 
@@ -90,7 +91,7 @@ public class EntityDataWindow extends GuiWindow {
         if (uuid != null) {
             if (entity != prevHoveredEntity) updateUsernameString(uuid);
 
-            DrawUtil.drawFontText(graphics, " Owner: " + this.currentOwnerName, getPos().getAdded(2, 2 + yOff), Color.WHITE);
+            TextBuilder.start( " Owner: " + this.currentOwnerName, getPos().getAdded(2, 2 + yOff), Color.WHITE).dynamic(true).draw(graphics);
             yOff += 12;
         }
 

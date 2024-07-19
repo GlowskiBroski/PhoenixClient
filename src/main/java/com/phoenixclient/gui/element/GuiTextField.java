@@ -61,7 +61,7 @@ public class GuiTextField extends GuiWidget {
         //Draw Text
         double scale = 1;
         if (DrawUtil.getFontTextWidth(title.concat(msg)) > getSize().getX() - 2) scale = (getSize().getX() - 2 - DrawUtil.getFontTextWidth(title))/(DrawUtil.getFontTextWidth(msg));
-        DrawUtil.drawDualColorFontText(graphics,title,msg,getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,typing ? Color.GREEN : Color.WHITE,true,1,(float)scale);
+        DrawUtil.drawDualColorFontText(graphics,title,msg,getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,typing ? Color.GREEN : Color.WHITE,true,1,(float)scale,true);
     }
 
     @Override

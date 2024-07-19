@@ -7,6 +7,7 @@ import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -39,7 +40,7 @@ public class SettingsWindow extends GuiWindow {
         updateXButton(graphics, mousePos);
 
         //Draw Title
-        DrawUtil.drawFontText(graphics, getParentWindow().getTitle().replace("Window",""), getPos().getAdded(new Vector(closeButton.getSize().getX() + 4 + 2,1 + getSize().getY()/2 - DrawUtil.getFontTextHeight()/2)), Color.WHITE);
+        TextBuilder.start(getParentWindow().getTitle().replace("Window",""), getPos().getAdded(new Vector(closeButton.getSize().getX() + 4 + 2,1 + getSize().getY()/2 - DrawUtil.getFontTextHeight()/2)), Color.WHITE).draw(graphics);
 
         //Draw Background
         int backgroundHeight = 1;
@@ -51,7 +52,6 @@ public class SettingsWindow extends GuiWindow {
         DrawUtil.drawRectangleRound(graphics,getPos().getAdded(0,getSize().getY()),new Vector(getSize().getX(),backgroundHeight),new Color(BGC.getRed(), BGC.getGreen(), BGC.getBlue(), BGC.getAlpha() / 2));
 
         drawWidgets(graphics, mousePos);
-
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.FontRenderer;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
@@ -102,9 +103,9 @@ public class GuiManager extends Module {
             GuiGraphics graphics = new GuiGraphics(MC, MC.renderBuffers().bufferSource());
             hintFade -= .25;
             String hint = "Press " + Component.translatable(GuiManager.MODULE_KEY_MAPPING.saveString()).getString() + " to open the module menu!";
-            DrawUtil.drawFontText(graphics, hint, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue()));
+            TextBuilder.start(hint,new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue())).draw(graphics);
             String hint2 = "Change this in default Minecraft controls menu!";
-            DrawUtil.drawFontText(graphics, hint2, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint2) / 2, 2 + DrawUtil.getFontTextHeight() + 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue()));
+            TextBuilder.start(hint2, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint2) / 2, 2 + DrawUtil.getFontTextHeight() + 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue())).draw(graphics);
         }
     }
 

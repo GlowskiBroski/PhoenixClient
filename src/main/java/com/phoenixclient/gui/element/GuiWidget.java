@@ -7,6 +7,7 @@ import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import com.phoenixclient.util.setting.Container;
 import net.minecraft.client.gui.GuiGraphics;
@@ -93,7 +94,7 @@ public abstract class GuiWidget {
                 pos.setX(MC.getWindow().getGuiScaledWidth() - DrawUtil.getFontTextWidth(description) - 2);
 
             DrawUtil.drawRectangleRound(graphics, pos, new Vector(DrawUtil.getFontTextWidth(description) + 4, DrawUtil.getFontTextHeight() + 3), colorManager.getBackgroundColor());
-            DrawUtil.drawFontText(graphics, description, pos.getAdded(2, 2), Color.WHITE);
+            TextBuilder.start(description, pos.getAdded(2, 2), Color.WHITE).draw(graphics);
         }
     }
 

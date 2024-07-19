@@ -6,6 +6,7 @@ import com.phoenixclient.util.render.DrawUtil;
 
 import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.module.Module;
+import com.phoenixclient.util.render.TextBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import org.lwjgl.glfw.GLFW;
@@ -42,7 +43,7 @@ public class ModuleKeyBindSelector extends GuiWidget {
             }
         }
         if (DrawUtil.getFontTextWidth(msg) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(msg) + 2);
-        DrawUtil.drawFontText(graphics, msg, getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,true,(float)scale);
+        TextBuilder.start(msg, getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE).scale((float)scale).draw(graphics);
     }
 
 

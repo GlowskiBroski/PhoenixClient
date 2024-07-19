@@ -109,9 +109,9 @@ public class CoordinatesWindow extends GuiWindow {
             }
         }
 
-        DrawUtil.drawDualColorFontText(graphics, xLabel, x, xPos, labelColor, color);
-        DrawUtil.drawDualColorFontText(graphics, yLabel, y, yPos, labelColor, color);
-        DrawUtil.drawDualColorFontText(graphics, zLabel, z, zPos, labelColor, color);
+        DrawUtil.drawDualColorFontText(graphics, xLabel, x, xPos, labelColor, color,true);
+        DrawUtil.drawDualColorFontText(graphics, yLabel, y, yPos, labelColor, color,true);
+        DrawUtil.drawDualColorFontText(graphics, zLabel, z, zPos, labelColor, color,true);
     }
 
 }

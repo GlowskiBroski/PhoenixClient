@@ -4,6 +4,7 @@ import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -51,7 +52,7 @@ public abstract class ListWindow extends GuiWindow {
     protected void drawWindow(GuiGraphics graphics, Vector mousePos) {
         int yOff = 0;
         if (label.get()) {
-            DrawUtil.drawFontText(graphics, getLabel() + ": ", getPos().getAdded(2, 2), colorManager.getHudLabelColor());
+            TextBuilder.start(getLabel() + ": ", getPos().getAdded(2, 2), colorManager.getHudLabelColor()).draw(graphics);
             yOff += 12;
         }
 
@@ -80,6 +81,7 @@ public abstract class ListWindow extends GuiWindow {
                 default -> throw new IllegalStateException("Unexpected value: " + side.get());
             };
 
+            //I am keeping this as a static string. Maybe think about making this dynamic in the future
             DrawUtil.drawDualColorFontText(graphics, set.getKey(), set.getValue().tag, getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale), c1, c2);
 
             yOff += (animationLocationMap.get(index).expand ? 0 : (int)(DrawUtil.getFontTextHeight(scale) + 2 * scale)) + animationLocationMap.get(index).offset;
