@@ -94,25 +94,25 @@ public class GuiModeCycle<T> extends GuiWidget {
 
     public Color getColorR() {
         if (pressingR) {
-            int[] colVal = {colorManager.getBaseColor().getRed(), colorManager.getBaseColor().getGreen(), colorManager.getBaseColor().getBlue()};
+            int[] colVal = {colorManager.getWidgetColor().getRed(), colorManager.getWidgetColor().getGreen(), colorManager.getWidgetColor().getBlue()};
             for (int i = 0; i < colVal.length; i++) {
                 colVal[i] = (int)MathUtil.getBoundValue(colVal[i] - 50,0,255);
             }
-            return new Color(colVal[0],colVal[1],colVal[2],colorManager.getBaseColor().getAlpha());
+            return new Color(colVal[0],colVal[1],colVal[2],colorManager.getWidgetColor().getAlpha());
         } else {
-            return colorManager.getBaseColor();
+            return colorManager.getWidgetColor();
         }
     }
 
     public Color getColorL() {
         if (pressingL) {
-            int[] colVal = {colorManager.getBaseColor().getRed(), colorManager.getBaseColor().getGreen(), colorManager.getBaseColor().getBlue()};
+            int[] colVal = {colorManager.getWidgetColor().getRed(), colorManager.getWidgetColor().getGreen(), colorManager.getWidgetColor().getBlue()};
             for (int i = 0; i < colVal.length; i++) {
                 colVal[i] = (int)MathUtil.getBoundValue(colVal[i] - 50,0,255);
             }
-            return new Color(colVal[0],colVal[1],colVal[2],colorManager.getBaseColor().getAlpha());
+            return new Color(colVal[0],colVal[1],colVal[2],colorManager.getWidgetColor().getAlpha());
         } else {
-            return colorManager.getBaseColor();
+            return colorManager.getWidgetColor();
         }
     }
 

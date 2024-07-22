@@ -48,7 +48,7 @@ public class Tooltips extends Module {
             for (int i = 0; i < layers.length; i++) {
                 String s = layers[i];
                 if (!s.isEmpty()) s = "{" + s;
-                TextBuilder.start(s,pos,Color.WHITE).draw(graphics);
+                TextBuilder.start(s,pos,Color.WHITE).defaultFont().scale(.5f).draw(graphics);
                 pos.add(new Vector(0,10));
             }
 

@@ -29,7 +29,6 @@ import java.util.ConcurrentModificationException;
 import static com.phoenixclient.PhoenixClient.MC;
 
 //TODO: Maybe add a set of boolean for each window to be disabled? Maybe not?
-//TODO: Implement Color Theming
 public class GuiManager extends Module {
 
     public static final KeyMapping MODULE_KEY_MAPPING = new KeyMapping("Module GUI Toggle", GLFW.GLFW_KEY_RIGHT_CONTROL, "Phoenix Client");
@@ -53,21 +52,39 @@ public class GuiManager extends Module {
             "Custom font for the HUD",
             "Verdana").setModeData("Segoe Print", "Arial","Verdana","Impact","Default");
 
-    private final SettingGUI<String> theme = new SettingGUI<>(
-            this,
-            "Theme",
-            "Color theme for the HUD",
-            "Sea Blue").setModeData("Red","Orange","Green","Sea Blue","Blue","Purple","Rainbow");
-
     public final SettingGUI<Boolean> blur = new SettingGUI<>(
             this,
             "Blur",
             "Adds a blur effect to the background of the GUI menus",
             true);
 
+    private final SettingGUI<String> theme = new SettingGUI<>(
+            this,
+            "Theme",
+            "Color theme for the HUD",
+            "Sea Blue").setModeData("Red","Orange","Green","Sea Blue","Blue","Purple","Rainbow", "Custom");
+
+    public final SettingGUI<Double> baseColorHue = new SettingGUI<>(
+            this,
+            "Base Color",
+            "Hue for the Base Color of the theme",
+            .43d).setSliderData(0,1,.01).setDependency(theme,"Custom");
+
+    public final SettingGUI<Double> depthColorHue = new SettingGUI<>(
+            this,
+            "Depth Color",
+            "Hue for the Base Color of the theme",
+            .53d).setSliderData(0,1,.01).setDependency(theme,"Custom");
+
+    public final SettingGUI<Double> widgetColorHue = new SettingGUI<>(
+            this,
+            "Widget Color",
+            "Hue for the Base Color of the theme",
+            .47d).setSliderData(0,1,.01).setDependency(theme,"Custom");
+
     public GuiManager() {
         super("GUI", "GUI manager for Phoenix Client", Category.RENDER, true, -1);
-        addSettings(font,theme,blur);
+        addSettings(font,theme,blur,baseColorHue,depthColorHue,widgetColorHue);
         addEventSubscriber(Event.EVENT_RENDER_HUD, (event) -> {
             font.runOnChange(() -> PhoenixClient.setFontRenderer(new FontRenderer(font.get(), Font.PLAIN)));
             theme.runOnChange(() -> {
@@ -82,6 +99,7 @@ public class GuiManager extends Module {
                 };
                 PhoenixClient.getColorManager().setTheme(theme);
                 PhoenixClient.getColorManager().setRainbow(this.theme.get().equals("Rainbow"));
+                PhoenixClient.getColorManager().setCustom(this.theme.get().equals("Custom"));
             });
         });
         addEventSubscriber(Event.EVENT_RENDER_HUD, this::renderHud);

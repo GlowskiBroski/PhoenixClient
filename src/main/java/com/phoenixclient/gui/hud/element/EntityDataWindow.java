@@ -9,6 +9,7 @@ import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
@@ -98,7 +99,19 @@ public class EntityDataWindow extends GuiWindow {
         }
 
         this.prevHoveredEntity = entity;
-        //System.out.println(entity.getEntityData().getNonDefaultValues());
+
+        /* Debug Display Entity NBT code
+        String nbt = entity.saveWithoutId(new CompoundTag()).getAsString();
+        Vector pos = new Vector(2, 2 - 10);
+        String[] layers = nbt.split("\\{");
+        for (int i = 0; i < layers.length; i++) {
+            String s = layers[i];
+            if (!s.isEmpty()) s = "{" + s;
+            TextBuilder.start(s,pos,Color.WHITE).defaultFont().scale(.5f).draw(graphics);
+            pos.add(new Vector(0,10));
+        }
+         */
+
         setSize(new Vector(100, yOff));
     }
 
