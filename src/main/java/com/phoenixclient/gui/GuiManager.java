@@ -57,21 +57,31 @@ public class GuiManager extends Module {
             this,
             "Theme",
             "Color theme for the HUD",
-            "Sea Blue").setModeData("Sea Blue", "Blue", "Orange");
+            "Sea Blue").setModeData("Red","Orange","Green","Sea Blue","Blue","Purple","Rainbow");
+
+    public final SettingGUI<Boolean> blur = new SettingGUI<>(
+            this,
+            "Blur",
+            "Adds a blur effect to the background of the GUI menus",
+            true);
 
     public GuiManager() {
         super("GUI", "GUI manager for Phoenix Client", Category.RENDER, true, -1);
-        addSettings(font,theme);
+        addSettings(font,theme,blur);
         addEventSubscriber(Event.EVENT_RENDER_HUD, (event) -> {
             font.runOnChange(() -> PhoenixClient.setFontRenderer(new FontRenderer(font.get(), Font.PLAIN)));
             theme.runOnChange(() -> {
                 ColorManager.Theme theme = switch (this.theme.get()) {
+                    case "Red" -> ColorManager.Theme.RED;
+                    case "Orange" -> ColorManager.Theme.ORANGE;
+                    case "Green" -> ColorManager.Theme.GREEN;
                     case "Sea Blue" -> ColorManager.Theme.SEABLUE;
                     case "Blue" -> ColorManager.Theme.BLUE;
-                    case "Orange" -> ColorManager.Theme.ORANGE;
-                    default -> throw new IllegalStateException("Unexpected value: " + this.theme.get());
+                    case "Purple" -> ColorManager.Theme.PURPLE;
+                    default -> ColorManager.Theme.SEABLUE;
                 };
                 PhoenixClient.getColorManager().setTheme(theme);
+                PhoenixClient.getColorManager().setRainbow(this.theme.get().equals("Rainbow"));
             });
         });
         addEventSubscriber(Event.EVENT_RENDER_HUD, this::renderHud);

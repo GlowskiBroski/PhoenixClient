@@ -82,7 +82,9 @@ public abstract class ListWindow extends GuiWindow {
             };
 
             //I am keeping this as a static string. Maybe think about making this dynamic in the future
-            DrawUtil.drawDualColorFontText(graphics, set.getKey(), set.getValue().tag, getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale), c1, c2);
+            TextBuilder.start(set.getKey(),getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale),c1).draw(graphics)
+                    .next().text(set.getValue().tag()).color(c2).draw(graphics);
+
 
             yOff += (animationLocationMap.get(index).expand ? 0 : (int)(DrawUtil.getFontTextHeight(scale) + 2 * scale)) + animationLocationMap.get(index).offset;
             index ++;

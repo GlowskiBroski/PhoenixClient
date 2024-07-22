@@ -25,9 +25,9 @@ public class TextBuilder {
      */
     public TextBuilder() {
         this.fontRenderer = PhoenixClient.getFontRenderer();
-        this.shadow = true;
-        this.dynamic = false;
-        this.scale = 1;
+        this.shadow = true; //Contains shadow by default
+        this.dynamic = false; //Static string by default
+        this.scale = 1; //Scale 1 by default
     }
 
     public static TextBuilder start() {
@@ -59,13 +59,13 @@ public class TextBuilder {
         return this;
     }
 
-    public TextBuilder shadow(boolean shadow) {
-        this.shadow = shadow;
+    public TextBuilder shadowLess() {
+        this.shadow = false;
         return this;
     }
 
-    public TextBuilder dynamic(boolean dynamic) {
-        this.dynamic = dynamic;
+    public TextBuilder dynamic() {
+        this.dynamic = true;
         return this;
     }
 
@@ -80,8 +80,16 @@ public class TextBuilder {
 
     }
 
+    /**
+     * Overrides the position of the next text to be directly next to the
+     * @return
+     */
+    public TextBuilder next() {
+        return TextBuilder.start().pos(pos.getAdded(fontRenderer == null ? new Vector((MC.font.width(text) + 1) * scale,0) : new Vector((fontRenderer.getWidth(text) + 1) * scale,0)));
+    }
+
     //TODO: Potentially combine the shadow inside of the bufferedimage
-    public void draw(GuiGraphics graphics) {
+    public TextBuilder draw(GuiGraphics graphics) {
         graphics.pose().scale(scale, scale, 1);
         graphics.setColor(1, 1, 1, color.getAlpha() / 255f);
         if (fontRenderer == null) {
@@ -100,5 +108,8 @@ public class TextBuilder {
         }
         graphics.pose().scale(1 / scale, 1 / scale, 1);
         graphics.setColor(1f, 1f, 1f, 1f);
+        return this;
     }
+
+
 }

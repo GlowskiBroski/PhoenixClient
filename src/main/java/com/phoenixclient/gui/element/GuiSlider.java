@@ -59,7 +59,7 @@ public class GuiSlider<T extends Number> extends GuiWidget {
         double scale = 1;
         String title = getTitle() + ": " + (getSetting().getType().equals("integer") ? getSetting().get().intValue() : String.format("%.2f", getSetting().get()));
         if (DrawUtil.getFontTextWidth(title) + border + 1 > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(title) + border + 2);
-        TextBuilder.start( title, getPos().getAdded(new Vector(border + 1, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE).scale((float) scale).dynamic(true).draw(graphics);
+        TextBuilder.start( title, getPos().getAdded(new Vector(border + 1, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE).scale((float) scale).dynamic().draw(graphics);
     }
 
 

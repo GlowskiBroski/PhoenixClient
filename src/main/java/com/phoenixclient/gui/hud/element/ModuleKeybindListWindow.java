@@ -3,6 +3,7 @@ package com.phoenixclient.gui.hud.element;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import net.minecraft.client.gui.screens.Screen;
 import org.lwjgl.glfw.GLFW;
 

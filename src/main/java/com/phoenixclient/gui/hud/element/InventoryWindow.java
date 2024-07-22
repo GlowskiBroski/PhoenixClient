@@ -91,8 +91,7 @@ public class InventoryWindow extends GuiWindow {
         RenderSystem.enableBlend();
         DrawUtil.drawTexturedRect(graphics,GUI_TEXTURE,pos.getAdded(new Vector(0,74)),new Vector(176,6),new Vector(0,160), new Vector(256,256));
         DrawUtil.drawTexturedRect(graphics,GUI_TEXTURE,pos,new Vector(176,74),Vector.NULL(), new Vector(256,256));
-        //DrawUtil.drawDefaultText(graphics, title, new Vector(x + 7, y + 5), new Color(175, 175, 175, 220));
-        TextBuilder.start(title, new Vector(x + 7, y + 6), new Color(50, 50, 50, 255)).shadow(false).defaultFont().draw(graphics);
+        TextBuilder.start(title, new Vector(x + 7, y + 6), new Color(50, 50, 50, 255)).shadowLess().defaultFont().draw(graphics);
         RenderSystem.disableBlend();
     }
 

@@ -5,6 +5,7 @@ import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import com.phoenixclient.util.setting.Setting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -61,7 +62,10 @@ public class GuiTextField extends GuiWidget {
         //Draw Text
         double scale = 1;
         if (DrawUtil.getFontTextWidth(title.concat(msg)) > getSize().getX() - 2) scale = (getSize().getX() - 2 - DrawUtil.getFontTextWidth(title))/(DrawUtil.getFontTextWidth(msg));
-        DrawUtil.drawDualColorFontText(graphics,title,msg,getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,typing ? Color.GREEN : Color.WHITE,true,1,(float)scale,true);
+
+        TextBuilder
+                .start(title,getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)),Color.WHITE).draw(graphics)
+                .next().text(msg).color(typing ? Color.GREEN : Color.WHITE).scale((float)scale).dynamic().draw(graphics);
     }
 
     @Override

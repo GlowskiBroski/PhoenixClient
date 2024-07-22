@@ -45,8 +45,10 @@ public class GUI extends Screen {
         guiGraphics.setColor(1f,1f,1f,screenFadeIn);
 
         //DRAW BACKGROUND
-        MC.gameRenderer.processBlurEffect(200);
-        MC.getMainRenderTarget().bindWrite(false);
+        if (PhoenixClient.getGuiManager().blur.get()) {
+            MC.gameRenderer.processBlurEffect(200);
+            MC.getMainRenderTarget().bindWrite(false);
+        }
         DrawUtil.drawRectangle(guiGraphics, Vector.NULL(), getSize(), new Color(0, 0, 0, 100));
 
         //DRAW ALL ELEMENTS

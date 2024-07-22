@@ -19,26 +19,9 @@ import java.awt.*;
 import static com.phoenixclient.PhoenixClient.MC;
 
 //TODO: Organize this class its ugly
-//TODO: Try and phase out using the drawFontText and switch to using FontRenderer.drawString methods everywhere. Make this class a shape drawer, not text and shape
 public class DrawUtil {
 
     // -------------------- TEXT ----------------------
-
-    //TODO: Remove dual color text from this class and rout it to TextBuilder
-    public static void drawDualColorFontText(GuiGraphics graphics, String text1, String text2, Vector pos, Color color1, Color color2, boolean drawShadow, float scale1, float scale2, boolean dynamic) {
-        TextBuilder.start(text1,pos,color1).shadow(drawShadow).scale(scale1).dynamic(dynamic).draw(graphics);
-        TextBuilder.start(text2, pos.getAdded(new Vector(getFontTextWidth(text1) + 1, 0)), color2).shadow(drawShadow).scale(scale2).dynamic(dynamic).draw(graphics);
-    }
-
-    public static void drawDualColorFontText(GuiGraphics graphics, String text1, String text2, Vector pos, Color color1, Color color2, boolean dynamic) {
-        TextBuilder.start(text1,pos,color1).dynamic(dynamic).draw(graphics);
-        TextBuilder.start(text2, pos.getAdded(new Vector(getFontTextWidth(text1) + 1, 0)), color2).dynamic(dynamic).draw(graphics);
-    }
-
-    public static void drawDualColorFontText(GuiGraphics graphics, String text1, String text2, Vector pos, Color color1, Color color2) {
-        drawDualColorFontText(graphics,text1,text2,pos,color1,color2,false);
-    }
-
 
     public static double getFontTextWidth(String text, double scale) {
         return PhoenixClient.getFontRenderer().getWidth(text) * scale;

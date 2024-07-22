@@ -2,6 +2,7 @@ package com.phoenixclient.gui.hud.element;
 
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 
 import com.phoenixclient.module.Module;
@@ -46,7 +47,7 @@ public class ModuleListWindow extends ListWindow {
         for (Module module : sortedDisplayList) {
             String tag = module.getModTag().isEmpty() ? "" : "[" + module.getModTag() + "]";
             if (rainbow.get()) {
-                map.put(module.getTitle(),new ListInfo(tag,getRainbowColor(rainbowOffset),Color.WHITE));
+                map.put(module.getTitle(),new ListInfo(tag, ColorManager.getRainbowColor(rainbowOffset),Color.WHITE));
                 rainbowOffset += switch (vert.get()) {
                     case "Top" -> 1;
                     case "Bottom" ->  -1;
@@ -73,18 +74,5 @@ public class ModuleListWindow extends ListWindow {
                 default -> throw new IllegalStateException("Unexpected value: " + vert.get());
             };
         }
-    }
-
-    private static Color getRainbowColor(long offset) {
-        float strength = 1;
-        float saturation = 255f;
-        float brightness = 255f;
-        float rainbowSpeed = .75f;
-
-        float speed = (float)(rainbowSpeed * Math.pow(10,10));
-        float hue = (float) (System.nanoTime() - offset * Math.pow(10,8)) / speed;
-        long colorHex = Long.parseLong(Integer.toHexString(Color.HSBtoRGB(hue, (saturation / 255), (brightness / 255))), 16);
-        Color color = new Color((int) colorHex);
-        return new Color((float) color.getRed() / 255.0f * strength, (float) color.getGreen() / 255.0f * strength, (float) color.getBlue() / 255.0f * strength, (float) color.getAlpha() / 255.0f);
     }
 }

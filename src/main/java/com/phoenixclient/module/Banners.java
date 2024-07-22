@@ -3,6 +3,8 @@ package com.phoenixclient.module;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.mixin.MixinHooks;
 
+//TODO: Look into a "Too Expensive" bypass for anvils?
+
 public class Banners extends Module {
 
     public Banners() {

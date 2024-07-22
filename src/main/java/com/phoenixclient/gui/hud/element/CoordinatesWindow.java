@@ -3,6 +3,7 @@ package com.phoenixclient.gui.hud.element;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -109,9 +110,9 @@ public class CoordinatesWindow extends GuiWindow {
             }
         }
 
-        DrawUtil.drawDualColorFontText(graphics, xLabel, x, xPos, labelColor, color,true);
-        DrawUtil.drawDualColorFontText(graphics, yLabel, y, yPos, labelColor, color,true);
-        DrawUtil.drawDualColorFontText(graphics, zLabel, z, zPos, labelColor, color,true);
+        TextBuilder.start(xLabel,xPos,labelColor).draw(graphics).next().text(x).color(color).dynamic().draw(graphics);
+        TextBuilder.start(yLabel,yPos,labelColor).draw(graphics).next().text(y).color(color).dynamic().draw(graphics);
+        TextBuilder.start(zLabel,zPos,labelColor).draw(graphics).next().text(z).color(color).dynamic().draw(graphics);
     }
 
 }
