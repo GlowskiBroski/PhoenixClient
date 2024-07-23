@@ -1,66 +1,69 @@
 package com.phoenixclient.gui.hud.element;
 
-import com.phoenixclient.event.Event;
-import com.phoenixclient.event.EventAction;
-import com.phoenixclient.event.events.PacketEvent;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.entity.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
-public class StorageListWindow extends ListWindow {
+public class SignTextListWindow extends ListWindow {
 
-    public StorageListWindow(Screen screen, Vector pos) {
-        super(screen, "StorageListWindow", pos);
+    //TODO: Add Range Slider
+
+    private final SettingGUI<Boolean> coordinates;
+
+    public SignTextListWindow(Screen screen, Vector pos) {
+        super(screen, "SignTextListWindow", pos);
+        this.coordinates = new SettingGUI<>(this, "Show Coordinates", "Shows the coordinates for each sign", false);
+        addSettings(coordinates);
     }
 
     @Override
     protected String getLabel() {
-        return "Storage List";
+        return "Sign List";
     }
-
-    //TODO: This is stupidly laggy. Find a better way to get block entities
 
     @Override
     protected LinkedHashMap<String , ListInfo> getListMap() {
         LinkedHashMap<String, ListInfo> currentList = new LinkedHashMap<>();
         for (BlockEntity blockEntity : getBlockEntities()) {
 
-            String rawName = blockEntity.getBlockState().getBlock().toString();
-            String entityName = rawName.replace("minecraft:","").replace("Block","").replace("{","").replace("}","");//rawName.replace("minecraft:","").replace("_"," ");
-            entityName = entityName.replaceFirst(entityName.charAt(0) + "",(entityName.charAt(0) + "").toUpperCase()).replace("_"," ");
+            if (!(blockEntity instanceof SignBlockEntity s)) continue;
+            String entityName = "";
 
-            boolean isStorage = entityName.equalsIgnoreCase("chest")
-                    || entityName.toLowerCase().contains("shulker box")
-                    || entityName.equalsIgnoreCase("trapped chest")
-                    || entityName.equalsIgnoreCase("hopper")
-                    || entityName.equalsIgnoreCase("dropper")
-                    || entityName.equalsIgnoreCase("dispenser")
-                    || entityName.equalsIgnoreCase("furnace")
-                    || entityName.equalsIgnoreCase("barrel");
+            //Add Front Text
+            for (int i = 0; i < 4; i++) {
+                String lineText = s.getFrontText().getMessage(i,true).getString();
+                if (lineText.isEmpty()) continue;
+                entityName = entityName.concat(lineText + " ");
+            }
 
-            if (!isStorage) continue;
+            //Add Back Text
+            for (int i = 0; i < 4; i++) {
+                String lineText = s.getBackText().getMessage(i,true).getString();
+                if (lineText.isEmpty()) continue;
+                entityName = entityName.concat(lineText + " ");
+            }
 
-            if (entityName.contains("shulker box")) entityName = "Shulker box";
+            if (entityName.isEmpty()) continue;
+
+            if (coordinates.get()) entityName = "(" + s.getBlockPos().getX() + ", " + s.getBlockPos().getY() + ", " + s.getBlockPos().getZ() + "): " + entityName;
 
             if (currentList.containsKey(entityName)) {
+                if (currentList.get(entityName).tag().isEmpty()) currentList.put(entityName, new ListInfo("(1)",Color.WHITE,Color.CYAN));
                 ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + 1) + ")",Color.WHITE,Color.CYAN);
                 currentList.put(entityName, count);
                 continue;
             }
-            currentList.put(entityName,new ListInfo("(1)",Color.WHITE,Color.CYAN));
+            currentList.put(entityName,new ListInfo("",Color.WHITE,Color.CYAN));
         }
 
         return forceAddedToBottom(currentList);

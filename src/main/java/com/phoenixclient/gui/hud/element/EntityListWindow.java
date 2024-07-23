@@ -21,7 +21,7 @@ public class EntityListWindow extends ListWindow {
 
     public EntityListWindow(Screen screen, Vector pos) {
         super(screen, "EntityListWindow", pos);
-        this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",64).setSliderData(1,200,1);
+        this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",64).setSliderData(1,400,1);
         this.combineItems = new SettingGUI<>(this,"Combine Items","Combines items into 1 category",true);
         addSettings(range,combineItems);
     }
@@ -35,7 +35,6 @@ public class EntityListWindow extends ListWindow {
     @Override
     protected LinkedHashMap<String , ListInfo> getListMap() {
         LinkedHashMap<String, ListInfo> currentList = new LinkedHashMap<>();
-        LinkedHashMap<String, ListInfo> nextList = new LinkedHashMap<>();
 
         for (Entity entity : MC.level.entitiesForRendering()) {
             if (entity.distanceTo(MC.player) > range.get()) continue;
@@ -55,20 +54,7 @@ public class EntityListWindow extends ListWindow {
             currentList.putIfAbsent(entityName,new ListInfo("(1)",Color.WHITE,Color.CYAN));
         }
 
-        //Always add to bottom
-        if (previousList != null) nextList = (LinkedHashMap<String, ListInfo>) previousList.clone();
-
-        for (Map.Entry<String, ListInfo> prevSet : currentList.entrySet()) {
-            if (nextList.containsKey(prevSet.getKey())) nextList.put(prevSet.getKey(),prevSet.getValue());
-            else nextList.put(prevSet.getKey(),prevSet.getValue());
-        }
-
-        ArrayList<String> removalQueue = new ArrayList<>();
-        for (Map.Entry<String, ListInfo> set : nextList.entrySet())
-            if (!currentList.containsKey(set.getKey())) removalQueue.add(set.getKey());
-
-        for (String s : removalQueue) nextList.remove(s);
-
-        return nextList;
+        return forceAddedToBottom(currentList);
     }
+
 }

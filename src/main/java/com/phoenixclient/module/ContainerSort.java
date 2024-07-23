@@ -8,10 +8,13 @@ import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,7 +28,7 @@ public class ContainerSort extends Module {
             this,
             "Type",
             "Sorting type for containers",
-            "Name").setModeData("Name");
+            "Name").setModeData("Name","ID","Category");
 
     private int hintFade = 0;
     private boolean hintFadeIn = true;
@@ -59,8 +62,8 @@ public class ContainerSort extends Module {
             if (hintFade < 255) hintFade += 3;
             if (hintFade >= 255) hintFadeIn = false;
         } else {
-            if (hintFade > 0) hintFade -= 3;
-            if (hintFade <= 0) hintFadeIn = true;
+            if (hintFade > 25) hintFade -= 3;
+            if (hintFade <= 25) hintFadeIn = true;
         }
 
         Color color = new Color(255, 255, 255, Math.clamp(hintFade, 0, 255));
@@ -115,12 +118,12 @@ public class ContainerSort extends Module {
     }
 
     private int getNonInventorySlots(AbstractContainerMenu containerMenu) {
-        int num = 0;
+        int count = 0;
         for (int i = 0; i < containerMenu.slots.size(); i++) {
-            boolean isSlotInPlayerInventory = containerMenu.getSlot(i).container instanceof Inventory;
-            if (!isSlotInPlayerInventory) num++;
+            boolean isSlotInPlayerInventory = (containerMenu.getSlot(i).container instanceof Inventory);
+            if (!isSlotInPlayerInventory) count++;
         }
-        return num;
+        return count;
     }
 
     private ArrayList<ItemStack> getSortedItemTemplateList(AbstractContainerMenu containerMenu) {
@@ -134,13 +137,27 @@ public class ContainerSort extends Module {
     private class StackComparator implements Comparator<ItemStack> {
         @Override
         public int compare(ItemStack stack1, ItemStack stack2) {
-            type.get(); //TODO: Add different modes using this setting. Look into InventorySort mod on CurseForge for different option ideas
             if (stack1.equals(stack2)) return 0;
             if (stack1.isEmpty()) return 1;
             if (stack2.isEmpty()) return -1;
 
-            int temp = stack1.getItem().getName(stack1).getString().compareTo(stack2.getItem().getName(stack2).getString());
-            return temp == 0 ? Integer.compare(stack2.getCount(), stack1.getCount()) : Integer.compare(temp, 0);
+            switch (type.get()) {
+                case "ID" -> {
+                    String item1Str = Item.getId(stack1.getItem()) + "";
+                    String item2Str = Item.getId(stack2.getItem()) + "";
+                    return item1Str.compareTo(item2Str);
+                }
+                case "Category" -> {
+                    String item1Str = stack1.getItem().getDescriptionId();
+                    String item2Str = stack2.getItem().getDescriptionId();
+                    return item1Str.compareTo(item2Str);
+                }
+                default /*"Name"*/ -> {
+                    String item1Str = stack1.getItem().getName(stack1).getString();
+                    String item2Str = stack2.getItem().getName(stack2).getString();
+                    return item1Str.compareTo(item2Str);
+                }
+            }
         }
     }
 

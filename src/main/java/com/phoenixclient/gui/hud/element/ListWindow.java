@@ -37,6 +37,7 @@ public abstract class ListWindow extends GuiWindow {
         super(screen, title, pos, Vector.NULL());
         this.label = new SettingGUI<>(this, "Label", "Show the label", true);
         this.scale = new SettingGUI<>(this, "Scale", "The scale of the list", 1d).setSliderData(.25d, 1d, .05d);
+        //TODO: ADD CENTER MODE
         this.side = new SettingGUI<>(this, "Side", "The side of the list", "Left").setModeData("Left","Right");
         addSettings(label, scale, side);
     }
@@ -133,6 +134,25 @@ public abstract class ListWindow extends GuiWindow {
                 if (set.getValue().offset <= min) set.getValue().offset = min;
             }
         }
+    }
+
+    protected LinkedHashMap<String, ListInfo> forceAddedToBottom(LinkedHashMap<String, ListInfo> currentList) {
+        //There's probably a better way to do this, but oh well :)
+        LinkedHashMap<String, ListInfo> nextList = new LinkedHashMap<>();
+        if (previousList != null) nextList = (LinkedHashMap<String, ListInfo>) previousList.clone();
+
+        for (Map.Entry<String, ListInfo> prevSet : currentList.entrySet()) {
+            if (nextList.containsKey(prevSet.getKey())) nextList.put(prevSet.getKey(),prevSet.getValue());
+            else nextList.put(prevSet.getKey(),prevSet.getValue());
+        }
+
+        ArrayList<String> removalQueue = new ArrayList<>();
+        for (Map.Entry<String, ListInfo> set : nextList.entrySet())
+            if (!currentList.containsKey(set.getKey())) removalQueue.add(set.getKey());
+
+        for (String s : removalQueue) nextList.remove(s);
+
+        return nextList;
     }
 
     protected record ListInfo(String tag, Color colorMain, Color colorTag) {}

@@ -23,6 +23,7 @@ public class HUDGUI extends GUI {
     private final ModuleListWindow moduleList = new ModuleListWindow(this, Vector.NULL());
     private final StorageListWindow storageList = new StorageListWindow(this, Vector.NULL());
     private final ModuleKeybindListWindow moduleKeybindListWindow = new ModuleKeybindListWindow(this, Vector.NULL());
+    private final SignTextListWindow signTextListWindow = new SignTextListWindow(this, Vector.NULL());
 
     //private final PacketInflowWindow packetInflowWindow = new PacketInflowWindow(this,new Vector(80,0));
 
@@ -30,7 +31,7 @@ public class HUDGUI extends GUI {
 
     public HUDGUI(Component title) {
         super(title);
-        addGuiElements(inventory,armor,direction,fps,speed,coordinates, entityList, entityData, tps, moduleList, storageList, moduleKeybindListWindow);
+        addGuiElements(inventory,armor,direction,fps,speed,coordinates, entityList, entityData, tps, moduleList, storageList, moduleKeybindListWindow,signTextListWindow);
     }
 
     @Override

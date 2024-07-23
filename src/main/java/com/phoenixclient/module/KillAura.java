@@ -98,6 +98,7 @@ public class KillAura extends Module {
 
     private boolean isTarget(Entity entity, Vector playerPos) {
         if (entity == null) return false;
+        if (!entity.isAlive()) return false;
         if (entity.equals(MC.player)) return false;
         FreeCam freeCam = (FreeCam) PhoenixClient.getModule("FreeCam");
         if (entity.equals(freeCam.dummyPlayer)) return false;

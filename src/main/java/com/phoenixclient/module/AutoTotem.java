@@ -5,6 +5,7 @@ import com.phoenixclient.event.EventAction;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -66,9 +67,13 @@ public class AutoTotem extends Module {
 
     private void replaceTotem(int i) {
         if (MC.player.containerMenu instanceof InventoryMenu) {
-            MC.gameMode.handleInventoryMouseClick(0, i < 9 ? i + 36 : i, 0, ClickType.PICKUP, MC.player);
-            MC.gameMode.handleInventoryMouseClick(0, 45, 0, ClickType.PICKUP, MC.player);
-            MC.gameMode.handleInventoryMouseClick(0, i < 9 ? i + 36 : i, 0, ClickType.PICKUP, MC.player);
+            clickWindow(i < 9 ? i + 36 : i);
+            clickWindow(45);
+            clickWindow(i < 9 ? i + 36 : i);
         }
+    }
+
+    private void clickWindow(int index) {
+        MC.gameMode.handleInventoryMouseClick(0, index, 0, ClickType.PICKUP, MC.player);
     }
 }

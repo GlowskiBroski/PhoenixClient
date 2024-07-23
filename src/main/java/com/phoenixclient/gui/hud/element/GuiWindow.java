@@ -64,6 +64,9 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
             this.anchorX = new Setting<>(manager, title + "_anchorX", "NONE");
             this.anchorY = new Setting<>(manager, title + "_anchorY", "NONE");
         }
+
+        //TODO: Add a setting for each window to the GUI manager
+        //PhoenixClient.getGuiManager().addSettings();
     }
 
     protected abstract void drawWindow(GuiGraphics graphics, Vector mousePos);
@@ -82,7 +85,7 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
                 //Scale to Corner
                 posScale.set(getPos().getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
 
-                //Scale to Center
+                //Scale to Center (Feels a little more inaccurate, will use top left corner instead)
                 //posScale.set(getPos().getAdded(getSize().getMultiplied(.5)).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 /MC.getWindow().getGuiScaledHeight()));
             }
 

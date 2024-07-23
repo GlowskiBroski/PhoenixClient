@@ -84,7 +84,7 @@ public abstract class Module implements ISettingParent, Comparable<Module> {
         addEventActions(new EventAction(event,() -> subscriber.run(event)));
     }
 
-    protected void addSettings(SettingGUI<?>... settings) {
+    public void addSettings(SettingGUI<?>... settings) {
         settingList.addAll(Arrays.asList(settings));
     }
 
