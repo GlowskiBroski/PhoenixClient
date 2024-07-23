@@ -50,7 +50,7 @@ public class GuiManager extends Module {
             this,
             "Font",
             "Custom font for the HUD",
-            "Verdana").setModeData("Segoe Print", "Arial","Verdana","Impact","Default");
+            "Verdana").setModeData("Segoe Print", "Arial", "Verdana", "Impact", "Default");
 
     public final SettingGUI<Boolean> blur = new SettingGUI<>(
             this,
@@ -62,29 +62,29 @@ public class GuiManager extends Module {
             this,
             "Theme",
             "Color theme for the HUD",
-            "Sea Blue").setModeData("Red","Orange","Green","Sea Blue","Blue","Purple","Rainbow", "Custom");
+            "Sea Blue").setModeData("Red", "Orange", "Green", "Sea Blue", "Blue", "Purple", "Rainbow", "Custom");
 
     public final SettingGUI<Double> baseColorHue = new SettingGUI<>(
             this,
             "Base Color",
             "Hue for the Base Color of the theme",
-            .43d).setSliderData(0,1,.01).setDependency(theme,"Custom");
+            .43d).setSliderData(0, 1, .01).setDependency(theme, "Custom");
 
     public final SettingGUI<Double> depthColorHue = new SettingGUI<>(
             this,
             "Depth Color",
             "Hue for the Base Color of the theme",
-            .53d).setSliderData(0,1,.01).setDependency(theme,"Custom");
+            .53d).setSliderData(0, 1, .01).setDependency(theme, "Custom");
 
     public final SettingGUI<Double> widgetColorHue = new SettingGUI<>(
             this,
             "Widget Color",
             "Hue for the Base Color of the theme",
-            .47d).setSliderData(0,1,.01).setDependency(theme,"Custom");
+            .47d).setSliderData(0, 1, .01).setDependency(theme, "Custom");
 
     public GuiManager() {
         super("GUI", "GUI manager for Phoenix Client", Category.RENDER, true, -1);
-        addSettings(font,theme,blur,baseColorHue,depthColorHue,widgetColorHue);
+        addSettings(font, theme, blur, baseColorHue, depthColorHue, widgetColorHue);
         addEventSubscriber(Event.EVENT_RENDER_HUD, (event) -> {
             font.runOnChange(() -> PhoenixClient.setFontRenderer(new FontRenderer(font.get(), Font.PLAIN)));
             theme.runOnChange(() -> {
@@ -126,12 +126,13 @@ public class GuiManager extends Module {
     }
 
     private double hintFade = 255;
+
     private void drawStartingHint() {
         if (hintFade > 0) {
             GuiGraphics graphics = new GuiGraphics(MC, MC.renderBuffers().bufferSource());
             hintFade -= .25;
             String hint = "Press " + Component.translatable(GuiManager.MODULE_KEY_MAPPING.saveString()).getString() + " to open the module menu!";
-            TextBuilder.start(hint,new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue())).draw(graphics);
+            TextBuilder.start(hint, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue())).draw(graphics);
             String hint2 = "Change this in default Minecraft controls menu!";
             TextBuilder.start(hint2, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint2) / 2, 2 + DrawUtil.getFontTextHeight() + 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue())).draw(graphics);
         }
@@ -143,9 +144,10 @@ public class GuiManager extends Module {
 
         if (action != GLFW.GLFW_PRESS) return;
 
-        if (key == Key.KEY_ESC.getId()) PhoenixClient.getSettingManager().saveAll(); //Whenever the GUI closes, save all settings
+        if (key == Key.KEY_ESC.getId())
+            PhoenixClient.getSettingManager().saveAll(); //Whenever the GUI closes, save all settings
 
-        String mapping = InputConstants.getKey(key,action).getName();
+        String mapping = InputConstants.getKey(key, action).getName();
         if (HUD_KEY_MAPPING.saveString().equals(mapping)) getHudGui().toggleOpen();
         if (MODULE_KEY_MAPPING.saveString().equals(mapping)) getModuleGui().toggleOpen();
     }
@@ -172,6 +174,7 @@ public class GuiManager extends Module {
     public void instantiateHUDGUI() {
         hudGUI = new HUDGUI(Component.translatable("HUDGUI"));
     }
+
     public void instantiateModuleGUI() {
         moduleGUI = new ModuleGUI(Component.translatable("ModuleGUI"));
     }
@@ -179,6 +182,7 @@ public class GuiManager extends Module {
     public HUDGUI getHudGui() {
         return hudGUI;
     }
+
     public ModuleGUI getModuleGui() {
         return moduleGUI;
     }

@@ -60,7 +60,8 @@ public class PhoenixClient implements ModInitializer {
                 new AutoLog(),
                 new Banners(),
                 new ElytraJump(),
-                new Tooltips()
+                new Tooltips(),
+                new ContainerSort()
         );
 
         GUI_MANAGER.instantiateHUDGUI();

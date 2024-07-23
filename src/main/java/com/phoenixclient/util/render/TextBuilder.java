@@ -77,14 +77,23 @@ public class TextBuilder {
     public TextBuilder defaultFont() {
         this.fontRenderer = null;
         return this;
+    }
 
+    public TextBuilder centerX() {
+        if (fontRenderer == null) return pos(new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - (MC.font.width(text) * scale) / 2,pos.getY()));
+        return pos(new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - (fontRenderer.getWidth(text) * scale) / 2,pos.getY()));
+    }
+
+    public TextBuilder centerY() {
+        if (fontRenderer == null) return pos(new Vector(pos.getX(),(double) MC.getWindow().getGuiScaledHeight() / 2 - (MC.font.lineHeight * scale) / 2));
+        return pos(new Vector(pos.getX(),(double) MC.getWindow().getGuiScaledHeight() / 2 - (fontRenderer.getHeight() * scale) / 2));
     }
 
     /**
-     * Overrides the position of the next text to be directly next to the
+     * Creates a new text builder adjacent to the current one to be used for Dual, Triple, Quadruple... Colored/Scaled text.
      * @return
      */
-    public TextBuilder next() {
+    public TextBuilder nextAdj() {
         return TextBuilder.start().pos(pos.getAdded(fontRenderer == null ? new Vector((MC.font.width(text) + 1) * scale,0) : new Vector((fontRenderer.getWidth(text) + 1) * scale,0)));
     }
 

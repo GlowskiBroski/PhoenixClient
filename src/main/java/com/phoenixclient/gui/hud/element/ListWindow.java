@@ -1,6 +1,5 @@
 package com.phoenixclient.gui.hud.element;
 
-import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
@@ -83,7 +82,7 @@ public abstract class ListWindow extends GuiWindow {
 
             //I am keeping this as a static string. Maybe think about making this dynamic in the future
             TextBuilder.start(set.getKey(),getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale),c1).draw(graphics)
-                    .next().text(set.getValue().tag()).color(c2).draw(graphics);
+                    .nextAdj().text(set.getValue().tag()).color(c2).draw(graphics);
 
 
             yOff += (animationLocationMap.get(index).expand ? 0 : (int)(DrawUtil.getFontTextHeight(scale) + 2 * scale)) + animationLocationMap.get(index).offset;

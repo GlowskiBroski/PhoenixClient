@@ -2,6 +2,7 @@ package com.phoenixclient.event.events;
 
 import com.phoenixclient.event.Event;
 import com.phoenixclient.util.math.Vector;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -18,6 +19,10 @@ public class RenderScreenEvent extends Event {
         int i = (int)(MC.mouseHandler.xpos() * (double)MC.getWindow().getGuiScaledWidth() / (double)MC.getWindow().getScreenWidth());
         int j = (int)(MC.mouseHandler.ypos() * (double)MC.getWindow().getGuiScaledHeight() / (double)MC.getWindow().getScreenHeight());
         return new Vector(i,j);
+    }
+
+    public GuiGraphics getGraphics() {
+        return new GuiGraphics(MC, MC.renderBuffers().bufferSource());
     }
 
 

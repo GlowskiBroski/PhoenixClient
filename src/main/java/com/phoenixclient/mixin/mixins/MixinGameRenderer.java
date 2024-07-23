@@ -19,6 +19,7 @@ public abstract class MixinGameRenderer {
 
     @Inject(method = "render", at = @At(value = "INVOKE",target = "Lnet/minecraft/client/gui/screens/Screen;handleDelayedNarration()V"), cancellable = true)
     private void onRenderScreen(CallbackInfo ci) {
+        //TODO: Please add guiGraphics as a parameter for the post
         Event.EVENT_RENDER_SCREEN.post();
     }
 

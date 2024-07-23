@@ -2,8 +2,11 @@ package com.phoenixclient.event.events;
 
 import com.phoenixclient.event.Event;
 import com.phoenixclient.util.math.Vector;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static com.phoenixclient.PhoenixClient.MC;
 
 public class RenderItemTooltipEvent extends Event {
 
@@ -33,6 +36,10 @@ public class RenderItemTooltipEvent extends Event {
 
     public Vector getMousePos() {
         return mousePos;
+    }
+
+    public GuiGraphics getGraphics() {
+        return new GuiGraphics(MC, MC.renderBuffers().bufferSource());
     }
 
 

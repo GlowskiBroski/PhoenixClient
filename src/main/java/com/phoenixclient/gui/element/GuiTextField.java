@@ -1,9 +1,7 @@
 package com.phoenixclient.gui.element;
 
-import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.math.Vector;
-import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
@@ -65,7 +63,7 @@ public class GuiTextField extends GuiWidget {
 
         TextBuilder
                 .start(title,getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)),Color.WHITE).draw(graphics)
-                .next().text(msg).color(typing ? Color.GREEN : Color.WHITE).scale((float)scale).dynamic().draw(graphics);
+                .nextAdj().text(msg).color(typing ? Color.GREEN : Color.WHITE).scale((float)scale).dynamic().draw(graphics);
     }
 
     @Override

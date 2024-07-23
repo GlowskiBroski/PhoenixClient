@@ -1,6 +1,5 @@
 package com.phoenixclient.gui.hud.element;
 
-import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
@@ -110,9 +109,9 @@ public class CoordinatesWindow extends GuiWindow {
             }
         }
 
-        TextBuilder.start(xLabel,xPos,labelColor).draw(graphics).next().text(x).color(color).dynamic().draw(graphics);
-        TextBuilder.start(yLabel,yPos,labelColor).draw(graphics).next().text(y).color(color).dynamic().draw(graphics);
-        TextBuilder.start(zLabel,zPos,labelColor).draw(graphics).next().text(z).color(color).dynamic().draw(graphics);
+        TextBuilder.start(xLabel,xPos,labelColor).draw(graphics).nextAdj().text(x).color(color).dynamic().draw(graphics);
+        TextBuilder.start(yLabel,yPos,labelColor).draw(graphics).nextAdj().text(y).color(color).dynamic().draw(graphics);
+        TextBuilder.start(zLabel,zPos,labelColor).draw(graphics).nextAdj().text(z).color(color).dynamic().draw(graphics);
     }
 
 }

@@ -1,15 +1,12 @@
 package com.phoenixclient.gui.hud.element;
 
-import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
-import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
@@ -63,7 +60,7 @@ public class EntityDataWindow extends GuiWindow {
             Color healthColor = healthPercent <= 1 ? ColorManager.getRedGreenScaledColor(healthPercent) : new Color(255, 255, 0);
             TextBuilder
                     .start("\"" + entity.getName().getString() + "\"",getPos().getAdded(2, 2 + yOff),Color.WHITE).draw(graphics)
-                    .next().text(" (" + MathUtil.roundDouble(living.getHealth(), 2) + "/" + MathUtil.roundDouble(living.getMaxHealth(),2) + ")").color(healthColor).dynamic().draw(graphics);
+                    .nextAdj().text(" (" + MathUtil.roundDouble(living.getHealth(), 2) + "/" + MathUtil.roundDouble(living.getMaxHealth(),2) + ")").color(healthColor).dynamic().draw(graphics);
         } else {
             TextBuilder.start( "\"" + entity.getName().getString() + "\"", getPos().getAdded(2, 2 + yOff), Color.WHITE).dynamic().draw(graphics);
         }
@@ -83,9 +80,9 @@ public class EntityDataWindow extends GuiWindow {
             Color speedColor = ColorManager.getRedGreenScaledColor(speedPercent);
             Color jumpColor = ColorManager.getRedGreenScaledColor(jumpPercent);
 
-            TextBuilder.start( " Speed: ",getPos().getAdded(2, 2 + yOff),Color.WHITE).draw(graphics).next().text(speed + " m/s").color(speedColor).dynamic().draw(graphics);
+            TextBuilder.start( " Speed: ",getPos().getAdded(2, 2 + yOff),Color.WHITE).draw(graphics).nextAdj().text(speed + " m/s").color(speedColor).dynamic().draw(graphics);
             yOff += 12;
-            TextBuilder.start( " Jump: ",getPos().getAdded(2, 2 + yOff),Color.WHITE).draw(graphics).next().text(blockHeight + " m").color(jumpColor).dynamic().draw(graphics);
+            TextBuilder.start( " Jump: ",getPos().getAdded(2, 2 + yOff),Color.WHITE).draw(graphics).nextAdj().text(blockHeight + " m").color(jumpColor).dynamic().draw(graphics);
             yOff += 12;
         }
 

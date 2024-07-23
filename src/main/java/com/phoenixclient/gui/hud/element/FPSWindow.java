@@ -1,6 +1,5 @@
 package com.phoenixclient.gui.hud.element;
 
-import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
@@ -28,7 +27,7 @@ public class FPSWindow extends GuiWindow {
 
         setSize(new Vector((int) DrawUtil.getFontTextWidth(label + text) + 6,13));
 
-        TextBuilder.start(label,getPos().getAdded(new Vector(2,2)),colorManager.getHudLabelColor()).draw(graphics).next().text(text).color(Color.WHITE).dynamic().draw(graphics);
+        TextBuilder.start(label,getPos().getAdded(new Vector(2,2)),colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(text).color(Color.WHITE).dynamic().draw(graphics);
 
     }
 

@@ -1,6 +1,5 @@
 package com.phoenixclient.gui.hud.element;
 
-import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
 import com.phoenixclient.util.actions.StopWatch;
@@ -36,7 +35,7 @@ public class TPSWindow extends GuiWindow {
 
         setSize(new Vector((int) DrawUtil.getFontTextWidth(label + text) + 6,13));
 
-        TextBuilder.start(label,getPos().getAdded(new Vector(2,2)),colorManager.getHudLabelColor()).draw(graphics).next().text(text).color(Color.WHITE).dynamic().draw(graphics);
+        TextBuilder.start(label,getPos().getAdded(new Vector(2,2)),colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(text).color(Color.WHITE).dynamic().draw(graphics);
     }
 
     private final EventAction packetEvent = new EventAction(Event.EVENT_PACKET, () -> {

@@ -1,6 +1,5 @@
 package com.phoenixclient.gui.hud.element;
 
-import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
@@ -57,7 +56,7 @@ public class DirectionWindow extends GuiWindow {
                 getPos().getX() + getSize().getX() / 2 - DrawUtil.getFontTextWidth(label + directionString) / 2 - 1,
                 getPos().getY() + 2);
 
-        TextBuilder.start(label,pos,colorManager.getHudLabelColor()).draw(graphics).next().text(directionString).color(Color.WHITE).draw(graphics);
+        TextBuilder.start(label,pos,colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(directionString).color(Color.WHITE).draw(graphics);
     }
 
 }
