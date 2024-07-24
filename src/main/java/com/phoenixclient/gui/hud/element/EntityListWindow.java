@@ -31,7 +31,6 @@ public class EntityListWindow extends ListWindow {
         return "Entity List";
     }
 
-    //TODO: This is VERY laggy, especially if the range is higher. Figure that out. No its not from the nextListOrdering, i tested it. Its the list itself
     @Override
     protected LinkedHashMap<String , ListInfo> getListMap() {
         LinkedHashMap<String, ListInfo> currentList = new LinkedHashMap<>();

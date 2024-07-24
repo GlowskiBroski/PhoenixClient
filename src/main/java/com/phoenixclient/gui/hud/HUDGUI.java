@@ -11,27 +11,41 @@ public class HUDGUI extends GUI {
     // DEFINE WINDOWS
     // -----------------------------------------------------------------
 
-    private final ArmorWindow armor = new ArmorWindow(this,Vector.NULL());
-    private final CoordinatesWindow coordinates = new CoordinatesWindow(this,Vector.NULL());
-    private final DirectionWindow direction = new DirectionWindow(this,Vector.NULL());
-    private final EntityListWindow entityList = new EntityListWindow(this,Vector.NULL());
-    private final EntityDataWindow entityData = new EntityDataWindow(this,Vector.NULL());
-    private final FPSWindow fps = new FPSWindow(this,Vector.NULL());
-    private final InventoryWindow inventory = new InventoryWindow(this,Vector.NULL());
-    private final SpeedWindow speed = new SpeedWindow(this,Vector.NULL());
-    private final TPSWindow tps = new TPSWindow(this,Vector.NULL());
+    private final ArmorWindow armor = new ArmorWindow(this, Vector.NULL());
+    private final CoordinatesWindow coordinates = new CoordinatesWindow(this, Vector.NULL());
+    private final DirectionWindow direction = new DirectionWindow(this, Vector.NULL());
+    private final EntityListWindow entityList = new EntityListWindow(this, Vector.NULL());
+    private final EntityDataWindow entityData = new EntityDataWindow(this, Vector.NULL());
+    private final FPSWindow fps = new FPSWindow(this, Vector.NULL());
+    private final InventoryWindow inventory = new InventoryWindow(this, Vector.NULL());
+    private final SpeedWindow speed = new SpeedWindow(this, Vector.NULL());
+    private final TPSWindow tps = new TPSWindow(this, Vector.NULL());
     private final ModuleListWindow moduleList = new ModuleListWindow(this, Vector.NULL());
     private final StorageListWindow storageList = new StorageListWindow(this, Vector.NULL());
     private final ModuleKeybindListWindow moduleKeybindListWindow = new ModuleKeybindListWindow(this, Vector.NULL());
     private final SignTextListWindow signTextListWindow = new SignTextListWindow(this, Vector.NULL());
 
-    //private final PacketInflowWindow packetInflowWindow = new PacketInflowWindow(this,new Vector(80,0));
+    private final PacketFlowListWindow packetFlowList = new PacketFlowListWindow(this, Vector.NULL());
 
     // -----------------------------------------------------------------
 
     public HUDGUI(Component title) {
         super(title);
-        addGuiElements(inventory,armor,direction,fps,speed,coordinates, entityList, entityData, tps, moduleList, storageList, moduleKeybindListWindow,signTextListWindow);
+        addGuiElements(
+                inventory,
+                armor,
+                direction,
+                fps,
+                speed,
+                coordinates,
+                entityList,
+                entityData,
+                tps,
+                moduleList,
+                storageList,
+                moduleKeybindListWindow,
+                signTextListWindow
+        );
     }
 
     @Override

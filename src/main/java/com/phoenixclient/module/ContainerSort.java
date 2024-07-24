@@ -7,6 +7,7 @@ import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.world.entity.player.Inventory;
@@ -57,6 +58,7 @@ public class ContainerSort extends Module {
 
     public void onRenderScreen(RenderScreenEvent event) {
         if (!(MC.screen instanceof AbstractContainerScreen<?>)) return;
+        if (!shouldSort()) return;
         String hint = "Hold SPACE to sort container!";
         if (hintFadeIn) {
             if (hintFade < 255) hintFade += 3;
@@ -98,7 +100,7 @@ public class ContainerSort extends Module {
                 ItemStack nextItem = containerMenu.getSlot(j).getItem();
 
                 //If the items are stackable, stack them
-                if (ItemStack.isSameItemSameComponents(stack,nextItem)) {
+                if (ItemStack.isSameItemSameComponents(stack,nextItem) && stack.getMaxStackSize() > 1) {
                     clickWindow(containerMenu,j);
                     clickWindow(containerMenu,i);
                 }
@@ -113,7 +115,8 @@ public class ContainerSort extends Module {
     private boolean shouldSort() {
         if (MC.player == null) return false;
         if (!MC.player.containerMenu.getCarried().isEmpty()) return false;
-        if (!MC.player.isSpectator()) return true;
+        if (MC.player.isSpectator()) return false;
+        if (MC.screen instanceof AnvilScreen) return false;
         return !(MC.screen instanceof InventoryScreen);
     }
 
