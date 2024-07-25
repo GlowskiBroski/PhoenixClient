@@ -1,6 +1,5 @@
 package com.phoenixclient.mixin.mixins;
 
-
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.events.PacketEvent;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,8 +32,5 @@ public abstract class MixinConnection extends SimpleChannelInboundHandler<Packet
         event.post(packet,PacketEvent.Type.SEND);
         event.updateCancelled(ci);
     }
-
-    @Shadow
-    protected abstract void channelRead0(ChannelHandlerContext channelHandlerContext, Packet<?> packet);
 
 }

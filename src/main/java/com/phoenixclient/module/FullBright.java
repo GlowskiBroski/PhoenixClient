@@ -4,8 +4,6 @@ import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.setting.SettingGUI;
-import net.minecraft.client.gui.screens.OptionsScreen;
-import net.minecraft.client.gui.screens.VideoSettingsScreen;
 
 import static com.phoenixclient.PhoenixClient.MC;
 

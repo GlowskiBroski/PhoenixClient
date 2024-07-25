@@ -3,6 +3,7 @@ package com.phoenixclient.module;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
+import com.phoenixclient.event.events.KeyPressEvent;
 import com.phoenixclient.event.events.PacketEvent;
 import com.phoenixclient.mixin.MixinHooks;
 import com.phoenixclient.util.MotionUtil;
@@ -15,14 +16,19 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.phys.Vec3;
+import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.UUID;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
 public class FreeCam extends Module {
+
+    //TODO: Create way to cycle through nearby players in a "spectate" type mode
 
     private final OnChange<Vector> onChangeView = new OnChange<>();
     private final OnChange<Vector> onChangeSpoofedView = new OnChange<>();
@@ -42,14 +48,14 @@ public class FreeCam extends Module {
             "Speed",
             "Flight Speed of FreeCam",
             1d)
-            .setSliderData(.1,2,.1)
-            .setDependency(mode, "Interact");
+            .setSliderData(.1, 2, .1);
 
     public FreeCam() {
-        super("FreeCam", "Allows the camera to move out of the body", Category.PLAYER, false, -1);
+        super("FreeCam", "Allows the camera to move out of the body (press <- -> to cycle through nearby players)", Category.PLAYER, false, -1);
         addSettings(mode, speed);
-        addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
-        addEventSubscriber(Event.EVENT_PACKET,this::onPacket);
+        addEventSubscriber(Event.EVENT_PLAYER_UPDATE, this::onPlayerUpdate);
+        addEventSubscriber(Event.EVENT_PACKET, this::onPacket);
+        addEventSubscriber(Event.EVENT_KEY_PRESS, this::onKeyPress);
     }
 
     public void onPlayerUpdate(Event event) {
@@ -58,16 +64,26 @@ public class FreeCam extends Module {
             switch (mode.get()) {
                 case "Ghost" -> {
                     //Nothing Extra Yet ¯\_(ツ)_/¯
+                    MotionUtil.moveEntityStrafe(speed.get() + .052, MC.player);
+                    Vector deltaM = new Vector(MC.player.getDeltaMovement());
+                    MC.player.setDeltaMovement(deltaM.getX(), 0, deltaM.getZ());
+                    if (MC.options.keyJump.isDown())
+                        MC.player.setDeltaMovement(deltaM.getX(), speed.get(), deltaM.getZ());
+                    if (MC.options.keyShift.isDown())
+                        MC.player.setDeltaMovement(deltaM.getX(), -speed.get(), deltaM.getZ());
+                    if (!MotionUtil.isInputActive(true)) MC.player.setDeltaMovement(0, 0, 0);
                 }
                 case "Interact" -> {
                     MixinHooks.noClip = true;
                     MC.player.getAbilities().flying = true;
-                    MotionUtil.moveEntityStrafe(speed.get() + .052,MC.player);
+                    MotionUtil.moveEntityStrafe(speed.get() + .052, MC.player);
                     Vector deltaM = new Vector(MC.player.getDeltaMovement());
                     MC.player.setDeltaMovement(deltaM.getX(), 0, deltaM.getZ());
-                    if (MC.options.keyJump.isDown()) MC.player.setDeltaMovement(deltaM.getX(), speed.get(), deltaM.getZ());
-                    if (MC.options.keyShift.isDown()) MC.player.setDeltaMovement(deltaM.getX(), -speed.get(), deltaM.getZ());
-                    if (!MotionUtil.isInputActive(true)) MC.player.setDeltaMovement(0,0,0);
+                    if (MC.options.keyJump.isDown())
+                        MC.player.setDeltaMovement(deltaM.getX(), speed.get(), deltaM.getZ());
+                    if (MC.options.keyShift.isDown())
+                        MC.player.setDeltaMovement(deltaM.getX(), -speed.get(), deltaM.getZ());
+                    if (!MotionUtil.isInputActive(true)) MC.player.setDeltaMovement(0, 0, 0);
                     updateDummyPlayerSwinging();
                     updateDummyPlayerLookVector();
                 }
@@ -78,13 +94,12 @@ public class FreeCam extends Module {
 
     public void onPacket(PacketEvent event) {
         Packet<?> packet = event.getPacket();
-
         if (packet instanceof ServerboundMovePlayerPacket.Rot) {
             if (!packet.equals(interactRotationPacket)) event.setCancelled(true);
         }
 
         if (packet instanceof ClientboundPlayerPositionPacket c) {
-            if (dummyPlayer != null) dummyPlayer.setPos(new Vector(c.getX(),c.getY(),c.getZ()).getVec3());
+            if (dummyPlayer != null) dummyPlayer.setPos(new Vector(c.getX(), c.getY(), c.getZ()).getVec3());
             event.setCancelled(true);
         }
         if (packet instanceof ServerboundMovePlayerPacket.PosRot
@@ -95,8 +110,37 @@ public class FreeCam extends Module {
         ) {
             event.setCancelled(true);
         }
-
     }
+
+    //Cycle through nearby players
+    private int specPlayerIndex = 0;
+    public void onKeyPress(KeyPressEvent event) {
+        if (event.getKey() != GLFW.GLFW_KEY_LEFT && event.getKey() != GLFW.GLFW_KEY_RIGHT) return;
+
+        ArrayList<Player> playerList = new ArrayList<>();
+        for (Entity entity : MC.level.entitiesForRendering()) {
+            if (entity instanceof Player p) playerList.add(p);
+        }
+        playerList.sort(new PlayerNameComparator());
+
+        switch (event.getKey()) {
+            case GLFW.GLFW_KEY_LEFT -> {
+                specPlayerIndex++;
+                if (specPlayerIndex >= playerList.size()) {
+                    specPlayerIndex = 0;
+                }
+            }
+            case GLFW.GLFW_KEY_RIGHT -> {
+                specPlayerIndex--;
+                if (specPlayerIndex < 0) {
+                    specPlayerIndex = playerList.size() - 1;
+                }
+            }
+        }
+
+        MC.player.setPos(playerList.get(specPlayerIndex).getPosition(0));
+    }
+
 
     @Override
     public void onEnabled() {
@@ -107,7 +151,8 @@ public class FreeCam extends Module {
             return;
         }
         //Set Mode Change Detector off to reset detector
-        mode.runOnChange(() -> {});
+        mode.runOnChange(() -> {
+        });
 
         //Log Original Game Mode
         gameMode = MC.gameMode.getPlayerMode();
@@ -145,13 +190,15 @@ public class FreeCam extends Module {
 
 
     private void summonDummyPlayer() {
-        MC.level.addEntity(dummyPlayer = new AbstractClientPlayer(MC.level,MC.player.getGameProfile()) {
+        MC.level.addEntity(dummyPlayer = new AbstractClientPlayer(MC.level, MC.player.getGameProfile()) {
             public boolean isSpectator() {
                 return false;
             }
+
             public UUID getUUID() {
                 return UUID.randomUUID();
             }
+
             protected PlayerInfo getPlayerInfo() {
                 return MC.getConnection().getPlayerInfo(MC.player.getUUID());
             }
@@ -203,7 +250,7 @@ public class FreeCam extends Module {
             dummyPlayer.setXRot(pS);
 
             //It doesn't really matter what the angles are that I send here, as they are overwritten by the rotation manager
-            onChangeSpoofedView.run(new Vector(yS,pS), () -> MC.getConnection().send(interactRotationPacket = new ServerboundMovePlayerPacket.Rot(yS, pS, true)));
+            onChangeSpoofedView.run(new Vector(yS, pS), () -> MC.getConnection().send(interactRotationPacket = new ServerboundMovePlayerPacket.Rot(yS, pS, true)));
         }
     }
 
@@ -222,4 +269,11 @@ public class FreeCam extends Module {
         MC.player.onGameModeChanged(gameMode);
     }
 
+    public class PlayerNameComparator implements Comparator<Player> {
+
+        @Override
+        public int compare(Player o1, Player o2) {
+            return 0;
+        }
+    }
 }

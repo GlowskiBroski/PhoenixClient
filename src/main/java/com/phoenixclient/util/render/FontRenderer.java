@@ -60,7 +60,7 @@ public class FontRenderer {
             if (bakedDynamicCharList.containsKey(c)) {
                 resourceLocation = bakedDynamicCharList.get(c);
             } else {
-                resourceLocation = new ResourceLocation("phoenixclient", UUID.randomUUID().toString());
+                resourceLocation = ResourceLocation.fromNamespaceAndPath("phoenixclient", UUID.randomUUID().toString());
                 BufferedImage img = getBufferedImage(String.valueOf(c));
                 if (img != null) {
                     DynamicTexture tex = TextureUtil.getDynamicTexture(img);
@@ -107,7 +107,7 @@ public class FontRenderer {
         if (bakedStaticStringList.containsKey(text)) {
             resourceLocation = bakedStaticStringList.get(text);
         } else {
-            resourceLocation = new ResourceLocation("phoenixclient", UUID.randomUUID().toString());
+            resourceLocation = ResourceLocation.fromNamespaceAndPath("phoenixclient", UUID.randomUUID().toString());
             BufferedImage img = getBufferedImage(text);
             if (img != null) {
                 DynamicTexture tex = TextureUtil.getDynamicTexture(img);

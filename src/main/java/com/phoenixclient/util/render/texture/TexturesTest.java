@@ -19,7 +19,7 @@ import static com.phoenixclient.PhoenixClient.MC;
 public class TexturesTest {
 
     private static OnChange<Double> onGuiChange = new OnChange<>();
-    private static ResourceLocation windowHead = new ResourceLocation("phoenixclient", UUID.randomUUID().toString());
+    private static ResourceLocation windowHead = ResourceLocation.fromNamespaceAndPath("phoenixclient", UUID.randomUUID().toString());
 
     private static void initWindowHead(Color color) {
         int size = 50;

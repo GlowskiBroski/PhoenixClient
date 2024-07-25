@@ -50,10 +50,10 @@ public class ArmorWindow extends GuiWindow {
         nPos.multiply(1 / scale);
 
         if (Minecraft.getInstance().screen == getScreen()) {
-            ResourceLocation helmet = new ResourceLocation("textures/item/empty_armor_slot_helmet.png");
-            ResourceLocation chestplate = new ResourceLocation("textures/item/empty_armor_slot_chestplate.png");
-            ResourceLocation leggings = new ResourceLocation("textures/item/empty_armor_slot_leggings.png");
-            ResourceLocation boots = new ResourceLocation("textures/item/empty_armor_slot_boots.png");
+            ResourceLocation helmet = ResourceLocation.withDefaultNamespace("textures/item/empty_armor_slot_helmet.png");
+            ResourceLocation chestplate = ResourceLocation.withDefaultNamespace("textures/item/empty_armor_slot_chestplate.png");
+            ResourceLocation leggings = ResourceLocation.withDefaultNamespace("textures/item/empty_armor_slot_leggings.png");
+            ResourceLocation boots = ResourceLocation.withDefaultNamespace("textures/item/empty_armor_slot_boots.png");
 
             RenderSystem.setShaderColor(.2F,.2F,.2F,1F);
 

@@ -27,7 +27,7 @@ public class PacketFlowListWindow extends ListWindow {
         this.mode = new SettingGUI<>(this, "Mode", "Type of packets to log", "Inflow").setModeData("Inflow", "Outflow");
         this.history = new SettingGUI<>(this, "History", "The amount of time a packet will stay on the window after being sent", 5).setSliderData(1, 60, 1);
         addSettings(mode, history);
-        packetEvent.subscribe();
+        //packetEvent.subscribe();
     }
 
     @Override
@@ -63,6 +63,7 @@ public class PacketFlowListWindow extends ListWindow {
         return forceAddedToBottom(currentList);
     }
 
+    //TODO: This kinda broke the packet event. Im guessing it caused exceptions in the thread
     public EventAction packetEvent = new EventAction(Event.EVENT_PACKET, () -> {
         PacketEvent event = Event.EVENT_PACKET;
         switch (mode.get()) {

@@ -103,7 +103,7 @@ public class TextBuilder {
         graphics.setColor(1, 1, 1, color.getAlpha() / 255f);
         if (fontRenderer == null) {
             MC.font.drawInBatch(text, ((float) pos.getX()), ((float) pos.getY()), color.hashCode(), shadow, graphics.pose().last().pose(), graphics.bufferSource(), net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
-            graphics.flush();
+            //graphics.flush();
         } else {
             if (shadow) {
                 int damp = 175;

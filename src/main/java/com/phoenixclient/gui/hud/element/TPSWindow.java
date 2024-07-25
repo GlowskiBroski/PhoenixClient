@@ -38,6 +38,8 @@ public class TPSWindow extends GuiWindow {
         TextBuilder.start(label,getPos().getAdded(new Vector(2,2)),colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(text).color(Color.WHITE).dynamic().draw(graphics);
     }
 
+    //TODO: This is like actually stupid how this functions, make it better
+
     private final EventAction packetEvent = new EventAction(Event.EVENT_PACKET, () -> {
         PacketEvent event = Event.EVENT_PACKET;
         tpsWatch.run(20 * 1000, () -> {

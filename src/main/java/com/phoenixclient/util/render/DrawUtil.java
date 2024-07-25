@@ -73,18 +73,17 @@ public class DrawUtil {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Matrix4f matrix = graphics.pose().last().pose();
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(outlined ? VertexFormat.Mode.DEBUG_LINE_STRIP : VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);//.getBuilder();
 
-        bufferBuilder.begin(outlined ? VertexFormat.Mode.DEBUG_LINE_STRIP : VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferBuilder.vertex(matrix, x, y + height, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, x + width, y + height, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, x + width, y, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, x, y, 0).color(r, g, b, a).endVertex();
+        bufferBuilder.addVertex(matrix, x, y + height, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(matrix, x + width, y + height, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(matrix, x + width, y, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(matrix, x, y, 0).setColor(r, g, b, a);
 
         //Redraw first vertex to complete outline
-        if (outlined) bufferBuilder.vertex(matrix, x, y + height, 0).color(r, g, b, a).endVertex();
+        if (outlined) bufferBuilder.addVertex(matrix, x, y + height, 0).setColor(r, g, b, a);
 
-        BufferBuilder.RenderedBuffer buff = bufferBuilder.end();
+        MeshData buff = bufferBuilder.build();
         BufferUploader.drawWithShader(buff);
     }
 
@@ -97,9 +96,7 @@ public class DrawUtil {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Matrix4f matrix = graphics.pose().last().pose();
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-
-        bufferBuilder.begin(outlined ? VertexFormat.Mode.DEBUG_LINE_STRIP : VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(outlined ? VertexFormat.Mode.DEBUG_LINE_STRIP : VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
 
         //Mark the 4 quarter circle centers
         Vector[] corners = {
@@ -125,14 +122,14 @@ public class DrawUtil {
             for (int i = 0; i <= vertexCount; i++) {
                 Vector vertex = new Vector(Math.cos(radianIncrement*i + rotation),-Math.sin(radianIncrement*i + rotation)).getMultiplied(radius).getAdded(center);
                 setFirstVertex.run(() -> firstVertex.setX(vertex.getX()).setY(vertex.getY()).setZ(vertex.getZ()));
-                bufferBuilder.vertex(matrix, (float)vertex.getX(),(float)vertex.getY(), 0).color(color.getRed()/255f, color.getGreen()/255f,color.getBlue()/255f, color.getAlpha()/255f).endVertex();
+                bufferBuilder.addVertex(matrix, (float)vertex.getX(),(float)vertex.getY(), 0).setColor(color.getRed()/255f, color.getGreen()/255f,color.getBlue()/255f, color.getAlpha()/255f);
             }
         }
 
         //Redraw first vertex to complete outline
-        if (outlined) bufferBuilder.vertex(matrix, (float)firstVertex.getX(),(float)firstVertex.getY(), 0).color(color.getRed()/255f, color.getGreen()/255f,color.getBlue()/255f, color.getAlpha()/255f).endVertex();
+        if (outlined) bufferBuilder.addVertex(matrix, (float)firstVertex.getX(),(float)firstVertex.getY(), 0).setColor(color.getRed()/255f, color.getGreen()/255f,color.getBlue()/255f, color.getAlpha()/255f);
 
-        BufferUploader.drawWithShader(bufferBuilder.end());
+        BufferUploader.drawWithShader(bufferBuilder.build());
         RenderSystem.disableBlend();
     }
 
@@ -161,17 +158,14 @@ public class DrawUtil {
         RenderSystem.setShaderTexture(0, texture);
 
         Matrix4f matrix = graphics.pose().last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.addVertex(matrix, x, y + height, 0).setUv(texX / texWidth, (texY + height) / texHeight);
+        bufferbuilder.addVertex(matrix, x + width, y + height, 0).setUv((texX + width) / texWidth, (texY + height) / texHeight);
+        bufferbuilder.addVertex(matrix, x + width, y, 0).setUv((texX + width) / texWidth, texY / texHeight);
+        bufferbuilder.addVertex(matrix, x, y, 0).setUv(texX / texWidth, texY / texHeight);
 
-        bufferbuilder.vertex(matrix, x, y + height, 0).uv(texX / texWidth, (texY + height) / texHeight).endVertex();
-        bufferbuilder.vertex(matrix, x + width, y + height, 0).uv((texX + width) / texWidth, (texY + height) / texHeight).endVertex();
-        bufferbuilder.vertex(matrix, x + width, y, 0).uv((texX + width) / texWidth, texY / texHeight).endVertex();
-        bufferbuilder.vertex(matrix, x, y, 0).uv(texX / texWidth, texY / texHeight).endVertex();
-
-        BufferBuilder.RenderedBuffer buff = bufferbuilder.end();
-        BufferUploader.drawWithShader(buff);
+        BufferUploader.drawWithShader(bufferbuilder.build());
     }
 
     /**
@@ -197,38 +191,36 @@ public class DrawUtil {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Matrix4f matrix = graphics.pose().last().pose();
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
 
         float stretchX = 2;
-
+        BufferBuilder bufferBuilder;
         if (outlined) {
-            bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+            bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 
             //Outline
-            bufferBuilder.vertex(matrix, x, y, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size + stretchX, y, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size + size / 4 + stretchX, y + size / 2, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size + stretchX, y + size, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x, y + size, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size / 4, y + size / 2, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x, y, 0).color(r, g, b, a).endVertex();
+            bufferBuilder.addVertex(matrix, x, y, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size + stretchX, y, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size + size / 4 + stretchX, y + size / 2, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size + stretchX, y + size, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x, y + size, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size / 4, y + size / 2, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x, y, 0).setColor(r, g, b, a);
         } else {
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
             //FillU
-            bufferBuilder.vertex(matrix, x, y, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size / 4, y + size / 2, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size + size / 4 + stretchX, y + size / 2, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size + stretchX, y, 0).color(r, g, b, a).endVertex();
+            bufferBuilder.addVertex(matrix, x, y, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size / 4, y + size / 2, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size + size / 4 + stretchX, y + size / 2, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size + stretchX, y, 0).setColor(r, g, b, a);
 
             //FillL
-            bufferBuilder.vertex(matrix, x + size / 4, y + size / 2, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x, y + size, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size + stretchX, y + size, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size + size / 4 + stretchX, y + size / 2, 0).color(r, g, b, a).endVertex();
+            bufferBuilder.addVertex(matrix, x + size / 4, y + size / 2, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x, y + size, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size + stretchX, y + size, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size + size / 4 + stretchX, y + size / 2, 0).setColor(r, g, b, a);
         }
 
-        BufferBuilder.RenderedBuffer buff = bufferBuilder.end();
-        BufferUploader.drawWithShader(buff);
+        BufferUploader.drawWithShader(bufferBuilder.build());
 
         RenderSystem.disableBlend();
     }
@@ -247,26 +239,23 @@ public class DrawUtil {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Matrix4f matrix = graphics.pose().last().pose();
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-
-        bufferBuilder.begin(outlined ? VertexFormat.Mode.DEBUG_LINE_STRIP : VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(outlined ? VertexFormat.Mode.DEBUG_LINE_STRIP : VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         //Outline
         if (backwards) {
             x -= size/4;
-            bufferBuilder.vertex(matrix, x + size / 2, y, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size / 4, y + size / 2, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size/2, y + size, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size/2, y, 0).color(r, g, b, a).endVertex();
+            bufferBuilder.addVertex(matrix, x + size / 2, y, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size / 4, y + size / 2, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size/2, y + size, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size/2, y, 0).setColor(r, g, b, a);
         } else {
-            bufferBuilder.vertex(matrix, x, y, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x, y + size, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x + size / 4, y + size / 2, 0).color(r, g, b, a).endVertex();
-            bufferBuilder.vertex(matrix, x, y, 0).color(r, g, b, a).endVertex();
+            bufferBuilder.addVertex(matrix, x, y, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x, y + size, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x + size / 4, y + size / 2, 0).setColor(r, g, b, a);
+            bufferBuilder.addVertex(matrix, x, y, 0).setColor(r, g, b, a);
         }
 
-        BufferBuilder.RenderedBuffer buff = bufferBuilder.end();
-        BufferUploader.drawWithShader(buff);
+        BufferUploader.drawWithShader(bufferBuilder.build());
 
         RenderSystem.disableBlend();
     }

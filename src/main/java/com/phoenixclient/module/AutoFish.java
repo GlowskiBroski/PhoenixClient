@@ -1,7 +1,7 @@
 package com.phoenixclient.module;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
-import com.phoenixclient.event.EventAction;
 import com.phoenixclient.event.events.PacketEvent;
 import com.phoenixclient.util.setting.SettingGUI;
 import com.phoenixclient.util.actions.StopWatch;
@@ -39,7 +39,7 @@ public class AutoFish extends Module {
                 autoFishTimer.start();
                 autoFishTimer.restart();
                 shouldRecast = true;
-                MC.getConnection().send(new ServerboundUseItemPacket(InteractionHand.MAIN_HAND, 0)); //Retrieve
+                clickRod();
             }
         }
     }
@@ -47,12 +47,23 @@ public class AutoFish extends Module {
     public void onPlayerUpdate(Event event) {
         if (autoFishTimer.hasTimePassedS(1) && shouldRecast) {
             shouldRecast = false;
-            MC.getConnection().send(new ServerboundUseItemPacket(InteractionHand.MAIN_HAND, 6)); //Recast
+            clickRod();
         }
 
         if (autoRecast.get() && autoFishTimer.hasTimePassedS(15)) {
-            if (MC.player.fishing == null) MC.getConnection().send(new ServerboundUseItemPacket(InteractionHand.MAIN_HAND, 6)); //Recast
+            clickRod();
         }
+    }
+
+    private void clickRod() {
+        float yaw = MC.player.getYRot();
+        float pitch = MC.player.getXRot();
+        FreeCam fc = (FreeCam) PhoenixClient.getModule("FreeCam");
+        if (fc.isEnabled() && fc.dummyPlayer != null) {
+            yaw = fc.dummyPlayer.getYRot();
+            pitch = fc.dummyPlayer.getXRot();
+        }
+        MC.getConnection().send(new ServerboundUseItemPacket(InteractionHand.MAIN_HAND, 0,yaw,pitch)); //Retrieve
     }
 
 }
