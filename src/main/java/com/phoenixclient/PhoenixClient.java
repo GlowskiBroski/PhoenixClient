@@ -23,7 +23,7 @@ public class PhoenixClient implements ModInitializer {
 
     private static final SettingManager SETTING_MANAGER = new SettingManager(new CSVFile("PhoenixClient", "settings"));
     private static final GuiManager GUI_MANAGER = new GuiManager();
-    private static final ColorManager COLOR_MANAGER = new ColorManager(ColorManager.Theme.SEABLUE);
+    private static final ColorManager COLOR_MANAGER = new ColorManager(ColorManager.Theme.SEAGREEN);
     private static final RotationManager ROTATION_MANAGER = new RotationManager();
     private static FontRenderer FONT_RENDERER = new FontRenderer("Verdana", Font.PLAIN);
     private static final LinkedHashMap<String,Module> MODULES_LIST = new LinkedHashMap<>(); //Key value pair: ModName, Module

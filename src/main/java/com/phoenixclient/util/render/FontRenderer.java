@@ -19,7 +19,8 @@ public class FontRenderer {
     private final HashMap<String, ResourceLocation> bakedStaticStringList = new HashMap<>();
     private final HashMap<Character, ResourceLocation> bakedDynamicCharList = new HashMap<>();
 
-    protected final OnChange<Double> onGuiScaleChanged = new OnChange<>();
+    protected final OnChange<Double> onGuiScaleChangedDynamic = new OnChange<>();
+    protected final OnChange<Double> onGuiScaleChangedStatic = new OnChange<>();
 
     private FontMetrics fontMetrics;
     private Font font;
@@ -46,7 +47,7 @@ public class FontRenderer {
         }
 
         double guiScale = MC.getWindow().getGuiScale();
-        onGuiScaleChanged.run(MC.getWindow().getGuiScale(), () -> {
+        onGuiScaleChangedDynamic.run(MC.getWindow().getGuiScale(), () -> {
             bakedDynamicCharList.clear();
             setFont(new Font(font.getFontName(), font.getStyle(), (int) (10 * guiScale)));
         });
@@ -98,7 +99,7 @@ public class FontRenderer {
         }
 
         double guiScale = MC.getWindow().getGuiScale();
-        onGuiScaleChanged.run(MC.getWindow().getGuiScale(), () -> {
+        onGuiScaleChangedStatic.run(MC.getWindow().getGuiScale(), () -> {
             bakedStaticStringList.clear();
             setFont(new Font(getFont().getFontName(), getFont().getStyle(), (int) (10 * guiScale)));
         });

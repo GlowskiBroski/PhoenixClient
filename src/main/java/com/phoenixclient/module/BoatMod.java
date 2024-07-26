@@ -39,7 +39,7 @@ public class BoatMod extends Module {
             this,
             "Glide Speed",
             "Boatfly Glide Speed",
-            1d)
+            0d)
             .setSliderData(0,2,.1)
             .setDependency(mode,"Fly");
 

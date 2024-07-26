@@ -28,7 +28,7 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 public class FreeCam extends Module {
 
-    //TODO: Create way to cycle through nearby players in a "spectate" type mode
+    //TODO: Smart cull doesnt seem to be working on interact mode?
 
     private final OnChange<Vector> onChangeView = new OnChange<>();
     private final OnChange<Vector> onChangeSpoofedView = new OnChange<>();
@@ -116,10 +116,11 @@ public class FreeCam extends Module {
     private int specPlayerIndex = 0;
     public void onKeyPress(KeyPressEvent event) {
         if (event.getKey() != GLFW.GLFW_KEY_LEFT && event.getKey() != GLFW.GLFW_KEY_RIGHT) return;
+        if (event.getState() != 1) return;
 
         ArrayList<Player> playerList = new ArrayList<>();
         for (Entity entity : MC.level.entitiesForRendering()) {
-            if (entity instanceof Player p) playerList.add(p);
+            if (entity instanceof Player p && !p.equals(MC.player)) playerList.add(p);
         }
         playerList.sort(new PlayerNameComparator());
 
@@ -137,8 +138,11 @@ public class FreeCam extends Module {
                 }
             }
         }
-
-        MC.player.setPos(playerList.get(specPlayerIndex).getPosition(0));
+        Player specPlayer = playerList.get(specPlayerIndex);
+        MC.player.setPos(specPlayer.getPosition(0));
+        MC.player.setYHeadRot(specPlayer.getYHeadRot());
+        MC.player.setYRot(specPlayer.getYRot());
+        MC.player.setXRot(specPlayer.getXRot());
     }
 
 
@@ -273,7 +277,7 @@ public class FreeCam extends Module {
 
         @Override
         public int compare(Player o1, Player o2) {
-            return 0;
+            return o1.getDisplayName().getString().compareTo(o2.getDisplayName().getString());
         }
     }
 }

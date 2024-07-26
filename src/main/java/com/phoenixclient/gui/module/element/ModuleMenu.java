@@ -27,7 +27,7 @@ public class ModuleMenu extends GuiWidget {
         super(screen, pos, new Vector(60,50));
         this.scaling = 0;
         this.buttonList = new ArrayList<>();
-        this.open = new Setting<>(PhoenixClient.getSettingManager(), category.getName() + "_open", false);
+        this.open = new Setting<>(PhoenixClient.getSettingManager(), category.getName() + "_open", true);
         this.mainButton = new GuiButton(getScreen(), category.getName(), getPos(),getSize(), colorManager,(f) -> open.set(!open.get())) {
             @Override
             protected void drawWidget(GuiGraphics graphics, Vector mousePos) {

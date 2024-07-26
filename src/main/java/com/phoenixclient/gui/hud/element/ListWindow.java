@@ -52,7 +52,13 @@ public abstract class ListWindow extends GuiWindow {
     protected void drawWindow(GuiGraphics graphics, Vector mousePos) {
         int yOff = 0;
         if (label.get()) {
-            TextBuilder.start(getLabel() + ": ", getPos().getAdded(2, 2), colorManager.getHudLabelColor()).draw(graphics);
+            String label = getLabel() + ":";
+            int x = switch (side.get()) {
+                case "Left" -> 2;
+                case "Right" -> (int)(getSize().getX() - DrawUtil.getFontTextWidth(label)) - 3;
+                default -> throw new IllegalStateException("Unexpected value: " + side.get());
+            };
+            TextBuilder.start(label, getPos().getAdded(x, 2), colorManager.getHudLabelColor()).draw(graphics);
             yOff += 12;
         }
 
@@ -75,16 +81,20 @@ public abstract class ListWindow extends GuiWindow {
             Color c1 = new Color(set.getValue().colorMain.getRed() / 255f,set.getValue().colorMain.getGreen() / 255f,set.getValue().colorMain.getBlue() / 255f, alpha);
             Color c2 = new Color(set.getValue().colorTag.getRed() / 255f,set.getValue().colorTag.getGreen() / 255f,set.getValue().colorTag.getBlue() / 255f, alpha);
 
-            int x = switch (side.get()) {
-                case "Left" -> 2;
-                case "Right" -> (int)(getSize().getX() - DrawUtil.getFontTextWidth(set.getKey() + set.getValue().tag) * scale) - 3;
+            //I am keeping this as a static string. Maybe think about making this dynamic in the future
+            switch (side.get()) {
+                case "Left" -> {
+                    int x = 2;
+                    TextBuilder.start(set.getKey(),getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale),c1).draw(graphics)
+                            .nextAdj().text(set.getValue().tag()).color(c2).draw(graphics);
+                }
+                case "Right" -> {
+                    int x = (int)(getSize().getX() - DrawUtil.getFontTextWidth(set.getKey() + set.getValue().tag) * scale) - 3;
+                    TextBuilder.start(set.getValue().tag(),getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale),c2).draw(graphics)
+                            .nextAdj().text(set.getKey()).color(c1).draw(graphics);
+                }
                 default -> throw new IllegalStateException("Unexpected value: " + side.get());
             };
-
-            //I am keeping this as a static string. Maybe think about making this dynamic in the future
-            TextBuilder.start(set.getKey(),getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale),c1).draw(graphics)
-                    .nextAdj().text(set.getValue().tag()).color(c2).draw(graphics);
-
 
             yOff += (animationLocationMap.get(index).expand ? 0 : (int)(DrawUtil.getFontTextHeight(scale) + 2 * scale)) + animationLocationMap.get(index).offset;
             index ++;

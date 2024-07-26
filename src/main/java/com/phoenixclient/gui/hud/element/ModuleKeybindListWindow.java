@@ -31,13 +31,14 @@ public class ModuleKeybindListWindow extends ListWindow {
         }
 
         for (Module module : sortedDisplayList) {
-            String first = module.getTitle() + ": ";
-            String second = "";
+            String first = module.getTitle();
+            String second = "[";
             try {
                 second = second.concat(module.getKeyBind() == -1 ? "NONE" : GLFW.glfwGetKeyName(module.getKeyBind(), -1).toUpperCase());
             } catch (NullPointerException e) {
                 second = second.concat("Bound (Null Key Name)");
             }
+            second = second.concat("]");
             map.put(first,new ListInfo(second,Color.WHITE,module.isEnabled() ? Color.GREEN : Color.RED));
         }
 

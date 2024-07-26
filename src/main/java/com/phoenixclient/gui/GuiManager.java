@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
-import com.phoenixclient.event.events.RenderScreenEvent;
 import com.phoenixclient.gui.hud.HUDGUI;
 import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.gui.module.ModuleGUI;
@@ -50,7 +49,7 @@ public class GuiManager extends Module {
             this,
             "Font",
             "Custom font for the HUD",
-            "Verdana").setModeData("Segoe Print", "Arial", "Verdana", "Impact", "Default");
+            "Arial").setModeData("Segoe Print", "Arial", "Verdana", "Impact", "Default");
 
     public final SettingGUI<Boolean> blur = new SettingGUI<>(
             this,
@@ -62,25 +61,25 @@ public class GuiManager extends Module {
             this,
             "Theme",
             "Color theme for the HUD",
-            "Sea Blue").setModeData("Red", "Orange", "Green", "Sea Blue", "Blue", "Purple", "Rainbow", "Custom");
+            "Light Blue").setModeData("Red", "Orange", "Green", "Sea Green", "Blue", "Light Blue", "Purple", "Rainbow", "Custom");
 
     public final SettingGUI<Double> baseColorHue = new SettingGUI<>(
             this,
             "Base Color",
             "Hue for the Base Color of the theme",
-            .43d).setSliderData(0, 1, .01).setDependency(theme, "Custom");
+            .52d).setSliderData(0, 1, .01).setDependency(theme, "Custom");
 
     public final SettingGUI<Double> depthColorHue = new SettingGUI<>(
             this,
             "Depth Color",
             "Hue for the Base Color of the theme",
-            .53d).setSliderData(0, 1, .01).setDependency(theme, "Custom");
+            .59d).setSliderData(0, 1, .01).setDependency(theme, "Custom");
 
     public final SettingGUI<Double> widgetColorHue = new SettingGUI<>(
             this,
             "Widget Color",
             "Hue for the Base Color of the theme",
-            .47d).setSliderData(0, 1, .01).setDependency(theme, "Custom");
+            .52d).setSliderData(0, 1, .01).setDependency(theme, "Custom");
 
     public GuiManager() {
         super("GUI", "GUI manager for Phoenix Client", Category.RENDER, true, -1);
@@ -92,10 +91,11 @@ public class GuiManager extends Module {
                     case "Red" -> ColorManager.Theme.RED;
                     case "Orange" -> ColorManager.Theme.ORANGE;
                     case "Green" -> ColorManager.Theme.GREEN;
-                    case "Sea Blue" -> ColorManager.Theme.SEABLUE;
+                    case "Sea Green" -> ColorManager.Theme.SEAGREEN;
                     case "Blue" -> ColorManager.Theme.BLUE;
+                    case "Light Blue" -> ColorManager.Theme.LIGHTBLUE;
                     case "Purple" -> ColorManager.Theme.PURPLE;
-                    default -> ColorManager.Theme.SEABLUE;
+                    default -> ColorManager.Theme.LIGHTBLUE;
                 };
                 PhoenixClient.getColorManager().setTheme(theme);
                 PhoenixClient.getColorManager().setRainbow(this.theme.get().equals("Rainbow"));
