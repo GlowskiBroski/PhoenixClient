@@ -115,6 +115,15 @@ public abstract class Module implements ISettingParent, Comparable<Module> {
         return keyBind.get();
     }
 
+    protected boolean updateDisableOnEnabled() {
+        if (MC.player == null) {
+            disable();
+            for (EventAction action : getEventActions()) action.unsubscribe();
+            return true;
+        }
+        return false;
+    }
+
 
     protected ArrayList<EventAction> getEventActions() {
         return eventActionList;

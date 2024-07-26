@@ -63,7 +63,6 @@ public class FreeCam extends Module {
             updateDummyPlayerInventory();
             switch (mode.get()) {
                 case "Ghost" -> {
-                    //Nothing Extra Yet ¯\_(ツ)_/¯
                     MotionUtil.moveEntityStrafe(speed.get() + .052, MC.player);
                     Vector deltaM = new Vector(MC.player.getDeltaMovement());
                     MC.player.setDeltaMovement(deltaM.getX(), 0, deltaM.getZ());
@@ -149,14 +148,10 @@ public class FreeCam extends Module {
     @Override
     public void onEnabled() {
         //Disable the mod if there is no player
-        if (MC.player == null) {
-            disable();
-            for (EventAction action : getEventActions()) action.unsubscribe();
-            return;
-        }
+        if (updateDisableOnEnabled()) return;
+
         //Set Mode Change Detector off to reset detector
-        mode.runOnChange(() -> {
-        });
+        mode.runOnChange(() -> {});
 
         //Log Original Game Mode
         gameMode = MC.gameMode.getPlayerMode();

@@ -78,11 +78,7 @@ public class PacketTest extends Module {
 
     @Override
     public void onEnabled() {
-        if (MC.player == null) {
-            disable();
-            for (EventAction action : getEventActions()) action.unsubscribe();
-            return;
-        }
+        if (updateDisableOnEnabled()) return;
         backup = MC.player.getVehicle();
         if (backup != null) {
             MC.player.removeVehicle();
@@ -92,6 +88,7 @@ public class PacketTest extends Module {
 
     @Override
     public void onDisabled() {
+        if (MC.player == null) return;
         if (backup != null) {
             if (!MC.options.keyShift.isDown()) {
                 //MC.level.addEntity(backup);

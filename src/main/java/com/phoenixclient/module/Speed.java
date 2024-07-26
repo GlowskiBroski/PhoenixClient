@@ -17,33 +17,14 @@ public class Speed extends Module {
             this,
             "Mode",
             "Mode of speed",
-            "BHop").setModeData("BHop", "OldNCP", "ElytraBounce", "ElytraSprint");
+            "BHop").setModeData("BHop", "OldNCP");
 
-    private final SettingGUI<Integer> bouncePitch = new SettingGUI<>(
-            this,
-            "Pitch",
-            "Lock pitch of ElytraBounce",
-            45).setSliderData(0, 85, 1).setDependency(mode, "ElytraBounce");
-
-    private final SettingGUI<Integer> speedCap = new SettingGUI<>(
-            this,
-            "Speed Cap",
-            "Top speed of ElytraSprint",
-            100)
-            .setSliderData(0, 200, 5).setDependency(mode, "ElytraSprint");
-
-    private final SettingGUI<Integer> esAcc = new SettingGUI<>(
-            this,
-            "Acceleration",
-            "Acceleration for the speed mod",
-            7)
-            .setSliderData(1, 15, 1).setDependency(mode, "ElytraSprint");
 
     private int step = 0;
 
     public Speed() {
         super("Speed", "Makes you go faster", Category.MOTION, false, -1);
-        addSettings(mode, bouncePitch,speedCap, esAcc);
+        addSettings(mode);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
     }
 
@@ -51,8 +32,6 @@ public class Speed extends Module {
         switch (mode.get()) {
             case "BHop" -> bHopSpeed();
             case "OldNCP" -> oldNcpSpeed();
-            case "ElytraBounce" -> elytraBounce();
-            case "ElytraSprint" -> elytraSprint();
         }
     }
 
@@ -60,18 +39,9 @@ public class Speed extends Module {
     public void onDisabled() {
         step = 0;
         switch (mode.get()) {
-            case "BHop" -> {
-
-            }
+            case "BHop" -> {/*Nothing Extra ¯\_(ツ)_/¯*/}
             case "OldNCP" -> {
                 MC.player.setDeltaMovement(MC.player.getDeltaMovement().x(), -.4, MC.player.getDeltaMovement().z());
-            }
-            case "ElytraBounce" -> {
-                MC.options.keyJump.setDown(false);
-                MixinHooks.keepElytraOnGround = false;
-            }
-            case "ElytraSprint" -> {
-                MixinHooks.keepElytraOnGround = false;
             }
         }
     }
@@ -122,102 +92,6 @@ public class Speed extends Module {
             }
         }
         MotionUtil.moveEntityStrafe(speed, MC.player);
-    }
-
-    public void elytraBounce() {
-        MixinHooks.keepElytraOnGround = true;
-        if (!MC.player.isFallFlying()) {
-            MC.player.startFallFlying();
-            MC.getConnection().send(new ServerboundPlayerCommandPacket(MC.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING));
-        }
-        if (MotionUtil.isInputActive(false) && MC.player.isFallFlying()) {
-            MC.player.setXRot(bouncePitch.get());//Potential good pitched: 20, 45, 70
-            if (MC.player.onGround()) MC.options.keyJump.setDown(true);
-        }
-    }
-
-    @Deprecated
-    public void elytraBounceOld() {
-        if (!MC.player.inventoryMenu.getSlot(6).getItem().getItem().equals(Items.ELYTRA)) return;
-        MixinHooks.keepElytraOnGround = true;
-        if (MotionUtil.isInputActive(false)) {
-            MC.player.setXRot(bouncePitch.get());//Potential good pitched: 20, 45, 70
-
-            double hMom = 20 * Math.sqrt(Math.pow(MC.player.getDeltaMovement().x, 2) + Math.pow(MC.player.getDeltaMovement().z, 2));
-
-            boolean shouldExtend = hMom >= 18;
-
-            if (MC.player.onGround()) {
-                MC.options.keyJump.setDown(true);
-
-                if (shouldExtend) {
-                    // in case you want to try horizontal //MC.player.addDeltaMovement(new Vector(yaw, 0, speed).getVec3());
-                    MotionUtil.addEntityMotionInLookDirection(MC.player, .12);
-                    if (hMom > 30) MotionUtil.addEntityMotionInLookDirection(MC.player, .01);
-                    if (hMom > 35) MotionUtil.addEntityMotionInLookDirection(MC.player, .01);
-                    if (hMom > 40) MotionUtil.addEntityMotionInLookDirection(MC.player, .01);
-                    if (hMom > 45) MotionUtil.addEntityMotionInLookDirection(MC.player, .022);
-                    if (hMom > 48) MotionUtil.addEntityMotionInLookDirection(MC.player, .022);
-                    if (hMom > 50) MotionUtil.addEntityMotionInLookDirection(MC.player, .022);
-                    if (hMom > 52) MotionUtil.addEntityMotionInLookDirection(MC.player, .022);
-                    if (hMom > 54) MotionUtil.addEntityMotionInLookDirection(MC.player, .022);
-                }
-            } else {
-                MC.options.keyJump.setDown(!MC.options.keyJump.isDown());
-                if (MC.player.isFallFlying()) {
-
-                    if (shouldExtend) {
-                        double inc = .000125;
-
-                        if (hMom > 30) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 32) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 34) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 36) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 38) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 40) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 42) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 44) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 46) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 48) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 50) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 52) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 54) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 56) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 58) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                        if (hMom > 60) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Doesn't require jumping to work. Still bypasses GRIM
-     */
-    public void elytraSprint() {
-        if (MC.options.keyUp.isDown() && MC.player.inventoryMenu.getSlot(6).getItem().getItem().equals(Items.ELYTRA)) {
-            if (!MC.player.isFallFlying()) {
-                MC.player.startFallFlying();
-                MC.getConnection().send(new ServerboundPlayerCommandPacket(MC.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING));
-            }
-
-            if (MC.player.isFallFlying() && MC.player.onGround()) {
-                MixinHooks.keepElytraOnGround = true;
-                MC.player.setSprinting(false);
-
-                double acceleration = (double) esAcc.get() / 100;
-                Angle yaw = new Angle(MC.player.getRotationVector().y, true);
-                Angle pitch = new Angle(10, true);
-
-                double hMom = 20 * Math.sqrt(Math.pow(MC.player.getDeltaMovement().x, 2) + Math.pow(MC.player.getDeltaMovement().z, 2));
-                if (hMom <= speedCap.get() && !MC.options.keyShift.isDown()) MC.player.addDeltaMovement(new Vector(yaw, pitch, acceleration).getVec3());
-
-                if (MC.player.touchingUnloadedChunk()) MC.player.setDeltaMovement(0,0,0);
-            }
-
-        } else {
-            MixinHooks.keepElytraOnGround = false;
-        }
     }
 
 }
