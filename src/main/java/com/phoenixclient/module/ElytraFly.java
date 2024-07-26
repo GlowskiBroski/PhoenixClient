@@ -45,7 +45,7 @@ public class ElytraFly extends Module {
 
     private final SettingGUI<Integer> speedCapHold = new SettingGUI<>(
             this,
-            "Speed Cap",
+            "Hold Speed Cap",
             "Top speed of hold mode",
             100)
             .setSliderData(0, 200, 5).setDependency(mode, "Hold");
@@ -59,7 +59,7 @@ public class ElytraFly extends Module {
     //Sprint
     private final SettingGUI<Integer> speedCapSprint = new SettingGUI<>(
             this,
-            "Speed Cap",
+            "Sprint Speed Cap",
             "Top speed of hold mode",
             100)
             .setSliderData(0, 200, 5).setDependency(mode, "Sprint");
@@ -76,7 +76,7 @@ public class ElytraFly extends Module {
             this,
             "Pitch",
             "Lock pitch of ElytraBounce",
-            45).setSliderData(0, 85, 1).setDependency(mode, "Bounce");
+            75).setSliderData(0, 85, 1).setDependency(mode, "Bounce");
 
 
     public ElytraFly() {
