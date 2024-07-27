@@ -79,7 +79,6 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
         }
 
         if (MC.screen == PhoenixClient.getGuiManager().getHudGui()) {
-
             if (dragging) {
                 setPos(mousePos.getAdded(dragOffset));
                 //Scale to Corner
@@ -88,7 +87,6 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
                 //Scale to Center (Feels a little more inaccurate, will use top left corner instead)
                 //posScale.set(getPos().getAdded(getSize().getMultiplied(.5)).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 /MC.getWindow().getGuiScaledHeight()));
             }
-
             bindWindowCoordinates();
             drawAnchoredLines(graphics, mousePos);
         }

@@ -2,8 +2,6 @@ package com.phoenixclient.mixin;
 
 public class MixinHooks {
 
-    public static boolean noConfusion = false; //TODO: Implement This
-
     public static boolean noClip = false;
 
     public static boolean mountNoClip = false;
@@ -22,4 +20,7 @@ public class MixinHooks {
 
     public static boolean allowOverloadedBanners = false;
 
+    public static boolean noCaveCulling = false;
+
+    public static boolean noFog = false;
 }

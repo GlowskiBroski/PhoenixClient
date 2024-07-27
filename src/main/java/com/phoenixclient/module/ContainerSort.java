@@ -9,13 +9,11 @@ import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ public class ContainerSort extends Module {
             this,
             "Type",
             "Sorting type for containers",
-            "Name").setModeData("Name","ID","Category");
+            "ID").setModeData("Name","ID","Category","Rarity");
 
     private int hintFade = 0;
     private boolean hintFadeIn = true;
@@ -79,7 +77,7 @@ public class ContainerSort extends Module {
             ItemStack templateItem = templateList.get(i);
 
             //If the next sorted item equals the true item, go to the next item
-            if (ItemStack.isSameItem(trueItem,templateItem)) continue;
+            if (ItemStack.isSameItemSameComponents(trueItem,templateItem)) continue;
 
             //Swap next item with the template's next sorted item
             int nextTemplateItemSlot = containerMenu.getItems().indexOf(templateItem);
@@ -136,6 +134,12 @@ public class ContainerSort extends Module {
         return stacks;
     }
 
+    public static String integerWithPaddedZeros(int num, int digits) {
+        String output = Integer.toString(num);
+        while (output.length() < digits) output = "0".concat(output);
+        return output;
+    }
+
     // This comparator compares item stacks by their item name.
     private class StackComparator implements Comparator<ItemStack> {
         @Override
@@ -144,23 +148,41 @@ public class ContainerSort extends Module {
             if (stack1.isEmpty()) return 1;
             if (stack2.isEmpty()) return -1;
 
+            String item1Str = "";
+            String item2Str = "";
+
             switch (type.get()) {
                 case "ID" -> {
-                    String item1Str = Item.getId(stack1.getItem()) + "";
-                    String item2Str = Item.getId(stack2.getItem()) + "";
-                    return item1Str.compareTo(item2Str);
+                    item1Str = integerWithPaddedZeros(Item.getId(stack1.getItem()),4);
+                    item2Str = integerWithPaddedZeros(Item.getId(stack2.getItem()),4);
                 }
                 case "Category" -> {
-                    String item1Str = stack1.getItem().getDescriptionId();
-                    String item2Str = stack2.getItem().getDescriptionId();
-                    return item1Str.compareTo(item2Str);
+                    item1Str = stack1.getItem().getDescriptionId();
+                    item2Str = stack2.getItem().getDescriptionId();
                 }
-                default /*"Name"*/ -> {
-                    String item1Str = stack1.getItem().getName(stack1).getString();
-                    String item2Str = stack2.getItem().getName(stack2).getString();
-                    return item1Str.compareTo(item2Str);
+                case "Rarity" -> {
+                    item1Str = stack1.getRarity().ordinal() + "";
+                    item2Str = stack2.getRarity().ordinal() + "";
                 }
             }
+
+            //-------------------------------Universal Sorting Extras ------------------------- (Higher up = Higher Priority)
+
+            //Name ABC
+            item1Str = item1Str.concat(stack1.getItem().getName(stack1).getString());
+            item2Str = item2Str.concat(stack2.getItem().getName(stack2).getString());
+            if (!stack1.getHoverName().getString().equals(stack1.getItem().getName(stack1).getString())) item1Str = item1Str.concat(stack1.getHoverName().getString());
+            if (!stack2.getHoverName().getString().equals(stack2.getItem().getName(stack2).getString())) item2Str = item2Str.concat(stack2.getHoverName().getString());
+
+            //Enchantments
+            //item1Str = item1Str.concat(stack1.getEnchantments() + "");
+            //item2Str = item2Str.concat(stack2.getEnchantments() + "");
+
+            //Durability
+            item1Str = item1Str.concat(integerWithPaddedZeros(stack1.getDamageValue(),5));
+            item2Str = item2Str.concat(integerWithPaddedZeros(stack2.getDamageValue(),5));
+
+            return item1Str.compareTo(item2Str);
         }
     }
 

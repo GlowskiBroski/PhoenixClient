@@ -111,7 +111,7 @@ public class FreeCam extends Module {
         }
     }
 
-    //Cycle through nearby players
+    //Cycle through spectating nearby players
     private int specPlayerIndex = 0;
     public void onKeyPress(KeyPressEvent event) {
         if (event.getKey() != GLFW.GLFW_KEY_LEFT && event.getKey() != GLFW.GLFW_KEY_RIGHT) return;
@@ -165,7 +165,7 @@ public class FreeCam extends Module {
             }
             case "Interact" -> {
                 //TODO: Find a way to make block mining faster while flying
-                MC.smartCull = false;
+                MixinHooks.noCaveCulling = true;
                 MixinHooks.noClip = true;
                 MixinHooks.noSuffocationHud = true;
             }
@@ -182,7 +182,7 @@ public class FreeCam extends Module {
 
         resetPlayerData();
 
-        MC.smartCull = true;
+        MixinHooks.noCaveCulling = false;
         MixinHooks.noClip = false;
         MixinHooks.noSuffocationHud = false;
     }
@@ -268,7 +268,7 @@ public class FreeCam extends Module {
         MC.player.onGameModeChanged(gameMode);
     }
 
-    public class PlayerNameComparator implements Comparator<Player> {
+    public static class PlayerNameComparator implements Comparator<Player> {
 
         @Override
         public int compare(Player o1, Player o2) {

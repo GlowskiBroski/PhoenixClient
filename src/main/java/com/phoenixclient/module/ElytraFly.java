@@ -131,6 +131,11 @@ public class ElytraFly extends Module {
         }
     }
 
+    @Override
+    public String getModTag() {
+        return mode.get();
+    }
+
     private void boost() {
         if (MC.player.isFallFlying()) {
             double speed = this.speedBoost.get() * (double) 1 / 10;

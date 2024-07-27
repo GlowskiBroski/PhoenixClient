@@ -15,6 +15,8 @@ import net.minecraft.client.gui.screens.Screen;
 import java.awt.*;
 import java.util.ArrayList;
 
+import static com.phoenixclient.PhoenixClient.MC;
+
 public class ModuleMenu extends GuiWidget {
 
     private final GuiButton mainButton;
@@ -50,6 +52,11 @@ public class ModuleMenu extends GuiWidget {
 
     @Override
     protected void drawWidget(GuiGraphics graphics, Vector mousePos) {
+        //Gui Scale Correction Begin
+        float guiScaled = MC.getWindow().getGuiScale() >= 2 ? (float) (2 / MC.getWindow().getGuiScale()) : 1;
+        graphics.pose().scale(guiScaled,guiScaled,1f);
+        mousePos = mousePos.getMultiplied(1 / guiScaled);
+
         float tempScaling = scaling; //Clones the scaling to prevent animation thread from de-syncing
         graphics.pose().translate((1 - tempScaling) * 10,0,0);
         graphics.pose().scale(tempScaling,1f,1f);
@@ -74,6 +81,9 @@ public class ModuleMenu extends GuiWidget {
         //Window Head
         setHoverHighlightVisible(false);
         mainButton.draw(graphics,mousePos);
+
+        //Gui Scale Correction End
+        graphics.pose().scale(1 / guiScaled,1 / guiScaled,1f);
     }
 
     @Override

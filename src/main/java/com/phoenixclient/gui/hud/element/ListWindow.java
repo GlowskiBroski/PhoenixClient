@@ -96,11 +96,13 @@ public abstract class ListWindow extends GuiWindow {
                 default -> throw new IllegalStateException("Unexpected value: " + side.get());
             };
 
-            yOff += (animationLocationMap.get(index).expand ? 0 : (int)(DrawUtil.getFontTextHeight(scale) + 2 * scale)) + animationLocationMap.get(index).offset;
+            //yOff += (animationLocationMap.get(index).expand ? 0 : (int)((DrawUtil.getFontTextHeight() + 2) * scale)) + animationLocationMap.get(index).offset;
+            yOff += animationLocationMap.get(index).expand ? 0 : (int)((DrawUtil.getFontTextHeight() + 2) * scale);
+            yOff += animationLocationMap.get(index).offset;
             index ++;
         }
         this.previousList = getListMap();
-        setSize(new Vector(72 * scale, yOff == 0 ? (int)(DrawUtil.getFontTextHeight(scale) + 2 * scale) : yOff + 1));
+        setSize(new Vector(72 * scale, yOff == 0 ? (int)((DrawUtil.getFontTextHeight() + 2) * scale) : yOff + 1));
         graphics.pose().scale(1 / scale, 1 / scale, 1f);
     }
 
