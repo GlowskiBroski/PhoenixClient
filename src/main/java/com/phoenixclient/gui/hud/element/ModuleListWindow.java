@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 
 public class ModuleListWindow extends ListWindow {
 
-    private final SettingGUI<String> vert;
+    protected final SettingGUI<String> vert;
     private final SettingGUI<Boolean> rainbow;
 
     public ModuleListWindow(Screen screen, Vector pos) {

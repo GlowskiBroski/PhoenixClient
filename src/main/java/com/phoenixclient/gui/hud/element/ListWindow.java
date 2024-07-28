@@ -11,6 +11,8 @@ import net.minecraft.client.gui.screens.Screen;
 import java.awt.*;
 import java.util.*;
 
+import static com.phoenixclient.PhoenixClient.MC;
+
 /**
  * An abstract list window that allows extensions for any dual-colored text window with a label
  */
@@ -51,11 +53,12 @@ public abstract class ListWindow extends GuiWindow {
     @Override
     protected void drawWindow(GuiGraphics graphics, Vector mousePos) {
         int yOff = 0;
-        if (label.get()) {
-            String label = getLabel() + ":";
+
+        String label = getLabel() + ":";
+        if (this.label.get()) {
             int x = switch (side.get()) {
                 case "Left" -> 2;
-                case "Right" -> (int)(getSize().getX() - DrawUtil.getFontTextWidth(label)) - 3;
+                case "Right" -> (int) (getSize().getX() - DrawUtil.getFontTextWidth(label)) - 3;
                 default -> throw new IllegalStateException("Unexpected value: " + side.get());
             };
             TextBuilder.start(label, getPos().getAdded(x, 2), colorManager.getHudLabelColor()).draw(graphics);
@@ -69,41 +72,45 @@ public abstract class ListWindow extends GuiWindow {
         LinkedHashMap<String, ListInfo> listMap = getListMap();
         boolean shouldUpdateAnimation = previousList != null && !previousList.equals(listMap);
 
-        if (shouldUpdateAnimation) updateAnimationRetract(listMap,scale);
-        for (Map.Entry<String , ListInfo> set : listMap.entrySet()) {
-            animationLocationMap.putIfAbsent(-1,new AnimationSet(false,0));
-            animationLocationMap.putIfAbsent(index,new AnimationSet(true,0));
-            if (shouldUpdateAnimation) updateAnimationExpand(set,index);
+        int longestString = (int) ((DrawUtil.getFontTextWidth(label) + 4) / scale);
+        if (shouldUpdateAnimation) updateAnimationRetract(listMap, scale);
+        for (Map.Entry<String, ListInfo> set : listMap.entrySet()) {
+            int width = (int) DrawUtil.getFontTextWidth(set.getKey() + set.getValue().tag());
+            if (width > longestString) longestString = width;
+            animationLocationMap.putIfAbsent(-1, new AnimationSet(false, 0));
+            animationLocationMap.putIfAbsent(index, new AnimationSet(true, 0));
+            if (shouldUpdateAnimation) updateAnimationExpand(set, index);
 
             if (index == 0) yOff += animationLocationMap.get(-1).offset;
 
-            float alpha = animationFadeInMap.containsKey(set.getKey()) ? MathUtil.getBoundValue(animationFadeInMap.get(set.getKey()).floatValue(),0,1).floatValue() : 1;
-            Color c1 = new Color(set.getValue().colorMain.getRed() / 255f,set.getValue().colorMain.getGreen() / 255f,set.getValue().colorMain.getBlue() / 255f, alpha);
-            Color c2 = new Color(set.getValue().colorTag.getRed() / 255f,set.getValue().colorTag.getGreen() / 255f,set.getValue().colorTag.getBlue() / 255f, alpha);
+            float alpha = animationFadeInMap.containsKey(set.getKey()) ? MathUtil.getBoundValue(animationFadeInMap.get(set.getKey()).floatValue(), 0, 1).floatValue() : 1;
+            Color c1 = new Color(set.getValue().colorMain.getRed() / 255f, set.getValue().colorMain.getGreen() / 255f, set.getValue().colorMain.getBlue() / 255f, alpha);
+            Color c2 = new Color(set.getValue().colorTag.getRed() / 255f, set.getValue().colorTag.getGreen() / 255f, set.getValue().colorTag.getBlue() / 255f, alpha);
 
             //I am keeping this as a static string. Maybe think about making this dynamic in the future
             switch (side.get()) {
                 case "Left" -> {
                     int x = 2;
-                    TextBuilder.start(set.getKey(),getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale),c1).draw(graphics)
+                    TextBuilder.start(set.getKey(), getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale), c1).draw(graphics)
                             .nextAdj().text(set.getValue().tag()).color(c2).draw(graphics);
                 }
                 case "Right" -> {
-                    int x = (int)(getSize().getX() - DrawUtil.getFontTextWidth(set.getKey() + set.getValue().tag) * scale) - 3;
-                    TextBuilder.start(set.getValue().tag(),getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale),c2).draw(graphics)
+                    int x = (int) (getSize().getX() - DrawUtil.getFontTextWidth(set.getKey() + set.getValue().tag) * scale) - 3;
+                    TextBuilder.start(set.getValue().tag(), getPos().getAdded(x, 2 + yOff).getMultiplied(1 / scale), c2).draw(graphics)
                             .nextAdj().text(set.getKey()).color(c1).draw(graphics);
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + side.get());
-            };
+            }
 
-            //yOff += (animationLocationMap.get(index).expand ? 0 : (int)((DrawUtil.getFontTextHeight() + 2) * scale)) + animationLocationMap.get(index).offset;
-            yOff += animationLocationMap.get(index).expand ? 0 : (int)((DrawUtil.getFontTextHeight() + 2) * scale);
+            yOff += animationLocationMap.get(index).expand ? 0 : (int) ((DrawUtil.getFontTextHeight() + 2) * scale);
             yOff += animationLocationMap.get(index).offset;
-            index ++;
+            index++;
         }
         this.previousList = getListMap();
-        setSize(new Vector(72 * scale, yOff == 0 ? (int)((DrawUtil.getFontTextHeight() + 2) * scale) : yOff + 1));
+
+        setSize(new Vector((longestString + 6) * scale, yOff == 0 ? (int) ((DrawUtil.getFontTextHeight() + 2) * scale) : yOff + 1));
         graphics.pose().scale(1 / scale, 1 / scale, 1f);
+        updateWindowPositionFromSize();
     }
 
     @Override
@@ -134,7 +141,7 @@ public abstract class ListWindow extends GuiWindow {
 
     private void updateAnimationOffset(float scale) {
         double rate = 2;
-        int max = (int)(DrawUtil.getFontTextHeight(scale) + 2 * scale);
+        int max = (int)((DrawUtil.getFontTextHeight() + 2) * scale);
         int min = 0;
 
         for (Map.Entry<Integer, AnimationSet> set : animationLocationMap.entrySet()) {
@@ -165,6 +172,33 @@ public abstract class ListWindow extends GuiWindow {
         for (String s : removalQueue) nextList.remove(s);
 
         return nextList;
+    }
+
+    private void updateWindowPositionFromSize() {
+        //Size Anchoring Modifiers
+        switch (side.get()) {
+            case "Left" -> {
+                //None
+            }
+            case "Center" -> onWidthChange.run(getSize().getX(), () -> {
+                if (onWidthChange.getPrevValue() != null)
+                    posScale.set(getPos().getSubtracted((getSize().getX() - onWidthChange.getPrevValue()) / 2, 0).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
+            });
+            case "Right" -> onWidthChange.run(getSize().getX(), () -> {
+                if (onWidthChange.getPrevValue() != null)
+                    posScale.set(getPos().getSubtracted(getSize().getX() - onWidthChange.getPrevValue(), 0).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
+            });
+        }
+
+        if (this instanceof ModuleListWindow l) {
+            switch (l.vert.get()) {
+                case "Top" -> {}
+                case "Bottom" -> onHeightChange.run(getSize().getY(), () -> {
+                    if (onHeightChange.getPrevValue() != null)
+                        posScale.set(getPos().getSubtracted(0,getSize().getY() - onHeightChange.getPrevValue()).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
+                });
+            }
+        }
     }
 
     protected record ListInfo(String tag, Color colorMain, Color colorTag) {}

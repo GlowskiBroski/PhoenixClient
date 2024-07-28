@@ -39,6 +39,11 @@ public class ContainerSort extends Module {
         addEventSubscriber(Event.EVENT_RENDER_SCREEN, this::onRenderScreen);
     }
 
+    @Override
+    public String getModTag() {
+        return type.get();
+    }
+
     public void onPlayerUpdate(Event event) {
         if (!(MC.screen instanceof AbstractContainerScreen<?> containerScreen)) return;
         if (shouldSort() && Key.KEY_SPACE.isKeyDown()) {

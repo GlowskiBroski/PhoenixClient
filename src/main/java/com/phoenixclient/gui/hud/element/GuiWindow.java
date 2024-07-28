@@ -1,6 +1,7 @@
 package com.phoenixclient.gui.hud.element;
 
 import com.phoenixclient.PhoenixClient;
+import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.input.Mouse;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.setting.ISettingParent;
@@ -30,9 +31,11 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
     private final String title;
 
     private final Container<Boolean> pinned;
-    private final Container<Vector> posScale;
+    protected final Container<Vector> posScale;
     private final Container<String> anchorX;
     private final Container<String> anchorY;
+
+    private final Container<Boolean> drawBackground;
 
     private boolean dragging;
     private Vector dragOffset;
@@ -41,6 +44,9 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
 
     private SettingsWindow settingsWindow;
     private boolean settingsOpen;
+
+    protected final OnChange<Double> onWidthChange = new OnChange<>();
+    protected final OnChange<Double> onHeightChange = new OnChange<>();
 
     public GuiWindow(Screen screen, String title, Vector pos, Vector size) {
         super(screen, pos, size);
@@ -57,16 +63,20 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
             this.posScale = new Container<>(new Vector(.1, .1));
             this.anchorX = new Container<>("NONE");
             this.anchorY = new Container<>("NONE");
+            this.drawBackground = new Container<>(false);
         } else {
             SettingManager manager = PhoenixClient.getSettingManager();
             this.pinned = new Setting<>(manager, title + "_pinned", false);
             this.posScale = new Setting<>(manager, title + "_posScale", new Vector(.1, .1)); //this.pos = new Setting<>(manager, title + "_pos",pos);
             this.anchorX = new Setting<>(manager, title + "_anchorX", "NONE");
             this.anchorY = new Setting<>(manager, title + "_anchorY", "NONE");
-        }
 
-        //TODO: Add a setting for each window to the GUI manager
-        //PhoenixClient.getGuiManager().addSettings();
+            this.drawBackground = new SettingGUI<>(this, "Draw Background", "Draws a dark background around a HUD element", false);
+            addSettings((SettingGUI<?>) drawBackground);
+
+            //TODO: Add a setting for each window to the GUI manager
+            //PhoenixClient.getGuiManager().addSettings();
+        }
     }
 
     protected abstract void drawWindow(GuiGraphics graphics, Vector mousePos);
@@ -78,18 +88,25 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
             updateAnchoredCoordinates();
         }
 
-        if (MC.screen == PhoenixClient.getGuiManager().getHudGui()) {
-            if (dragging) {
-                setPos(mousePos.getAdded(dragOffset));
-                //Scale to Corner
-                posScale.set(getPos().getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
+        boolean isHudGui = MC.screen == PhoenixClient.getGuiManager().getHudGui();
 
-                //Scale to Center (Feels a little more inaccurate, will use top left corner instead)
-                //posScale.set(getPos().getAdded(getSize().getMultiplied(.5)).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 /MC.getWindow().getGuiScaledHeight()));
-            }
-            bindWindowCoordinates();
-            drawAnchoredLines(graphics, mousePos);
+        if (isHudGui && dragging) {
+            setPos(mousePos.getAdded(dragOffset));
+            //Scale to Corner
+            posScale.set(getPos().getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
+
+            //Scale to Center (Feels a little more inaccurate, will use top left corner instead)
+            //posScale.set(getPos().getAdded(getSize().getMultiplied(.5)).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 /MC.getWindow().getGuiScaledHeight()));
         }
+
+        if (isHudGui) bindWindowCoordinates();
+
+        if (drawBackground.get()) {
+            DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(0, 0, 0, 175));
+            DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(150, 150, 150, 175), true);
+        }
+
+        if (isHudGui) drawAnchoredLines(graphics, mousePos);
 
         drawWindow(graphics, mousePos);
         drawPin(graphics, mousePos);
@@ -201,12 +218,14 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
     private void drawAnchoredLines(GuiGraphics graphics, Vector mousePos) {
         switch (anchorX.get()) {
             case "L" -> DrawUtil.drawRectangle(graphics, getPos(), new Vector(1, getSize().getY()), Color.RED);
-            case "R" -> DrawUtil.drawRectangle(graphics, getPos().getAdded(getSize().getX() - 1, 0), new Vector(1, getSize().getY()), Color.RED);
+            case "R" ->
+                    DrawUtil.drawRectangle(graphics, getPos().getAdded(getSize().getX() - 1, 0), new Vector(1, getSize().getY()), Color.RED);
         }
 
         switch (anchorY.get()) {
             case "U" -> DrawUtil.drawRectangle(graphics, getPos(), new Vector(getSize().getX(), 1), Color.RED);
-            case "D" -> DrawUtil.drawRectangle(graphics, getPos().getAdded(0, getSize().getY() - 1), new Vector(getSize().getX(), 1), Color.RED);
+            case "D" ->
+                    DrawUtil.drawRectangle(graphics, getPos().getAdded(0, getSize().getY() - 1), new Vector(getSize().getX(), 1), Color.RED);
         }
     }
 

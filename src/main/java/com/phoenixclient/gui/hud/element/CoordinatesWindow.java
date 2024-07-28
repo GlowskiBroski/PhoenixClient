@@ -23,9 +23,9 @@ public class CoordinatesWindow extends GuiWindow {
         super(screen, "CoordinatesWindow", pos, Vector.NULL());
         this.label = new SettingGUI<>(this, "Label", "Show the label", true);
         this.showNether = new SettingGUI<>(this, "Nether", "Shows the nether coordinates conversion", false);
-        this.coordinatesMode = new SettingGUI<>(this,"Mode","Mode of coordinates","Horizontal").setModeData("Horizontal","Vertical");
-        this.coordinatesSide = new SettingGUI<>(this,"Side","Side of coordinates","Left").setModeData("Left","Right","Center");
-        addSettings(label,showNether,coordinatesMode,coordinatesSide);
+        this.coordinatesMode = new SettingGUI<>(this, "Mode", "Mode of coordinates", "Horizontal").setModeData("Horizontal", "Vertical");
+        this.coordinatesSide = new SettingGUI<>(this, "Side", "Side of coordinates", "Left").setModeData("Left", "Right", "Center");
+        addSettings(label, showNether, coordinatesMode, coordinatesSide);
     }
 
     @Override
@@ -37,11 +37,11 @@ public class CoordinatesWindow extends GuiWindow {
         String zLabel = (label.get() ? "Z " : "");
 
         String currDim = MC.level.dimension().toString();
-        String overworld = BuiltinDimensionTypes.OVERWORLD.toString().replace("_type","");
-        String nether = BuiltinDimensionTypes.NETHER.toString().replace("_type","");
+        String overworld = BuiltinDimensionTypes.OVERWORLD.toString().replace("_type", "");
+        String nether = BuiltinDimensionTypes.NETHER.toString().replace("_type", "");
 
         boolean shouldConvert = showNether.get() && (currDim.equals(overworld) || currDim.equals(nether));
-        float conversion = (currDim.equals(overworld) ? (float) 1 /8 : 8);
+        float conversion = (currDim.equals(overworld) ? (float) 1 / 8 : 8);
 
         String x = String.format("%.1f", MC.player.getX()) + (shouldConvert ? " (" + String.format("%.1f", MC.player.getX() * conversion) + ")" : "");
         String y = String.format("%.1f", MC.player.getY());
@@ -60,32 +60,32 @@ public class CoordinatesWindow extends GuiWindow {
         Vector yPos = Vector.NULL();
         Vector zPos = Vector.NULL();
 
+        //Set Coordinate Positions and Window Size
         switch (coordinatesMode.get()) {
             case "Horizontal" -> {
-                setSize(new Vector(!label.get() ? 172 : 220, 13));
                 switch ((coordinatesSide.get())) {
                     case "Left" -> {
                         startPos = getPos().getAdded(2, 2);
                         xPos = startPos;
-                        yPos = startPos.getAdded(xLength + 10, 0);
-                        zPos = startPos.getAdded(xLength + yLength + 20, 0);
+                        yPos = xPos.getAdded(xLength + 10, 0);
+                        zPos = yPos.getAdded(yLength + 10, 0);
                     }
                     case "Right" -> {
-                        startPos = getPos().getAdded(getSize().getX() - 4, 2);
-                        xPos = startPos.getAdded(-xLength - yLength - zLength - 24, 0);
-                        yPos = startPos.getAdded(-yLength - zLength - 12, 0);
-                        zPos = startPos.getAdded(-zLength - 2, 0);
+                        startPos = getPos().getAdded(getSize().getX() - 3, 2);
+                        zPos = startPos.getSubtracted(zLength, 0);
+                        yPos = zPos.getSubtracted(10 + yLength, 0);
+                        xPos = yPos.getSubtracted(10 + xLength, 0);
                     }
                     case "Center" -> {
                         startPos = getPos().getAdded(getSize().getX() / 2, 2);
-                        xPos = startPos.getAdded(-yLength - xLength, 0);
-                        yPos = startPos.getAdded(-(yLength / 2), 0);
-                        zPos = startPos.getAdded(yLength, 0);
+                        yPos = startPos.getAdded(-yLength / 2, 0);
+                        xPos = yPos.getSubtracted(xLength + 10, 0);
+                        zPos = yPos.getAdded(yLength + 10, 0);
                     }
                 }
+                setSize(new Vector(xLength + yLength + zLength + 30, 13));
             }
             case "Vertical" -> {
-                setSize(new Vector(96, 33));
                 switch ((coordinatesSide.get())) {
                     case "Left" -> {
                         startPos = getPos().getAdded(2, 2);
@@ -94,24 +94,50 @@ public class CoordinatesWindow extends GuiWindow {
                         zPos = startPos.getAdded(0, 20);
                     }
                     case "Right" -> {
-                        startPos = getPos().getAdded(getSize().getX() - 4, 2);
+                        startPos = getPos().getAdded(getSize().getX() - 3, 2);
                         xPos = startPos.getAdded(-xLength, 0);
                         yPos = startPos.getAdded(-yLength, 10);
                         zPos = startPos.getAdded(-zLength, 20);
                     }
                     case "Center" -> {
-                        startPos = getPos().getAdded(16 + DrawUtil.getFontTextWidth(getTitle()) / 2, 2);
+                        startPos = getPos().getAdded(getSize().getX() / 2, 2);
                         xPos = startPos.getAdded(-xLength / 2, 0);
                         yPos = startPos.getAdded(-yLength / 2, 10);
                         zPos = startPos.getAdded(-zLength / 2, 20);
                     }
                 }
+                float longestString = 0;
+                if (xLength > longestString) longestString = xLength;
+                if (yLength > longestString) longestString = yLength;
+                if (zLength > longestString) longestString = zLength;
+                setSize(new Vector(longestString + 5, 33));
             }
         }
 
-        TextBuilder.start(xLabel,xPos,labelColor).draw(graphics).nextAdj().text(x).color(color).dynamic().draw(graphics);
-        TextBuilder.start(yLabel,yPos,labelColor).draw(graphics).nextAdj().text(y).color(color).dynamic().draw(graphics);
-        TextBuilder.start(zLabel,zPos,labelColor).draw(graphics).nextAdj().text(z).color(color).dynamic().draw(graphics);
+        updateWindowPositionFromSize();
+
+        TextBuilder.start(xLabel, xPos, labelColor).draw(graphics).nextAdj().text(x).color(color).dynamic().draw(graphics);
+        TextBuilder.start(yLabel, yPos, labelColor).draw(graphics).nextAdj().text(y).color(color).dynamic().draw(graphics);
+        TextBuilder.start(zLabel, zPos, labelColor).draw(graphics).nextAdj().text(z).color(color).dynamic().draw(graphics);
+
+    }
+
+    private void updateWindowPositionFromSize() {
+        //Set Window Position from the size change
+        switch (coordinatesSide.get()) {
+            case "Left" -> {
+                //None
+            }
+            case "Center" -> onWidthChange.run(getSize().getX(), () -> {
+                if (onWidthChange.getPrevValue() != null)
+                    posScale.set(getPos().getSubtracted((getSize().getX() - onWidthChange.getPrevValue()) / 2, 0).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
+
+            });
+            case "Right" -> onWidthChange.run(getSize().getX(), () -> {
+                if (onWidthChange.getPrevValue() != null)
+                    posScale.set(getPos().getSubtracted(getSize().getX() - onWidthChange.getPrevValue(), 0).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
+            });
+        }
     }
 
 }
