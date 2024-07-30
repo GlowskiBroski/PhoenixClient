@@ -32,7 +32,7 @@ public class BoatMod extends Module {
             "Speed",
             "Fly Speed",
             1d)
-            .setSliderData(.1,2,.05)
+            .setSliderData(.1,5,.05)
             .setDependency(mode,"Fly");
 
     private final SettingGUI<Double> glideSpeed = new SettingGUI<>(

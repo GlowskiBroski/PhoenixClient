@@ -18,6 +18,8 @@ public class Event {
 
     public static final Event EVENT_PLAYER_UPDATE = new Event();
 
+    public static final RenderLevelEvent EVENT_RENDER_LEVEL = new RenderLevelEvent();
+
 
     private final ArrayList<EventAction> eventActions = new ArrayList<>();
 

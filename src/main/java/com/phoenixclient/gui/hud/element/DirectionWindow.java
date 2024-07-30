@@ -20,7 +20,7 @@ public class DirectionWindow extends GuiWindow {
 
     public DirectionWindow(Screen screen, Vector pos) {
         super(screen, "DirectionWindow", pos, new Vector(60, 13));
-        this.label = new SettingGUI<>(this, "Label", "Show the label", true);
+        this.label = new SettingGUI<>(this, "Label", "Show the label", false);
         this.mode = new SettingGUI<>(this, "Mode", "Mode of Direction", "All").setModeData("All", "Compass", "Coordinate");
         addSettings(label, mode);
     }
@@ -62,33 +62,29 @@ public class DirectionWindow extends GuiWindow {
         switch (mode.get()) {
             case "All" -> {
                 directionString = coordinateDirection + " " + cardinalDirection;
-                setSize(new Vector(DrawUtil.getFontTextWidth("[+Z] South") + 2, getSize().getY()));
+                setSize(new Vector(DrawUtil.getFontTextWidth(label + "[+Z] South") + 2, getSize().getY()));
             }
             case "Compass" -> {
                 directionString = cardinalDirection;
-                setSize(new Vector(DrawUtil.getFontTextWidth("South") + 2, getSize().getY()));
+                setSize(new Vector(DrawUtil.getFontTextWidth(label + "South") + 2, getSize().getY()));
             }
             case "Coordinate" -> {
                 directionString = coordinateDirection;
-                setSize(new Vector(DrawUtil.getFontTextWidth("[+Z]") + 2, getSize().getY()));
+                setSize(new Vector(DrawUtil.getFontTextWidth(label + "[+Z]") + 2, getSize().getY()));
             }
         }
-
-        //Vector pos = new Vector(getPos().getX(), getPos().getY() + 2);
-        //setSize(new Vector(DrawUtil.getFontTextWidth(directionString) + 3, DrawUtil.getFontTextHeight() + 3));
-
-        //updateWindowPositionFromSize();
-
         Vector pos = new Vector(getPos().getX() + getSize().getX() / 2 - DrawUtil.getFontTextWidth(label + directionString) / 2 - 1, getPos().getY() + 2);
         TextBuilder.start(label, pos, colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(directionString).color(Color.WHITE).draw(graphics);
 
     }
 
-    private void updateWindowPositionFromSize() {
+    protected void updateWindowPositionFromSize() {
+        /* This doesn't work so swell, don't enable it for now
         onWidthChange.run(getSize().getX(), () -> {
             if (onWidthChange.getPrevValue() != null)
                 posScale.set(getPos().getSubtracted((getSize().getX() - onWidthChange.getPrevValue()) / 2, 0).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
         });
+         */
     }
 
 }

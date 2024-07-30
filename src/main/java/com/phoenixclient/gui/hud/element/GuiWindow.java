@@ -111,6 +111,8 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
         drawWindow(graphics, mousePos);
         drawPin(graphics, mousePos);
         if (settingsOpen) settingsWindow.draw(graphics, mousePos);
+
+        updateWindowPositionFromSize();
     }
 
     @Override
@@ -213,6 +215,10 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
             case "U" -> setPos(new Vector(getPos().getX(), 0));
             case "D" -> setPos(new Vector(getPos().getX(), MC.getWindow().getGuiScaledHeight() - getSize().getY()));
         }
+    }
+
+    //If a mode requires to move the window's position from a size change, do that here
+    protected void updateWindowPositionFromSize() {
     }
 
     private void drawAnchoredLines(GuiGraphics graphics, Vector mousePos) {

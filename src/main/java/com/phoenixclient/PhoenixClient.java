@@ -25,7 +25,7 @@ public class PhoenixClient implements ModInitializer {
     private static final GuiManager GUI_MANAGER = new GuiManager();
     private static final ColorManager COLOR_MANAGER = new ColorManager(ColorManager.Theme.SEAGREEN);
     private static final RotationManager ROTATION_MANAGER = new RotationManager();
-    private static FontRenderer FONT_RENDERER = new FontRenderer("Verdana", Font.PLAIN);
+    private static FontRenderer FONT_RENDERER = new FontRenderer("Arial", Font.PLAIN);
     private static final LinkedHashMap<String,Module> MODULES_LIST = new LinkedHashMap<>(); //Key value pair: ModName, Module
 
 
@@ -53,7 +53,7 @@ public class PhoenixClient implements ModInitializer {
                 new Flight(),
                 new NoSlow(),
                 new AntiKnockback(),
-                new CraftCarry(),
+                //new CraftCarry(),
                 new AutoTotem(),
                 new DeathSpot(),
                 new AntiPackets(),
@@ -62,7 +62,9 @@ public class PhoenixClient implements ModInitializer {
                 new ElytraJump(),
                 new Tooltips(),
                 new ContainerSort(),
-                new AutoEnchant()
+                new AutoEnchant(),
+                new EntityESP(),
+                new StorageESP()
         );
 
         GUI_MANAGER.instantiateHUDGUI();

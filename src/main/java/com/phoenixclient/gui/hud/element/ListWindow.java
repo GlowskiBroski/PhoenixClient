@@ -110,7 +110,6 @@ public abstract class ListWindow extends GuiWindow {
 
         setSize(new Vector((longestString + 6) * scale, yOff == 0 ? (int) ((DrawUtil.getFontTextHeight() + 2) * scale) : yOff + 1));
         graphics.pose().scale(1 / scale, 1 / scale, 1f);
-        updateWindowPositionFromSize();
     }
 
     @Override
@@ -174,7 +173,8 @@ public abstract class ListWindow extends GuiWindow {
         return nextList;
     }
 
-    private void updateWindowPositionFromSize() {
+    @Override
+    protected void updateWindowPositionFromSize() {
         //Size Anchoring Modifiers
         switch (side.get()) {
             case "Left" -> {
@@ -188,16 +188,6 @@ public abstract class ListWindow extends GuiWindow {
                 if (onWidthChange.getPrevValue() != null)
                     posScale.set(getPos().getSubtracted(getSize().getX() - onWidthChange.getPrevValue(), 0).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
             });
-        }
-
-        if (this instanceof ModuleListWindow l) {
-            switch (l.vert.get()) {
-                case "Top" -> {}
-                case "Bottom" -> onHeightChange.run(getSize().getY(), () -> {
-                    if (onHeightChange.getPrevValue() != null)
-                        posScale.set(getPos().getSubtracted(0,getSize().getY() - onHeightChange.getPrevValue()).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
-                });
-            }
         }
     }
 

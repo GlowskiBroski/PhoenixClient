@@ -7,6 +7,7 @@ import com.phoenixclient.util.render.DrawUtil;
 
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.setting.SettingGUI;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.awt.*;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+
+import static com.phoenixclient.PhoenixClient.MC;
 
 public class ModuleListWindow extends ListWindow {
 
@@ -59,6 +62,19 @@ public class ModuleListWindow extends ListWindow {
         }
 
         return map;
+    }
+
+    @Override
+    protected void updateWindowPositionFromSize() {
+        super.updateWindowPositionFromSize();
+        switch (vert.get()) {
+            case "Top" -> {
+            }
+            case "Bottom" -> onHeightChange.run(getSize().getY(), () -> {
+                if (onHeightChange.getPrevValue() != null)
+                    posScale.set(getPos().getSubtracted(0, getSize().getY() - onHeightChange.getPrevValue()).getScaled((double) 1 / MC.getWindow().getGuiScaledWidth(), (double) 1 / MC.getWindow().getGuiScaledHeight()));
+            });
+        }
     }
 
     public class ModuleComparator implements Comparator<Module> {

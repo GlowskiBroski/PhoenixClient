@@ -21,6 +21,11 @@ public class Flight extends Module {
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }
 
+    @Override
+    public String getModTag() {
+        return mode.get();
+    }
+
     public void onPlayerUpdate(Event event) {
         switch (mode.get()) {
             case "Vanilla" -> MC.player.getAbilities().flying = true;

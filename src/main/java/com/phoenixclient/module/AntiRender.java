@@ -6,6 +6,16 @@ import com.phoenixclient.util.setting.SettingGUI;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
+
+//TODO:
+// NoPumpkin
+// No Vignette
+// No Totem Animation
+// No Potion Overlay
+// No Weather
+// Blindness - Maybe separate into AntiPotion
+// No Warden Fog
+
 public class AntiRender extends Module {
 
     private final SettingGUI<Boolean> noBob = new SettingGUI<>(

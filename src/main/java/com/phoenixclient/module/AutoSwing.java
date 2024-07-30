@@ -47,6 +47,11 @@ public class AutoSwing extends Module {
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }
 
+    @Override
+    public String getModTag() {
+        return "L: " + lowerBound.get() + ", R: " + upperBound.get();
+    }
+
     public void onPlayerUpdate(Event event) {
         if (MC.options.keyAttack.isDown()) {
             int lowerCPS = lowerBound.get();

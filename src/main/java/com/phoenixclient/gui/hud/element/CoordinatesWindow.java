@@ -114,15 +114,14 @@ public class CoordinatesWindow extends GuiWindow {
             }
         }
 
-        updateWindowPositionFromSize();
 
         TextBuilder.start(xLabel, xPos, labelColor).draw(graphics).nextAdj().text(x).color(color).dynamic().draw(graphics);
         TextBuilder.start(yLabel, yPos, labelColor).draw(graphics).nextAdj().text(y).color(color).dynamic().draw(graphics);
         TextBuilder.start(zLabel, zPos, labelColor).draw(graphics).nextAdj().text(z).color(color).dynamic().draw(graphics);
-
     }
 
-    private void updateWindowPositionFromSize() {
+    @Override
+    protected void updateWindowPositionFromSize() {
         //Set Window Position from the size change
         switch (coordinatesSide.get()) {
             case "Left" -> {

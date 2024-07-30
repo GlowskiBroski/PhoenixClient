@@ -36,7 +36,7 @@ public class SignTextListWindow extends ListWindow {
     @Override
     protected LinkedHashMap<String , ListInfo> getListMap() {
         LinkedHashMap<String, ListInfo> currentList = new LinkedHashMap<>();
-        for (BlockEntity blockEntity : getBlockEntities()) {
+        for (BlockEntity blockEntity : StorageListWindow.BLOCK_ENTITY_LIST) {
             if (distanceTo(MC.player,blockEntity) > range.get()) continue;
 
             if (!(blockEntity instanceof SignBlockEntity s)) continue;
@@ -77,25 +77,5 @@ public class SignTextListWindow extends ListWindow {
         float y = (float)(entity.getY() - be.getBlockPos().getY());
         float z = (float)(entity.getZ() - be.getBlockPos().getZ());
         return Mth.sqrt(x * x + y * y + z * z);
-    }
-
-    private static ArrayList<BlockEntity> getBlockEntities() {
-        ArrayList<BlockEntity> list = new ArrayList<>();
-        for (LevelChunk chunk : getLoadedChunks()) list.addAll(chunk.getBlockEntities().values());
-        return list;
-    }
-
-    //TODO: Rework this using a mixin because its slow
-    private static ArrayList<LevelChunk> getLoadedChunks() {
-        ArrayList<LevelChunk> chunkList = new ArrayList<>();
-        int renderDistance = MC.options.renderDistance().get();
-
-        for (int x = -renderDistance; x <= renderDistance; x++) {
-            for (int z = -renderDistance; z <= renderDistance; z++) {
-                LevelChunk chunk = MC.level.getChunkSource().getChunk((int) MC.player.getX() / 16 + x, (int) MC.player.getZ() / 16 + z,true);
-                if (chunk != null) chunkList.add(chunk);
-            }
-        }
-        return chunkList;
     }
 }

@@ -25,6 +25,8 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 public class StorageListWindow extends ListWindow {
 
+    public static ArrayList<BlockEntity> BLOCK_ENTITY_LIST = new ArrayList<>();
+
     private final SettingGUI<Integer> range;
 
     public StorageListWindow(Screen screen, Vector pos) {
@@ -42,6 +44,8 @@ public class StorageListWindow extends ListWindow {
 
     @Override
     protected LinkedHashMap<String , ListInfo> getListMap() {
+        BLOCK_ENTITY_LIST = getBlockEntities();
+
         LinkedHashMap<String, ListInfo> currentList = new LinkedHashMap<>();
         for (BlockEntity blockEntity : getBlockEntities()) {
             if (distanceTo(MC.player,blockEntity) > range.get()) continue;

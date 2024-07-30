@@ -44,6 +44,15 @@ public class AutoLog extends Module {
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }
 
+    @Override
+    public String getModTag() {
+        String tag = "";
+        if (health.get()) tag = tag.concat("H: " + healthVal.get());
+        if (health.get() && minecartTNT.get()) tag = tag.concat(", ");
+        if (minecartTNT.get()) tag = tag.concat("TNT");
+        return tag;
+    }
+
     public void onPlayerUpdate(Event event) {
         if (minecartTNT.get()) {
             for (Entity e : MC.level.entitiesForRendering()) {

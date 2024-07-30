@@ -28,6 +28,11 @@ public class Speed extends Module {
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
     }
 
+    @Override
+    public String getModTag() {
+        return mode.get();
+    }
+
     public void onUpdate(Event event) {
         switch (mode.get()) {
             case "BHop" -> bHopSpeed();
