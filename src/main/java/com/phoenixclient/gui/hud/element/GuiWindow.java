@@ -30,12 +30,13 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
 
     private final String title;
 
-    private final Container<Boolean> pinned;
-    protected final Container<Vector> posScale;
+    protected Container<Boolean> pinned;
+    protected  Container<Vector> posScale;
+
     private final Container<String> anchorX;
     private final Container<String> anchorY;
 
-    private final Container<Boolean> drawBackground;
+    protected Container<Boolean> drawBackground;
 
     private boolean dragging;
     private Vector dragOffset;
@@ -67,11 +68,11 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
         } else {
             SettingManager manager = PhoenixClient.getSettingManager();
             this.pinned = new Setting<>(manager, title + "_pinned", false);
-            this.posScale = new Setting<>(manager, title + "_posScale", new Vector(.1, .1)); //this.pos = new Setting<>(manager, title + "_pos",pos);
+            this.posScale = new Setting<>(manager, title + "_posScale", new Vector(.1, .1));
             this.anchorX = new Setting<>(manager, title + "_anchorX", "NONE");
             this.anchorY = new Setting<>(manager, title + "_anchorY", "NONE");
 
-            this.drawBackground = new SettingGUI<>(this, "Draw Background", "Draws a dark background around a HUD element", false);
+            this.drawBackground = new SettingGUI<>(this, "Draw Background", "Draws a dark background around a HUD element", true);
             addSettings((SettingGUI<?>) drawBackground);
 
             //TODO: Add a setting for each window to the GUI manager

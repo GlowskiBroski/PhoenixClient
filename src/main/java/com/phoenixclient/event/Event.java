@@ -20,6 +20,8 @@ public class Event {
 
     public static final RenderLevelEvent EVENT_RENDER_LEVEL = new RenderLevelEvent();
 
+    public static final RenderDebugEvent EVENT_RENDER_DEBUG = new RenderDebugEvent();
+
 
     private final ArrayList<EventAction> eventActions = new ArrayList<>();
 

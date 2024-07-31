@@ -29,7 +29,7 @@ public class SpeedWindow extends GuiWindow {
         String label = (this.label.get() ? "Speed " : "");
         String currentSpeed = String.format("%.2f", getEntitySpeed(Minecraft.getInstance().player, mode.get().equals("3D"))) + "m/s";
 
-        setSize(new Vector((int) DrawUtil.getFontTextWidth(label + currentSpeed) + 6, 13));
+        setSize(new Vector((int) DrawUtil.getFontTextWidth(label + currentSpeed) + 6, 12));
 
         TextBuilder.start(label,getPos().getAdded(new Vector(2, 2)),colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(currentSpeed).color(Color.WHITE).dynamic().draw(graphics);
     }

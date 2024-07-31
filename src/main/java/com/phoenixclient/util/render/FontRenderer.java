@@ -52,8 +52,6 @@ public class FontRenderer {
             setFont(new Font(font.getFontName(), font.getStyle(), (int) (10 * guiScale)));
         });
 
-        graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
-
         //Draws each character individually using their own resource locations and textured rectangles
         pos = pos.clone();
         for (char c : text.toCharArray()) {
@@ -78,7 +76,10 @@ public class FontRenderer {
                 case "Arial" -> 2;
                 default -> 3;
             };
+            graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+            if (color.getAlpha() <= 0) return;
             DrawUtil.drawTexturedRect(graphics, resourceLocation, pos.getSubtracted(0, yOff), new Vector(width / guiScale, height / guiScale));
+            graphics.setColor(1f,1f,1f,1f);
             pos.add(new Vector(width / guiScale, 0));
         }
     }
@@ -120,13 +121,14 @@ public class FontRenderer {
 
         int width = getFontMetrics().stringWidth(text);
         int height = getFontMetrics().getHeight();
-        graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
         int yOff = switch (getFont().getFontName()) {
             case "Segoe Print" -> 5;
             case "Arial" -> 2;
             default -> 3;
         };
+        graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
         DrawUtil.drawTexturedRect(graphics, resourceLocation, pos.getSubtracted(0, yOff), new Vector(width / guiScale, height / guiScale));
+        graphics.setColor(1f,1f,1f,1f);
     }
 
     protected BufferedImage getBufferedImage(String text) {

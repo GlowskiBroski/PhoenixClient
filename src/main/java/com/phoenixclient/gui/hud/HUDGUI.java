@@ -27,6 +27,8 @@ public class HUDGUI extends GUI {
 
     private final PacketFlowListWindow packetFlowList = new PacketFlowListWindow(this, Vector.NULL());
 
+    private final LogoWindow logoWindow = new LogoWindow(this, Vector.NULL());
+
     // -----------------------------------------------------------------
 
     public HUDGUI(Component title) {
@@ -44,7 +46,8 @@ public class HUDGUI extends GUI {
                 moduleList,
                 storageList,
                 moduleKeybindListWindow,
-                signTextListWindow
+                signTextListWindow,
+                logoWindow
         );
     }
 

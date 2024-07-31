@@ -64,7 +64,8 @@ public class PhoenixClient implements ModInitializer {
                 new ContainerSort(),
                 new AutoEnchant(),
                 new EntityESP(),
-                new StorageESP()
+                new StorageESP(),
+                new AutoCrossbow()
         );
 
         GUI_MANAGER.instantiateHUDGUI();

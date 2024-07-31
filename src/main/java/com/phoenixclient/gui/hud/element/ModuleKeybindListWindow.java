@@ -11,6 +11,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+//TODO: Make this a tad more visually appealing
+
 public class ModuleKeybindListWindow extends ListWindow {
 
     public ModuleKeybindListWindow(Screen screen, Vector pos) {

@@ -2,8 +2,14 @@ package com.phoenixclient.util.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.phoenixclient.event.Event;
+import com.phoenixclient.module.StorageESP;
 import com.phoenixclient.util.math.Vector;
+import net.minecraft.client.Camera;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.debug.DebugRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
@@ -12,6 +18,8 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+
+import static com.phoenixclient.PhoenixClient.MC;
 
 public class Draw3DUtil {
 
@@ -22,8 +30,23 @@ public class Draw3DUtil {
         return  new Vector(x,y,z);
     }
 
+    /**
+     * It is necessary to call this method when rendering 3D features
+     * @param levelPoseStack
+     * @param pos
+     */
+    private static void applyRenderPositionOffset(PoseStack levelPoseStack, Vector pos) {
+        Camera cam = MC.getBlockEntityRenderDispatcher().camera;
+        BlockPos camBlockPos = cam.getBlockPosition();
+        Vector worldOffset = new Vector(camBlockPos.getX() >> 9 << 9, 0, camBlockPos.getZ() >> 9 << 9);
 
-    //TODO: Gets a little spazzy when coordinates get larger. Fix this
+        Vector matrixOffset = worldOffset.getSubtracted(new Vector(cam.getPosition()));
+        levelPoseStack.translate(matrixOffset.getX(), matrixOffset.getY(), matrixOffset.getZ());
+        //levelPoseStack.translate(-cam.getPosition().x,-cam.getPosition().y,-cam.getPosition().z);
+
+       pos.subtract(worldOffset);
+    }
+
     public static void drawOutlineBox(PoseStack levelPoseStack, AABB bb, Vector lerpPos, Color c) {
         AABB unitCube = AABB.unitCubeFromLowerCorner(new Vec3(-.5,0,-.5));
         float minX = (float) unitCube.minX;
@@ -38,9 +61,11 @@ public class Draw3DUtil {
         float b = c.getBlue() / 255f;
         float a = c.getAlpha() / 255f;
 
-        GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         levelPoseStack.pushPose();
+
+        applyRenderPositionOffset(levelPoseStack,lerpPos);
+
         levelPoseStack.translate(lerpPos.getX(), lerpPos.getY(), lerpPos.getZ());
         levelPoseStack.scale((float) (bb.maxX - bb.minX), (float) (bb.maxY - bb.minY), (float) (bb.maxZ - bb.minZ));
 
@@ -88,7 +113,6 @@ public class Draw3DUtil {
         levelPoseStack.popPose();
 
         GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_BLEND);
     }
 
 }

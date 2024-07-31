@@ -1,23 +1,22 @@
 package com.phoenixclient.module;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.events.RenderLevelEvent;
 import com.phoenixclient.gui.hud.element.StorageListWindow;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.Draw3DUtil;
 import com.phoenixclient.util.setting.SettingGUI;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.BarrelBlock;
-import net.minecraft.world.level.block.HopperBlock;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -88,14 +87,6 @@ public class StorageESP extends Module {
 
     public void onRender(RenderLevelEvent event) {
         PoseStack levelStack = event.getLevelPoseStack();
-        float partialTicks = event.getPartialTicks();
-        Vec3 camPos = MC.getBlockEntityRenderDispatcher().camera.getPosition();
-        levelStack.translate(camPos.x,camPos.y,camPos.z);
-
-        //TODO: Experiment with this to stop spaz at higher coordinates
-        Vector playerPos = new Vector(MC.player.getPosition(0));
-        Vector oldPos = new Vector(MC.player.xo,MC.player.yo,MC.player.zo);
-        levelStack.translate(-camPos.x,-camPos.y,-camPos.z);
 
         for (BlockEntity e : StorageListWindow.BLOCK_ENTITY_LIST) {
             AABB bb = AABB.ofSize(new Vector(e.getBlockPos()).getVec3(), 1, 1, 1);
@@ -109,19 +100,12 @@ public class StorageESP extends Module {
             boolean doFurnaces = furnaces.get() && e instanceof FurnaceBlockEntity;
             boolean doDispensers = dispensers.get() && e instanceof DispenserBlockEntity;
 
-            //Vector pos = new Vector(e.getBlockPos()).getAdded(.5, 0, .5);
-
             Vector pos = new Vector(e.getBlockPos()).getAdded(.5, 0, .5);
-
             if (doChests || doBarrels) Draw3DUtil.drawOutlineBox(levelStack, chestBB, pos, new Color(171, 99, 0, 255));
-
             if (doEnderChests) Draw3DUtil.drawOutlineBox(levelStack, chestBB, pos, new Color(156, 89, 211, 255));
-
             if (doShulkers) Draw3DUtil.drawOutlineBox(levelStack, bb, pos, new Color(236, 0, 255, 255));
-
             if (doHoppers || doFurnaces || doDispensers) Draw3DUtil.drawOutlineBox(levelStack, bb, pos, new Color(105, 105, 105, 255));
 
         }
     }
-
 }

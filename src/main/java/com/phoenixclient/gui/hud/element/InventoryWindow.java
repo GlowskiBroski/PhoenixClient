@@ -43,6 +43,7 @@ public class InventoryWindow extends GuiWindow {
         renderChestInventory(graphics,"Inventory",adjustedPos);
 
         //graphics.setColor(1,1,1,transparency.get() / 255f);
+        //graphics.setColor(1,1,1,1f);
         renderInventoryItems(graphics, MC.player.inventoryMenu.getItems(),9,35,adjustedPos);
 
         graphics.setColor(1f,1f,1f,1f);

@@ -25,7 +25,7 @@ public class FPSWindow extends GuiWindow {
         String label = (this.label.get() ? "FPS " : "");
         String text =  (Minecraft.getInstance().fpsString.substring(0,3)).replace("/","").replace("f","").replace(" ","");
 
-        setSize(new Vector((int) DrawUtil.getFontTextWidth(label + text) + 6,13));
+        setSize(new Vector((int) DrawUtil.getFontTextWidth(label + text) + 6,12));
 
         TextBuilder.start(label,getPos().getAdded(new Vector(2,2)),colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(text).color(Color.WHITE).dynamic().draw(graphics);
 

@@ -83,7 +83,7 @@ public class CoordinatesWindow extends GuiWindow {
                         zPos = yPos.getAdded(yLength + 10, 0);
                     }
                 }
-                setSize(new Vector(xLength + yLength + zLength + 30, 13));
+                setSize(new Vector(xLength + yLength + zLength + 30, 12));
             }
             case "Vertical" -> {
                 switch ((coordinatesSide.get())) {
@@ -110,7 +110,7 @@ public class CoordinatesWindow extends GuiWindow {
                 if (xLength > longestString) longestString = xLength;
                 if (yLength > longestString) longestString = yLength;
                 if (zLength > longestString) longestString = zLength;
-                setSize(new Vector(longestString + 5, 33));
+                setSize(new Vector(longestString + 5, 32));
             }
         }
 

@@ -73,6 +73,7 @@ public class ContainerSort extends Module {
 
         Color color = new Color(255, 255, 255, Math.clamp(hintFade, 0, 255));
         TextBuilder.start().text(hint).pos(new Vector(0, MC.getWindow().getGuiScaledHeight() - 14)).centerX().color(color).draw(event.getGraphics());
+
     }
 
     private void sortStacks(AbstractContainerMenu containerMenu) {

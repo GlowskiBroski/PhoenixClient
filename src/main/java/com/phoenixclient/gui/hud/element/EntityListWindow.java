@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -45,12 +46,14 @@ public class EntityListWindow extends ListWindow {
                 entityName = "Item: " + e.getName().getString();
             }
 
+            Color entityColor = entity instanceof Player ? new Color(79, 105, 245) : Color.WHITE;
+
             if (currentList.containsKey(entityName)) {
-                ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + 1) + ")",Color.WHITE,Color.CYAN);
+                ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + 1) + ")",entityColor,Color.CYAN);
                 currentList.put(entityName, count);
                 continue;
             }
-            currentList.putIfAbsent(entityName,new ListInfo("(1)",Color.WHITE,Color.CYAN));
+            currentList.putIfAbsent(entityName,new ListInfo("(1)",entityColor,Color.CYAN));
         }
 
         return forceAddedToBottom(currentList);

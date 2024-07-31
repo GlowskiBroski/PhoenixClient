@@ -100,13 +100,13 @@ public class TextBuilder {
     //TODO: Potentially combine the shadow inside of the bufferedimage
     public TextBuilder draw(GuiGraphics graphics) {
         graphics.pose().scale(scale, scale, 1);
-        graphics.setColor(1, 1, 1, color.getAlpha() / 255f);
+        if (color.getAlpha() <= 0) return this;
         if (fontRenderer == null) {
             MC.font.drawInBatch(text, ((float) pos.getX()), ((float) pos.getY()), color.hashCode(), shadow, graphics.pose().last().pose(), graphics.bufferSource(), net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
-            //graphics.flush();
+            graphics.flush();
         } else {
-            if (shadow) {
-                int damp = 175;
+            int damp = 175;
+            if (shadow && color.getAlpha() - damp > 0) {
                 Color shadowColor = new Color(MathUtil.getBoundValue(color.getRed() - damp,0,255).intValue(), MathUtil.getBoundValue(color.getGreen() - damp,0,255).intValue(), MathUtil.getBoundValue(color.getBlue() - damp,0,255).intValue(), MathUtil.getBoundValue(color.getAlpha() - 50,0,255).intValue());
                 if (dynamic) PhoenixClient.getFontRenderer().drawDynamicString(graphics,text,pos.getAdded(1,1).getMultiplied(1/scale),shadowColor);
                 else PhoenixClient.getFontRenderer().drawStaticString(graphics,text,pos.getAdded(1,1).getMultiplied(1/scale),shadowColor);
@@ -114,9 +114,10 @@ public class TextBuilder {
 
             if (dynamic) fontRenderer.drawDynamicString(graphics,text,pos.getMultiplied(1/scale),color);
             else fontRenderer.drawStaticString(graphics,text,pos.getMultiplied(1/scale),color);
+            graphics.flush();
         }
         graphics.pose().scale(1 / scale, 1 / scale, 1);
-        graphics.setColor(1f, 1f, 1f, 1f);
+        graphics.setColor(1f,1f,1f,1f);
         return this;
     }
 
