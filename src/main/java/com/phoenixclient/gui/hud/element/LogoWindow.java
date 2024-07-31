@@ -37,7 +37,6 @@ public class LogoWindow extends GuiWindow {
     @Override
     protected void drawWindow(GuiGraphics graphics, Vector mousePos) {
         Vector imgSize = new Vector(160,60).getMultiplied(scale.get());
-
         Vector windowSize = new Vector(imgSize.getX() * 126/160,imgSize.getY() * 37/60);
 
         ResourceLocation location = ResourceLocation.fromNamespaceAndPath("phoenixclient","logo.png"); //1600 x 600

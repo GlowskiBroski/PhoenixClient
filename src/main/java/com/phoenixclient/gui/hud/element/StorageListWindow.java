@@ -65,14 +65,19 @@ public class StorageListWindow extends ListWindow {
 
             if (!isStorage) continue;
 
-            if (entityName.contains("shulker box")) entityName = "Shulker box";
+
+            Color entityColor = Color.WHITE;
+            if (entityName.contains("shulker box")) {
+                entityName = "Shulker box";
+                entityColor = new Color(179, 86, 255);
+            }
 
             if (currentList.containsKey(entityName)) {
-                ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + 1) + ")",Color.WHITE,Color.CYAN);
+                ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + 1) + ")",entityColor,Color.CYAN);
                 currentList.put(entityName, count);
                 continue;
             }
-            currentList.put(entityName,new ListInfo("(1)",Color.WHITE,Color.CYAN));
+            currentList.put(entityName,new ListInfo("(1)",entityColor,Color.CYAN));
         }
 
         return forceAddedToBottom(currentList);
