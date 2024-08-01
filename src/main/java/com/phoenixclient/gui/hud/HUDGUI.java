@@ -36,17 +36,23 @@ public class HUDGUI extends GUI {
         addGuiElements(
                 inventory,
                 armor,
-                direction,
+
                 fps,
+                tps,
+                direction,
                 speed,
                 coordinates,
+
                 entityList,
-                entityData,
-                tps,
-                moduleList,
                 storageList,
-                moduleKeybindListWindow,
                 signTextListWindow,
+                //packetFlowList,
+
+                moduleKeybindListWindow,
+                moduleList,
+
+                entityData,
+
                 logoWindow
         );
     }

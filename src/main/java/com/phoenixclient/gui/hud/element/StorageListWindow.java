@@ -67,10 +67,13 @@ public class StorageListWindow extends ListWindow {
 
 
             Color entityColor = Color.WHITE;
-            if (entityName.contains("shulker box")) {
+            if (entityName.toLowerCase().contains("shulker box")) {
                 entityName = "Shulker box";
                 entityColor = new Color(179, 86, 255);
             }
+
+            if (entityName.equalsIgnoreCase("hopper") || entityName.equalsIgnoreCase("furnace") || entityName.equalsIgnoreCase("dropper") || entityName.equalsIgnoreCase("dispenser"))
+                entityColor = new Color(176, 176, 176);
 
             if (currentList.containsKey(entityName)) {
                 ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + 1) + ")",entityColor,Color.CYAN);

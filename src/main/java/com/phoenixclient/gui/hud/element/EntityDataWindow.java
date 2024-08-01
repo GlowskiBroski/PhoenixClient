@@ -7,6 +7,7 @@ import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
@@ -106,8 +107,8 @@ public class EntityDataWindow extends GuiWindow {
             if (!s.isEmpty()) s = "{" + s;
             TextBuilder.start(s,pos,Color.WHITE).defaultFont().scale(.5f).draw(graphics);
             pos.add(new Vector(0,10));
-        }
-         */
+        }*/
+
 
         setSize(new Vector(100, yOff));
     }

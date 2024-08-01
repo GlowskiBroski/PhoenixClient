@@ -28,10 +28,9 @@ public class LogoWindow extends GuiWindow {
         addSettings(scale);
 
         //Default Setting Overrides
-        SettingManager manager = PhoenixClient.getSettingManager();
-        this.pinned = new Setting<>(manager, getTitle() + "_pinned", true); //default to be true for logo
-        this.posScale = new Setting<>(manager, getTitle() + "_posScale", new Vector(0, 0)); //Default to 0,0
-        this.drawBackground = new SettingGUI<>(this, "Draw Background", "Draws a dark background around a HUD element", true); //Default to false
+        this.pinned.set(true);
+        this.posScale.set(Vector.NULL());
+        this.drawBackground.set(false);
     }
 
     @Override

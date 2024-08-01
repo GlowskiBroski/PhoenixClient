@@ -61,7 +61,7 @@ public class GuiManager extends Module {
             this,
             "Theme",
             "Color theme for the HUD",
-            "Light Blue").setModeData("Red", "Orange", "Green", "Sea Green", "Blue", "Light Blue", "Purple", "Rainbow", "Custom");
+            "Sea Green").setModeData("Red", "Orange", "Green", "Sea Green", "Blue", "Light Blue", "Purple", "Rainbow", "Custom");
 
     public final SettingGUI<Double> baseColorHue = new SettingGUI<>(
             this,

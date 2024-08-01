@@ -17,7 +17,8 @@
     "MixinLoomScreen",
     "MixinMouseHandler",
     "MixinOptionInstance",
-    "MixinOptions"
+    "MixinOptions",
+    "MixinPlayerModel"
   ],
   "injectors": {
     "defaultRequire": 1

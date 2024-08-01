@@ -6,7 +6,6 @@ import com.phoenixclient.util.setting.SettingGUI;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
-
 //TODO:
 // NoPumpkin
 // No Vignette
@@ -15,6 +14,7 @@ import static com.phoenixclient.PhoenixClient.MC;
 // No Weather
 // Blindness - Maybe separate into AntiPotion
 // No Warden Fog
+// No Pumpkin Overlay
 
 public class AntiRender extends Module {
 

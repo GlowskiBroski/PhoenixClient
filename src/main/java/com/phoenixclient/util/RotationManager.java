@@ -5,6 +5,10 @@ import com.phoenixclient.event.EventAction;
 import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.setting.Container;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
@@ -21,9 +25,9 @@ public class RotationManager {
     private float spoofedPitch;
 
     public RotationManager() {
-        this.spoofedYaw = 0;
-        this.spoofedPitch = 0;
-        this.spoofing = false;
+        spoofedYaw = 0;
+        spoofedPitch = 0;
+        spoofing = false;
     }
 
     public final EventAction updateSpoofedAngles = new EventAction(Event.EVENT_PLAYER_UPDATE, () -> {
