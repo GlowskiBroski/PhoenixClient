@@ -58,7 +58,7 @@ public class ShulkerView extends Module {
     public ShulkerView() {
         super("ShulkerView", "Renders shulker box inventories on tooltips or extends chests", Category.RENDER, false, -1);
         addSettings(chestView, tooltipView, tooltipScale);
-        addEventSubscriber(Event.EVENT_RENDER_ITEM_TOOLTIP,this::onRenderTooltip);
+        addEventSubscriber(Event.EVENT_RENDER_INVENTORY_ITEM_TOOLTIP,this::onRenderTooltip);
         addEventSubscriber(Event.EVENT_RENDER_SCREEN,this::onRenderScreen);
     }
 

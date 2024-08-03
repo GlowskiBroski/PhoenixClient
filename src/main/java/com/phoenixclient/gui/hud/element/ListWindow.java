@@ -191,7 +191,12 @@ public abstract class ListWindow extends GuiWindow {
         }
     }
 
-    protected record ListInfo(String tag, Color colorMain, Color colorTag) {}
+    protected record ListInfo(String tag, Color colorMain, Color colorTag) {
+        //For ListInfos without a tag
+        public ListInfo(Color colorMain) {
+            this("",colorMain,new Color(0,0,0,0));
+        }
+    }
 
     public static class AnimationSet {
         public boolean expand;

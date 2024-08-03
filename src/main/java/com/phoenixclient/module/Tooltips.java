@@ -50,7 +50,7 @@ public class Tooltips extends Module {
     public Tooltips() {
         super("Tooltips", "Renders better tooltips for specific items", Category.RENDER, false, -1);
         addSettings(nbt, trueDurability, showRepairCost);
-        addEventSubscriber(Event.EVENT_RENDER_ITEM_TOOLTIP, this::onRenderTooltip);
+        addEventSubscriber(Event.EVENT_RENDER_INVENTORY_ITEM_TOOLTIP, this::onRenderTooltip);
     }
 
 

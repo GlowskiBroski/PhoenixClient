@@ -64,6 +64,10 @@ public class SettingGUI<T> extends Setting<T> {
         onChange.reset();
     }
 
+    public T getPrevious() {
+        return onChange.getPrevValue();
+    }
+
 
     public String getName() {
         return name;

@@ -221,6 +221,11 @@ public class Vector {
     }
 
 
+    public static Vector getFromString(String vectorString) {
+        String[] vals = vectorString.replace("<","").replace(">","").split("\\|");
+        return new Vector(Double.parseDouble(vals[0]),Double.parseDouble(vals[1]),Double.parseDouble(vals[2]));
+    }
+
     @Override
     public Vector clone() {
         return new Vector(x,y,z);
@@ -229,6 +234,11 @@ public class Vector {
     @Override
     public String toString() {
         return "<" + getX() + "|" + getY() + "|" + getZ() + ">";
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
     }
 
     @Override

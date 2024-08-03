@@ -14,7 +14,8 @@ public class Event {
 
     public static final Event EVENT_RENDER_HUD = new Event();
     public static final RenderScreenEvent EVENT_RENDER_SCREEN = new RenderScreenEvent();
-    public static final RenderItemTooltipEvent EVENT_RENDER_ITEM_TOOLTIP = new RenderItemTooltipEvent();
+    public static final RenderItemTooltipEvent EVENT_DRAW_ITEM_TOOLTIP = new RenderItemTooltipEvent(); //This one is used every time the draw tooltip is called
+    public static final RenderItemTooltipEvent EVENT_RENDER_INVENTORY_ITEM_TOOLTIP = new RenderItemTooltipEvent(); //this one is used every time a tooltip is rendered in a container
 
     public static final Event EVENT_PLAYER_UPDATE = new Event();
 

@@ -32,13 +32,13 @@ public abstract class MixinAbstractContainerScreen {
 
     @Inject(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;renderTooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;II)V"), cancellable = true)
     private void onRenderItemTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, CallbackInfo ci) {
-        RenderItemTooltipEvent event = Event.EVENT_RENDER_ITEM_TOOLTIP;
+        RenderItemTooltipEvent event = Event.EVENT_RENDER_INVENTORY_ITEM_TOOLTIP;
         ItemStack item = hoveredSlot.getItem();
         List<Component> list = getTooltipFromContainerItem(item);
         containerItemList = list;
 
         event.post(item,list,mouseX,mouseY);
-        Event.EVENT_RENDER_ITEM_TOOLTIP.updateCancelled(ci);
+        Event.EVENT_RENDER_INVENTORY_ITEM_TOOLTIP.updateCancelled(ci);
     }
 
 
