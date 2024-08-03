@@ -46,7 +46,8 @@ public class EntityListWindow extends ListWindow {
             if (!combineItems.get() && entity instanceof ItemEntity e) {
                 entityName = "Item: " + e.getName().getString();
                 entityColor = new Color(255, 86, 86);
-            }
+                if (entityName.toLowerCase().contains("shulker box")) entityColor = new Color(179, 86, 255);
+                }
 
             if (currentList.containsKey(entityName)) {
                 ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + 1) + ")",entityColor,Color.CYAN);

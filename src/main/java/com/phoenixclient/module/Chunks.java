@@ -29,6 +29,8 @@ import java.util.Map;
 import static com.phoenixclient.PhoenixClient.MC;
 import static net.minecraft.util.Mth.clamp;
 
+//TODO: Have a CSV file save/load the data of each chunk so you know whether or not a chunk was new, even after restarting the client... forever
+
 public class Chunks extends Module {
 
     public Chunks() {

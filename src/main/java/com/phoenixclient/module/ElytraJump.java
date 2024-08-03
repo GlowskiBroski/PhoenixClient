@@ -41,7 +41,7 @@ public class ElytraJump extends Module {
         if (MC.options.keyJump.isDown()) {
 
             //Move forward a tad when jumping
-            if (MC.player.onGround())MC.player.addDeltaMovement(new Vector(new Angle(MC.player.getYHeadRot(),true), new Angle(0), .1).getVec3());
+            //if (MC.player.onGround())MC.player.addDeltaMovement(new Vector(new Angle(MC.player.getYHeadRot(),true), new Angle(0), .1).getVec3());
 
             //Launch the Elytra
             if (!MC.player.isFallFlying()) {

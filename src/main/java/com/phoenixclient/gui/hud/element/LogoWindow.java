@@ -20,6 +20,8 @@ import java.awt.*;
 
 public class LogoWindow extends GuiWindow {
 
+    private final ResourceLocation location = ResourceLocation.fromNamespaceAndPath("phoenixclient","logo.png"); //1600 x 600
+
     private final SettingGUI<Double> scale;
 
     public LogoWindow(Screen screen, Vector pos) {
@@ -38,7 +40,6 @@ public class LogoWindow extends GuiWindow {
         Vector imgSize = new Vector(160,60).getMultiplied(scale.get());
         Vector windowSize = new Vector(imgSize.getX() * 126/160,imgSize.getY() * 37/60);
 
-        ResourceLocation location = ResourceLocation.fromNamespaceAndPath("phoenixclient","logo.png"); //1600 x 600
         DrawUtil.drawTexturedRect(graphics,location,getPos().getSubtracted(18 * scale.get(),10 * scale.get()),imgSize);
         setSize(windowSize);
     }

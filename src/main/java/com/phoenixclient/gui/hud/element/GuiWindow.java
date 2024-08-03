@@ -103,6 +103,7 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
         if (isHudGui) bindWindowCoordinates();
 
         if (drawBackground.get()) {
+            //TODO: Potentially add small shadow effect to all windows when background enabled
             DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(0, 0, 0, 175));
             DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(150, 150, 150, 175), true);
         }

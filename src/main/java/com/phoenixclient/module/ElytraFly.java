@@ -193,7 +193,6 @@ public class ElytraFly extends Module {
 
                 if (MC.player.touchingUnloadedChunk()) MC.player.setDeltaMovement(0,0,0);
             }
-
         } else {
             MixinHooks.keepElytraOnGround = false;
         }

@@ -27,6 +27,7 @@
     "MixinBannerItem",
     "MixinBlockCollisions",
     "MixinEntity",
+    "MixinItemStack",
     "MixinScreenEffectRenderer",
     "MixinServerboundMovePlayerPacket"
   ]

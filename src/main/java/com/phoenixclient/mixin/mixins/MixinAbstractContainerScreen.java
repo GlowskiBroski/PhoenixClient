@@ -1,35 +1,50 @@
 package com.phoenixclient.mixin.mixins;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.events.RenderItemTooltipEvent;
-import com.phoenixclient.mixin.MixinHooks;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.ScreenEffectRenderer;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
+import java.util.Optional;
 
 @Mixin(AbstractContainerScreen.class)
 public abstract class MixinAbstractContainerScreen {
 
     @Shadow @Nullable protected Slot hoveredSlot;
 
+    @Shadow protected abstract List<Component> getTooltipFromContainerItem(ItemStack itemStack);
+
+    @Unique List<Component> containerItemList;
+
     @Inject(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;renderTooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;II)V"), cancellable = true)
-    private void onRenderItemTooltipPost(GuiGraphics guiGraphics, int i, int j, CallbackInfo ci) {
+    private void onRenderItemTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, CallbackInfo ci) {
         RenderItemTooltipEvent event = Event.EVENT_RENDER_ITEM_TOOLTIP;
-        event.post(hoveredSlot.getItem(),i,j);
+        ItemStack item = hoveredSlot.getItem();
+        List<Component> list = getTooltipFromContainerItem(item);
+        containerItemList = list;
+
+        event.post(item,list,mouseX,mouseY);
         Event.EVENT_RENDER_ITEM_TOOLTIP.updateCancelled(ci);
     }
 
+
+    @Redirect(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;renderTooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;II)V"))
+    private void getTooltipGuy(GuiGraphics instance, Font font, List<Component> list, Optional<TooltipComponent> optional, int i, int j) {
+        instance.renderTooltip(font, containerItemList, optional, i, j);
+    }
 
 }
