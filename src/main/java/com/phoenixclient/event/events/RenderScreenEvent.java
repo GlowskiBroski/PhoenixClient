@@ -21,6 +21,7 @@ public class RenderScreenEvent extends Event {
         return new Vector(i,j);
     }
 
+    //TODO: Replace this with an argument
     public GuiGraphics getGraphics() {
         return new GuiGraphics(MC, MC.renderBuffers().bufferSource());
     }

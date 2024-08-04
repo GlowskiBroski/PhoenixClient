@@ -1,15 +1,17 @@
 package com.phoenixclient.module;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.events.PacketEvent;
 import com.phoenixclient.event.events.RenderLevelEvent;
-import com.phoenixclient.gui.hud.element.ListWindow;
 import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.file.CSVFile;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.Draw3DUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.Container;
 import com.phoenixclient.util.setting.SettingGUI;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceKey;
@@ -30,7 +32,7 @@ import static net.minecraft.util.Mth.clamp;
 /**
  * Pallet mode taken from Trouser-Streak Meteor Addon.
  */
-public class Chunks extends Module {
+public class ChunkTrails extends Module {
 
     private HashMap<Vector, Boolean> loadedChunksMap = new HashMap<>(); //Key: ChunkPos, Value isNewChunk -- Save/Load this data as a CSV every time the client is loaded
 
@@ -43,9 +45,9 @@ public class Chunks extends Module {
     private final CSVFile liquidFileNE = new CSVFile("PhoenixClient/chunks", "newChunksLiquidNether.csv");
     private final CSVFile liquidFileEN = new CSVFile("PhoenixClient/chunks", "newChunksLiquidEnd.csv");
 
-    private final CSVFile copperFileOW = new CSVFile("PhoenixClient/chunks", "newChunksCopperOW.csv");
-    private final CSVFile copperFileNE = new CSVFile("PhoenixClient/chunks", "newChunksCopperNE.csv");
-    private final CSVFile copperFileEN = new CSVFile("PhoenixClient/chunks", "newChunksCopperEN.csv");
+    private final CSVFile copperFileOW = new CSVFile("PhoenixClient/chunks", "newChunksCopperOverworld.csv");
+    private final CSVFile copperFileNE = new CSVFile("PhoenixClient/chunks", "newChunksCopperNether.csv");
+    private final CSVFile copperFileEN = new CSVFile("PhoenixClient/chunks", "newChunksCopperEnd.csv");
 
     private final OnChange<ResourceKey<Level>> onDimensionChange = new OnChange<>();
 
@@ -61,11 +63,30 @@ public class Chunks extends Module {
             "Extra range added on to the render distance for chunks",
             0).setSliderData(0, 16, 1);
 
-    public Chunks() {
-        super("Chunks", "Send information of chunks upon load", Category.SERVER, false, -1);
-        addSettings(mode, range);
+    private final SettingGUI<Boolean> showNew = new SettingGUI<>(
+            this,
+            "Show New",
+            "Highlights new chunks in RED",
+            true);
+
+    private final SettingGUI<Boolean> showOld = new SettingGUI<>(
+            this,
+            "Show old",
+            "Highlights old chunks in GREEN",
+            true);
+
+    private final SettingGUI<Integer> yHeight = new SettingGUI<>(
+            this,
+            "Height",
+            "Y level of chunk highlights",
+            -64).setSliderData(-64,320,1);
+
+    public ChunkTrails() {
+        super("ChunkTrails", "Highlights new chunks in red and old chunks in green. Follow green chunks as a trail!", Category.SERVER, false, -1);
+        addSettings(mode, range, showNew, showOld,yHeight);
         addEventSubscriber(Event.EVENT_PACKET, this::onPacket);
         addEventSubscriber(Event.EVENT_RENDER_LEVEL, this::onRender);
+        addEventSubscriber(Event.EVENT_PLAYER_UPDATE, this::onUpdate);
     }
 
     public void onPacket(PacketEvent event) {
@@ -84,23 +105,6 @@ public class Chunks extends Module {
 
             Vector keyPos = new Vector(pos.x, 0, pos.z);
             loadedChunksMap.putIfAbsent(keyPos, isNewChunk);
-
-            //Save the CSV with the previous mode
-            //Load the CSV of the current mode
-            mode.runOnChange(() -> {
-                if (mode.getPrevious() != null) {
-                    System.out.println("Saving: " + mode.getPrevious() + " " + MC.level.dimension());
-                    getProperFile(mode.getPrevious(), MC.level.dimension()).save(loadedChunksMap);
-                }
-                loadCurrentFile();
-            });
-            onDimensionChange.run(MC.level.dimension(), () -> {
-                if (onDimensionChange.getPrevValue() != null) {
-                    System.out.println("Saving: " + mode.get() + " " + onDimensionChange.getPrevValue());
-                    getProperFile(mode.get(), onDimensionChange.getPrevValue()).save(loadedChunksMap);
-                }
-                loadCurrentFile();
-            });
         }
     }
 
@@ -108,14 +112,38 @@ public class Chunks extends Module {
         try {
             for (Vector chunkPos : getLoadedChunkPositions()) {
                 if (!loadedChunksMap.containsKey(chunkPos)) continue;
-                //New chunks are RED
-                //Old chunks are GREEN
-                Color color = loadedChunksMap.get(chunkPos) ? Color.RED : Color.GREEN;
-                Draw3DUtil.drawOutlineBox(event.getLevelPoseStack(), new AABB(0, 0, 0, 16, 0, 16), chunkPos.getMultiplied(16).y(-64), color);
+                boolean isNew = loadedChunksMap.get(chunkPos);
+
+                if (showNew.get() && isNew) {
+                    Color color = Color.RED;
+                    Draw3DUtil.drawOutlineBox(event.getLevelPoseStack(), new AABB(0, 0, 0, 16, 0, 16), chunkPos.getMultiplied(16).y(yHeight.get()), color);
+                }
+
+                if (showOld.get() && !isNew) {
+                    Color color = Color.GREEN;
+                    Draw3DUtil.drawOutlineBox(event.getLevelPoseStack(), new AABB(0, 0, 0, 16, 0, 16), chunkPos.getMultiplied(16).y(yHeight.get()), color);
+                }
             }
         } catch (NullPointerException | ConcurrentModificationException e) {
             //This shouldn't happen, but it may due to the desync between the render thread and game thread with the packets
         }
+    }
+
+    public void onUpdate(Event event) {
+        mode.runOnChange(() -> {
+            if (mode.getPrevious() != null) {
+                PhoenixClient.getNotificationManager().sendNotification("Saving: " + mode.getPrevious() + " " + MC.level.dimension().location(),Color.WHITE);
+                getProperFile(mode.getPrevious(), MC.level.dimension()).save(loadedChunksMap);
+            }
+            loadCurrentFile();
+        });
+        onDimensionChange.run(MC.level.dimension(), () -> {
+            if (onDimensionChange.getPrevValue() != null) {
+                PhoenixClient.getNotificationManager().sendNotification("Saving: " + mode.get() + " " + onDimensionChange.getPrevValue().location(),Color.WHITE);
+                getProperFile(mode.get(), onDimensionChange.getPrevValue()).save(loadedChunksMap);
+            }
+            loadCurrentFile();
+        });
     }
 
     @Override
@@ -127,12 +155,16 @@ public class Chunks extends Module {
     public void onEnabled() {
         if (updateDisableOnEnabled()) return;
         //Load Current File
+        PhoenixClient.getNotificationManager().sendNotification("Loading: " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
         setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
+        onDimensionChange.run(MC.level.dimension(),() -> {});
+        mode.runOnChange(() -> {});
     }
 
     @Override
     public void onDisabled() {
         //Save Current File
+        PhoenixClient.getNotificationManager().sendNotification("Saving: " + mode.get() + " " + MC.level.dimension().location(),Color.WHITE);
         getProperFile(mode.get(), MC.level.dimension()).save(loadedChunksMap);
 
         //Release memory
@@ -179,7 +211,7 @@ public class Chunks extends Module {
     }
 
     private void loadCurrentFile() {
-        System.out.println("Loading: " + mode.get() + " " + MC.level.dimension());
+        PhoenixClient.getNotificationManager().sendNotification("Loading: " + mode.get() + " " + MC.level.dimension().location(),Color.WHITE);
         setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
     }
 
@@ -207,7 +239,7 @@ public class Chunks extends Module {
 
 
 
-    //TODO: Review this, and streamline this. it is VERY difficult to read
+    //TODO: Review this, and streamline this. it is VERY difficult to read. make less nesting...
     private boolean palletData(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
         FriendlyByteBuf buf = packet.getChunkData().getReadBuffer();
         boolean isNewChunk = false;
@@ -226,18 +258,14 @@ public class Chunks extends Module {
             while (buf.readableBytes() > 0 && loops < 8) {
                 // Chunk Section structure
                 short blockCount = buf.readShort();
-                //System.out.println("Section: " + loops + " | Block count: " + blockCount);
 
                 // Block states Paletted Container
                 if (buf.readableBytes() < 1) break;
                 int blockBitsPerEntry2 = buf.readUnsignedByte();
-                //System.out.println("Section: " + loops + " | Block Bits Per Entry: " + blockBitsPerEntry2);
 
                 if (blockBitsPerEntry2 == 0) {
                     // Single valued palette
                     int singleBlockValue = buf.readVarInt();
-                    //BlockState blockState = Block.STATE_IDS.get(singleBlockValue);
-                    //System.out.println("Section: " + loops + " | Single Block Value: " + singleBlockValue + " | Blockstate: " + blockState);
                     buf.readVarInt(); // Data Array Length (should be 0)
                 } else if (blockBitsPerEntry2 >= 4 && blockBitsPerEntry2 <= 8) {
                     LevelChunkSection section = chunk.getSections()[loops];
@@ -252,22 +280,16 @@ public class Chunks extends Module {
                     }
                     // Indirect palette
                     int blockPaletteLength = buf.readVarInt();
-                    //System.out.println("Section: " + loops + " | Block palette length: " + blockPaletteLength);
-                    //System.out.println("Section: " + loops + " | bstates.size() "+bstates.size());
-                    //System.out.println("Section: " + loops + " | blockPaletteLength"+blockPaletteLength);
                     int isNewSection = 0;
                     int isBeingUpdatedSection = 0;
                     int bstatesSize = bstates.size();
                     if (bstatesSize <= 1) bstatesSize = blockPaletteLength;
                     if (bstatesSize < blockPaletteLength) {
                         isNewSection = 2;
-                        //System.out.println("Section: " + loops + " | smaller bstates size!!!!!!!");
                         newChunkQuantifier++; //double the weight of this
                     }
                     for (int i = 0; i < blockPaletteLength; i++) {
                         int blockPaletteEntry = buf.readVarInt();
-                        //BlockState blockState = Block.STATE_IDS.get(blockPaletteEntry);
-                        //System.out.println("Section: " + loops + " | Block palette entry " + i + ": " + blockPaletteEntry + " | Blockstate: " + blockState);
                         if (i == 0 && loops == 0 && blockPaletteEntry == 0 && MC.level.dimension() != Level.END)
                             firstchunkappearsnew = true;
                         if (i == 0 && blockPaletteEntry == 0 && MC.level.dimension() != Level.NETHER && MC.level.dimension() != Level.END)
@@ -277,7 +299,6 @@ public class Chunks extends Module {
                         if (i == 2 && (blockPaletteEntry == 5781 || blockPaletteEntry == 10 || blockPaletteEntry == 22318) && MC.level.dimension() != Level.NETHER && MC.level.dimension() != Level.END)
                             isNewSection++;
                         if (loops == 4 && blockPaletteEntry == 79 && MC.level.dimension() != Level.NETHER && MC.level.dimension() != Level.END) {
-                            //System.out.println("CHUNK IS BEING UPDATED!!!!!!");
                             if (!chunkIsBeingUpdated && beingUpdatedDetector.get()) chunkIsBeingUpdated = true;
                         }
                         if (blockPaletteEntry == 0 && (MC.level.dimension() == Level.NETHER || MC.level.dimension() == Level.END))
@@ -288,62 +309,41 @@ public class Chunks extends Module {
 
                     // Data Array
                     int blockDataArrayLength = buf.readVarInt();
-                    //System.out.println("Section: " + loops + " | Block Data Array Length: " + blockDataArrayLength);
                     if (buf.readableBytes() >= blockDataArrayLength * 8) {
                         buf.skipBytes(blockDataArrayLength * 8);
                     } else {
-                        //System.out.println("Section: " + loops + " | Not enough data for block array, skipping remaining: " + buf.readableBytes());
                         buf.skipBytes(buf.readableBytes());
                         break;
                     }
                 } else if (blockBitsPerEntry2 == 15) {
                     // Direct palette (no palette sent)
                     int blockDataArrayLength = buf.readVarInt();
-                    //System.out.println("Section: " + loops + " | Block Data Array Length (Direct): " + blockDataArrayLength);
                     if (buf.readableBytes() >= blockDataArrayLength * 8) {
                         buf.skipBytes(blockDataArrayLength * 8);
                     } else {
-                        //System.out.println("Section: " + loops + " | Not enough data for block array, skipping remaining: " + buf.readableBytes());
                         buf.skipBytes(buf.readableBytes());
                         break;
                     }
                 } else {
-                    //System.out.println("Section: " + loops + " | Invalid block bits per entry: " + blockBitsPerEntry2);
                     break;
                 }
 
                 // Biomes Paletted Container
-                if (buf.readableBytes() < 1) {
-                    //System.out.println("Section: " + loops + " | No biome data available");
-                    break;
-                }
+                if (buf.readableBytes() < 1) break;
 
                 int biomeBitsPerEntry = buf.readUnsignedByte();
-                //System.out.println("Section: " + loops + " | Biome Bits Per Entry: " + biomeBitsPerEntry);
 
                 if (biomeBitsPerEntry == 0) {
                     // Single valued palette
                     int singleBiomeValue = buf.readVarInt();
-                    //Registry<Biome> biomeRegistry = MC.level.getRegistryManager().get(RegistryKeys.BIOME);
-                    //Biome biome = biomeRegistry.get(singleBiomeValue);
-                    //Identifier biomeId = biomeRegistry.getId(biome);
-                    //System.out.println("Section: " + loops + " | Single Biome Value: " + singleBiomeValue + " | Biome: " + biomeId.toString());
                     if (singleBiomeValue == 39 && MC.level.dimension() == Level.END) isNewChunk = true;
                     buf.readVarInt(); // Data Array Length (should be 0)
                 } else if (biomeBitsPerEntry >= 1 && biomeBitsPerEntry <= 3) {
                     // Indirect palette
                     int biomePaletteLength = buf.readVarInt();
-                    //System.out.println("Section: " + loops + " | Biome palette length: " + biomePaletteLength);
                     for (int i = 0; i < biomePaletteLength; i++) {
-                        if (buf.readableBytes() < 1) {
-                            //System.out.println("Section: " + loops + " | Incomplete biome palette data");
-                            break;
-                        }
+                        if (buf.readableBytes() < 1) break;
                         int biomePaletteEntry = buf.readVarInt();
-                        //Registry<Biome> biomeRegistry = MC.level.getRegistryManager().get(RegistryKeys.BIOME);
-                        //Biome biome = biomeRegistry.get(biomePaletteEntry);
-                        //Identifier biomeId = biomeRegistry.getId(biome);
-                        //System.out.println("Section: " + loops + " | Biome palette entry " + i + ": " + biomePaletteEntry + " | Biome: " + biomeId.toString());
                         if (i == 0 && biomePaletteEntry == 39 && MC.level.dimension() == Level.END)
                             isNewChunk = true;
                         if (!isNewChunk && i == 0 && biomePaletteEntry != 55 && MC.level.dimension() == Level.END)
@@ -400,66 +400,14 @@ public class Chunks extends Module {
             //e.printStackTrace();
             if (beingUpdatedDetector.get() && (MC.level.dimension() == Level.NETHER || MC.level.dimension() == Level.END)) {
                 double oldpercentage = ((double) oldChunkQuantifier / loops) * 100;
-                //System.out.println("Percentage: " + oldpercentage);
                 if (oldpercentage >= 25) chunkIsBeingUpdated = true;
             } else if (MC.level.dimension() != Level.NETHER && MC.level.dimension() != Level.END) {
                 double percentage = ((double) newChunkQuantifier / loops) * 100;
-                //System.out.println("Percentage: " + percentage);
                 if (percentage >= 65) isNewChunk = true;
             }
         }
 
         if (firstchunkappearsnew) isNewChunk = true;
-        /*
-        boolean bewlian = (MC.level.dimension() == Level.END) ? isNewChunk : !isOldGeneration;
-        if (isNewChunk && !chunkIsBeingUpdated && bewlian) {
-            try {
-                if (!OldGenerationOldChunks.contains(oldpos) && !beingUpdatedOldChunks.contains(oldpos) && !tickexploitChunks.contains(oldpos) && !oldChunks.contains(oldpos) && !newChunks.contains(oldpos)) {
-                    newChunks.add(oldpos);
-                    if (save.get()) {
-                        saveData("/NewChunkData.txt", oldpos);
-                    }
-                    return;
-                }
-            } catch (Exception e) {
-                //e.printStackTrace();
-            }
-        } else if (!isNewChunk && !chunkIsBeingUpdated && isOldGeneration) {
-            try {
-                if (!OldGenerationOldChunks.contains(oldpos) && !beingUpdatedOldChunks.contains(oldpos) && !oldChunks.contains(oldpos) && !tickexploitChunks.contains(oldpos) && !newChunks.contains(oldpos)) {
-                    OldGenerationOldChunks.add(oldpos);
-                    if (save.get()) {
-                        saveData("/OldGenerationChunkData.txt", oldpos);
-                    }
-                }
-            } catch (Exception e) {
-                //e.printStackTrace();
-            }
-        } else if (chunkIsBeingUpdated) {
-            try {
-                if (!OldGenerationOldChunks.contains(oldpos) && !beingUpdatedOldChunks.contains(oldpos) && !oldChunks.contains(oldpos) && !tickexploitChunks.contains(oldpos) && !newChunks.contains(oldpos)) {
-                    beingUpdatedOldChunks.add(oldpos);
-                    if (save.get()) {
-                        saveData("/BeingUpdatedChunkData.txt", oldpos);
-                    }
-                }
-            } catch (Exception e) {
-                //e.printStackTrace();
-            }
-        } else if (!isNewChunk) {
-            try {
-                if (!OldGenerationOldChunks.contains(oldpos) && !beingUpdatedOldChunks.contains(oldpos) && !tickexploitChunks.contains(oldpos) && !oldChunks.contains(oldpos) && !newChunks.contains(oldpos)) {
-                    oldChunks.add(oldpos);
-                    if (save.get()) {
-                        saveData("/OldChunkData.txt", oldpos);
-                    }
-                    return;
-                }
-            } catch (Exception e) {
-                //e.printStackTrace();
-            }
-        }
-        */
 
         return isNewChunk || chunkIsBeingUpdated;
     }

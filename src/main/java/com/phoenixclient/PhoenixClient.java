@@ -1,6 +1,7 @@
 package com.phoenixclient;
 
 import com.phoenixclient.gui.GuiManager;
+import com.phoenixclient.gui.NotificationManager;
 import com.phoenixclient.module.*;
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.RotationManager;
@@ -25,6 +26,7 @@ public class PhoenixClient implements ModInitializer {
     private static final GuiManager GUI_MANAGER = new GuiManager();
     private static final ColorManager COLOR_MANAGER = new ColorManager(ColorManager.Theme.SEAGREEN);
     private static final RotationManager ROTATION_MANAGER = new RotationManager();
+    private static final NotificationManager NOTIFICATION_MANAGER = new NotificationManager();
     private static FontRenderer FONT_RENDERER = new FontRenderer("Arial", Font.PLAIN);
     private static final LinkedHashMap<String,Module> MODULES_LIST = new LinkedHashMap<>(); //Key value pair: ModName, Module
 
@@ -33,6 +35,7 @@ public class PhoenixClient implements ModInitializer {
     public void onInitialize() {
         addModules(
                 GUI_MANAGER,
+                NOTIFICATION_MANAGER,
                 new AutoFish(),
                 new FullBright(),
                 new ElytraFly(),
@@ -66,7 +69,7 @@ public class PhoenixClient implements ModInitializer {
                 new EntityESP(),
                 new StorageESP(),
                 new AutoCrossbow(),
-                new Chunks()
+                new ChunkTrails()
         );
 
         GUI_MANAGER.instantiateHUDGUI();
@@ -80,7 +83,6 @@ public class PhoenixClient implements ModInitializer {
 		Module.MODULE_KEYBIND_ACTION.subscribe();
 
         GUI_MANAGER.constUpdateGuiOpen.subscribe();
-        GUI_MANAGER.constUpdateRenderStartingHint.subscribe();
 
         ROTATION_MANAGER.updateSpoofedAngles.subscribe();
 
@@ -123,6 +125,10 @@ public class PhoenixClient implements ModInitializer {
 
     public static FontRenderer getFontRenderer() {
         return FONT_RENDERER;
+    }
+
+    public static NotificationManager getNotificationManager() {
+        return NOTIFICATION_MANAGER;
     }
 
     public static Collection<Module> getModules() {

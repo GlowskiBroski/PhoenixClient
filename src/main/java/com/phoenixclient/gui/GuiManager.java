@@ -9,6 +9,7 @@ import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.gui.module.ModuleGUI;
 import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.module.Module;
+import com.phoenixclient.util.actions.DoOnce;
 import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
@@ -40,10 +41,8 @@ public class GuiManager extends Module {
      * This action is subscribed on instantiation and detects for key presses to open any of the client's GUIs
      */
     public EventAction constUpdateGuiOpen = new EventAction(Event.EVENT_KEY_PRESS, this::updateGuiOpen);
-    /**
-     * This action is subscribed on instantiation and force draws the help hint when loading into the world
-     */
-    public EventAction constUpdateRenderStartingHint = new EventAction(Event.EVENT_RENDER_HUD, this::drawStartingHint);
+
+    private boolean isFirstEnable = true;
 
     private final SettingGUI<String> font = new SettingGUI<>(
             this,
@@ -110,6 +109,15 @@ public class GuiManager extends Module {
         return false;
     }
 
+    @Override
+    public void onEnabled() {
+        if (isFirstEnable) {
+            PhoenixClient.getNotificationManager().sendNotification("Press " + Component.translatable(GuiManager.MODULE_KEY_MAPPING.saveString()).getString() + " to open the module menu!",Color.WHITE,.25f);
+            PhoenixClient.getNotificationManager().sendNotification("Change this in default Minecraft controls menu!",Color.WHITE,.25f);
+            isFirstEnable = false;
+        }
+    }
+
     public void renderHud(Event event) {
         if (MC.options.hideGui) return;
 
@@ -122,19 +130,6 @@ public class GuiManager extends Module {
                 element.draw(graphics, new Vector(-1, -1)); //Draw each element on the HUD with a mousePos of NULL
                 element.runAnimation(9);
             }
-        }
-    }
-
-    private double hintFade = 255;
-
-    private void drawStartingHint() {
-        if (hintFade > 0) {
-            GuiGraphics graphics = new GuiGraphics(MC, MC.renderBuffers().bufferSource());
-            hintFade -= .25;
-            String hint = "Press " + Component.translatable(GuiManager.MODULE_KEY_MAPPING.saveString()).getString() + " to open the module menu!";
-            TextBuilder.start(hint, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue())).draw(graphics);
-            String hint2 = "Change this in default Minecraft controls menu!";
-            TextBuilder.start(hint2, new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint2) / 2, 2 + DrawUtil.getFontTextHeight() + 2), new Color(255, 255, 255, MathUtil.getBoundValue(hintFade, 0, 255).intValue())).draw(graphics);
         }
     }
 
