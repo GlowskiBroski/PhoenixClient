@@ -11,6 +11,7 @@ import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.file.CSVFile;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.Container;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
@@ -38,13 +39,16 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 public class ChunkTrailsWindow extends GuiWindow {
 
-    private final ResourceLocation chunkTrailTexture = ResourceLocation.fromNamespaceAndPath("phoenixclient", "pc_chunktrailtexture");
+    private final ResourceLocation chunkTrailResourceLocation = ResourceLocation.fromNamespaceAndPath("phoenixclient", "pc_chunktrailtexture");
+    private DynamicTexture chunkTrailTexture = null;
+    private DynamicTexture prevChunkTrailTexture = null;
+
     public HashMap<Vector, Boolean> loadedChunksMap = new HashMap<>(); //Key: ChunkPos, Value isNewChunk -- Save/Load this data as a CSV every time the client is loaded
 
     //TODO: Make these server dependent
-    private final CSVFile palletFileOW = new CSVFile("PhoenixClient/chunks", "newChunksPalletOverworld.csv");
-    private final CSVFile palletFileNE = new CSVFile("PhoenixClient/chunks", "newChunksPalletNether.csv");
-    private final CSVFile palletFileEN = new CSVFile("PhoenixClient/chunks", "newChunksPalletEnd.csv");
+    private final CSVFile paletteFileOW = new CSVFile("PhoenixClient/chunks", "newChunksPaletteOverworld.csv");
+    private final CSVFile paletteFileNE = new CSVFile("PhoenixClient/chunks", "newChunksPaletteNether.csv");
+    private final CSVFile paletteFileEN = new CSVFile("PhoenixClient/chunks", "newChunksPaletteEnd.csv");
 
     private final CSVFile liquidFileOW = new CSVFile("PhoenixClient/chunks", "newChunksLiquidOverworld.csv");
     private final CSVFile liquidFileNE = new CSVFile("PhoenixClient/chunks", "newChunksLiquidNether.csv");
@@ -58,7 +62,7 @@ public class ChunkTrailsWindow extends GuiWindow {
             this,
             "Mode",
             "Type of algorithm for new chunk detection",
-            "Pallet").setModeData("Pallet", "Liquid", "Copper");
+            "Palette").setModeData("Palette", "Liquid", "Copper");
 
     public final SettingGUI<Integer> windowSize = new SettingGUI<>(
             this,
@@ -69,8 +73,20 @@ public class ChunkTrailsWindow extends GuiWindow {
     public final SettingGUI<Double> scale = new SettingGUI<>(
             this,
             "Chunk Scale",
-            "Size of chunks in pixel (2 is 1 chunk / 4 pixels, 1 is 10 chunks/pixel). Smaller = more lag",
-            1d).setSliderData(.1, 2, .1);
+            "Size of chunks in pixel (2 is 1 chunk / 4 pixels, .2 is 5 chunks/pixel). Smaller = more lag",
+            1d).setSliderData(.2, 2, .1);
+
+    public final SettingGUI<Integer> updateDelay = new SettingGUI<>(
+            this,
+            "Update Delay",
+            "Image update delay in milliseconds",
+            750).setSliderData(250, 3000, 250);
+
+    public final SettingGUI<Boolean> multiThreadUpdates = new SettingGUI<>(
+            this,
+            "MultiThread Updates",
+            "Places image updating into a separate thread. GREATLY reduces lag. This may destroy your PC, only use this if you know you can!!",
+            false);
 
     private final OnChange<ResourceKey<Level>> onDimensionChange = new OnChange<>();
     private final DoOnce init = new DoOnce();
@@ -80,7 +96,7 @@ public class ChunkTrailsWindow extends GuiWindow {
 
     public ChunkTrailsWindow(Screen screen, Vector pos) {
         super(screen, "ChunkTrailsWindow", pos, new Vector(65, 65));
-        addSettings(mode, windowSize, scale);
+        addSettings(mode, windowSize, scale, updateDelay, multiThreadUpdates);
         new EventAction(Event.EVENT_PLAYER_UPDATE, () -> onUpdate(Event.EVENT_PLAYER_UPDATE)).subscribe();
         new EventAction(Event.EVENT_PACKET, () -> onPacket(Event.EVENT_PACKET)).subscribe();
     }
@@ -92,29 +108,50 @@ public class ChunkTrailsWindow extends GuiWindow {
 
         //Render Chunk Trail Texture.
         chunkTrailUpdateWatch.start();
-        if (chunkTrailUpdateWatch.hasTimePassedMS(250)) {
-            updateChunkTrailTexture();
+        if (chunkTrailUpdateWatch.hasTimePassedMS(updateDelay.get())) {
+            if (multiThreadUpdates.get()) {
+                Thread updateChunkTrailThread = new Thread(() -> chunkTrailTexture = getUpdatedChunkTrailTexture());
+                updateChunkTrailThread.setDaemon(true);
+                updateChunkTrailThread.start();
+            } else {
+                chunkTrailTexture = getUpdatedChunkTrailTexture();
+            }
             chunkTrailUpdateWatch.restart();
         }
-        DrawUtil.drawTexturedRect(graphics, chunkTrailTexture, getPos(), getSize());
 
-        //Draw Center Chunk
+        if (prevChunkTrailTexture != null) MC.getTextureManager().register(chunkTrailResourceLocation, prevChunkTrailTexture);
+        DrawUtil.drawTexturedRect(graphics, chunkTrailResourceLocation, getPos(), getSize());
+
+        //Draw Crosshair
         Vector center = getPos().getAdded(size / 2, size / 2);
         DrawUtil.drawRectangle(graphics, center, new Vector(1, 1), Color.BLUE);
+        DrawUtil.drawRectangle(graphics, center.getAdded(-1,0), new Vector(1, 1), Color.BLUE);
+        DrawUtil.drawRectangle(graphics, center.getAdded(0,1), new Vector(1, 1), Color.BLUE);
+        DrawUtil.drawRectangle(graphics, center.getAdded(1,0), new Vector(1, 1), Color.BLUE);
+        DrawUtil.drawRectangle(graphics, center.getAdded(0,-1), new Vector(1, 1), Color.BLUE);
+
+        //Draw Directions
+        TextBuilder.start("N",getPos().getAdded(getSize().getX() / 2 - DrawUtil.getFontTextWidth("N",.5) / 2,2).multiply(1/.5),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
+        TextBuilder.start("W",getPos().getAdded(2,getSize().getY() / 2 - DrawUtil.getDefaultTextHeight(.5) / 2).multiply(1/.5),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
+        TextBuilder.start("S",getPos().getAdded(getSize().getX() / 2 - DrawUtil.getFontTextWidth("S",.5) / 2,getSize().getY() - DrawUtil.getFontTextHeight(.5) - 1).multiply(1/.5),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
+        TextBuilder.start("E",getPos().getAdded(getSize().getX() - DrawUtil.getFontTextWidth("E",.5) - 2,getSize().getY() / 2 - DrawUtil.getDefaultTextHeight(.5) / 2).multiply(1/.5),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
+
+        prevChunkTrailTexture = chunkTrailTexture;
     }
 
     public void onPacket(PacketEvent event) {
         if (!isPinned()) return;
         if (MC.level == null) return;
+        if (MC.hasSingleplayerServer()) return;
         if (event.getPacket() instanceof ClientboundLevelChunkWithLightPacket p) { //This is the only packet sent to the client with chunk data
             ChunkPos pos = new ChunkPos(p.getX(), p.getZ());
             LevelChunk chunk = new LevelChunk(MC.level, pos);
             chunk.replaceWithPacketData(p.getChunkData().getReadBuffer(), p.getChunkData().getHeightmaps(), p.getChunkData().getBlockEntitiesTagsConsumer(p.getX(), p.getZ()));
 
             boolean isNewChunk = switch (mode.get()) {
-                case "Pallet" -> palletData(p, chunk);
-                case "Liquid" -> liquidData(p, chunk);
-                case "Copper" -> copperData(p, chunk);
+                case "Palette" -> isNewChunkPalette(p, chunk);
+                case "Liquid" -> isNewChunkLiquid(p, chunk);
+                case "Copper" -> isNewChunkCopper(p, chunk);
                 default -> throw new IllegalStateException("Unexpected value: " + mode.get());
             };
 
@@ -150,14 +187,14 @@ public class ChunkTrailsWindow extends GuiWindow {
         });
 
         chunkTrailSaveWatch.start();
-        if (chunkTrailSaveWatch.hasTimePassedS(50)) {
+        if (chunkTrailSaveWatch.hasTimePassedS(30)) {
             saveProperFile();
             chunkTrailSaveWatch.restart();
         }
     }
 
 
-    private void updateChunkTrailTexture() {
+    private DynamicTexture getUpdatedChunkTrailTexture() {
         int size = (int) (windowSize.get() / scale.get());
         NativeImage image = new NativeImage(NativeImage.Format.RGBA, size, size, false);
 
@@ -176,9 +213,7 @@ public class ChunkTrailsWindow extends GuiWindow {
                 image.setPixelRGBA(x,y,0);
             }
         }
-        DynamicTexture tex = new DynamicTexture(image);
-        tex.upload();
-        MC.getTextureManager().register(chunkTrailTexture, tex);
+        return new DynamicTexture(image);
     }
 
     private ArrayList<Vector> getSurroundingChunkPositions() {
@@ -200,10 +235,10 @@ public class ChunkTrailsWindow extends GuiWindow {
         ResourceKey<Level> ne = Level.NETHER;
         ResourceKey<Level> en = Level.END;
         switch (mode) {
-            case "Pallet" -> {
-                if (dimension.equals(ow)) return palletFileOW;
-                if (dimension.equals(ne)) return palletFileNE;
-                if (dimension.equals(en)) return palletFileEN;
+            case "Palette" -> {
+                if (dimension.equals(ow)) return paletteFileOW;
+                if (dimension.equals(ne)) return paletteFileNE;
+                if (dimension.equals(en)) return paletteFileEN;
             }
             case "Liquid" -> {
                 if (dimension.equals(ow)) return liquidFileOW;
@@ -220,14 +255,15 @@ public class ChunkTrailsWindow extends GuiWindow {
     }
 
     private void loadProperFile() {
-        PhoenixClient.getNotificationManager().sendNotification("Loading: " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
+        PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
         setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
     }
 
     private void saveProperFile() {
         Thread thread = new Thread(() -> {
-            PhoenixClient.getNotificationManager().sendNotification("Saving: " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
-            getProperFile(mode.get(), MC.level.dimension()).save(loadedChunksMap);
+            HashMap<Vector,Boolean> copyMap = (HashMap<Vector, Boolean>) loadedChunksMap.clone();
+            PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
+            getProperFile(mode.get(), MC.level.dimension()).save(copyMap);
         });
         thread.setDaemon(false);
         thread.setName("Chunk Trails Save Thread");
@@ -245,7 +281,7 @@ public class ChunkTrailsWindow extends GuiWindow {
 
     //-----------------------------------------------------------------------
 
-    private boolean liquidData(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
+    private boolean isNewChunkLiquid(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
         for (int x = 0; x < 16; x++) {
             for (int y = -64; y < 320; y++) {
                 for (int z = 0; z < 16; z++) {
@@ -257,9 +293,9 @@ public class ChunkTrailsWindow extends GuiWindow {
         return true;
     }
 
-    private boolean copperData(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
+    private boolean isNewChunkCopper(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
         for (int x = 0; x < 16; x++) {
-            for (int y = -64; y < 320; y++) {
+            for (int y = 0; y < 112; y++) {
                 for (int z = 0; z < 16; z++) {
                     Block block = chunk.getBlockState(new BlockPos(x, y, z)).getBlock();
                     if (block.equals(Blocks.COPPER_ORE)) return true;
@@ -270,7 +306,7 @@ public class ChunkTrailsWindow extends GuiWindow {
     }
 
     //TODO: Review this, and streamline this. it is VERY difficult to read. make less nesting...
-    private boolean palletData(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
+    private boolean isNewChunkPalette(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
         FriendlyByteBuf buf = packet.getChunkData().getReadBuffer();
         boolean isNewChunk = false;
         boolean chunkIsBeingUpdated = false;

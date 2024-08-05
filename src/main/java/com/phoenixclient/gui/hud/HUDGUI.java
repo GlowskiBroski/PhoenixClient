@@ -14,19 +14,20 @@ public class HUDGUI extends GUI {
     private final ArmorWindow armor = new ArmorWindow(this, Vector.NULL());
     private final CoordinatesWindow coordinates = new CoordinatesWindow(this, Vector.NULL());
     private final DirectionWindow direction = new DirectionWindow(this, Vector.NULL());
-    private final EntityListWindow entityList = new EntityListWindow(this, Vector.NULL());
-    private final EntityDataWindow entityData = new EntityDataWindow(this, Vector.NULL());
     private final FPSWindow fps = new FPSWindow(this, Vector.NULL());
     private final InventoryWindow inventory = new InventoryWindow(this, Vector.NULL());
     private final SpeedWindow speed = new SpeedWindow(this, Vector.NULL());
     private final TPSWindow tps = new TPSWindow(this, Vector.NULL());
     private final ModuleListWindow moduleList = new ModuleListWindow(this, Vector.NULL());
-    private final StorageListWindow storageList = new StorageListWindow(this, Vector.NULL());
-    private final ModuleKeybindListWindow moduleKeybindListWindow = new ModuleKeybindListWindow(this, Vector.NULL());
-    private final SignTextListWindow signTextListWindow = new SignTextListWindow(this, Vector.NULL());
 
-    private final PacketFlowListWindow packetFlowList = new PacketFlowListWindow(this, Vector.NULL());
-    private final ChunkTrailsWindow chunkRadar = new ChunkTrailsWindow(this, Vector.NULL());
+    //Optional windows: TODO: Add the ability to disable these shitters
+    private final EntityListWindow entityList = new EntityListWindow(this, Vector.NULL()); //Disable by default
+    private final EntityDataWindow entityData = new EntityDataWindow(this, Vector.NULL()); //Disable by default
+    private final StorageListWindow storageList = new StorageListWindow(this, Vector.NULL()); //Disable by default
+    private final ModuleKeybindListWindow moduleKeybindListWindow = new ModuleKeybindListWindow(this, Vector.NULL()); //Disable by default
+    private final SignTextListWindow signTextListWindow = new SignTextListWindow(this, Vector.NULL()); //Disable by default
+    private final PacketFlowListWindow packetFlowList = new PacketFlowListWindow(this, Vector.NULL()); //Disable by default
+    private final ChunkTrailsWindow chunkRadar = new ChunkTrailsWindow(this, Vector.NULL()); //Disable by default
 
     private final LogoWindow logoWindow = new LogoWindow(this, Vector.NULL());
 
