@@ -18,4 +18,9 @@ public abstract class MixinEntity {
     private void push(Entity entity, CallbackInfo ci) {
         if (MixinHooks.noPush) ci.cancel();
     }
+
+    @Inject(method = "isInWaterOrRain", at = @At(value = "HEAD"), cancellable = true)
+    private void overrideInWater(CallbackInfoReturnable<Boolean> cir) {
+        if (MixinHooks.alwaysRiptideTrident) cir.setReturnValue(true);
+    }
 }

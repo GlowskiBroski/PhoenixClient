@@ -173,14 +173,14 @@ public class ChunkTrailsWindow extends GuiWindow {
         //Change save files when changing mode OR dimension
         mode.runOnChange(() -> {
             if (mode.getPrevious() != null) {
-                PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.getPrevious() + " " + MC.level.dimension().location(), Color.WHITE);
+                //PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.getPrevious() + " " + MC.level.dimension().location(), Color.WHITE);
                 getProperFile(mode.getPrevious(), MC.level.dimension()).save(loadedChunksMap);
             }
             loadProperFile();
         });
         onDimensionChange.run(MC.level.dimension(), () -> {
             if (onDimensionChange.getPrevValue() != null) {
-                PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.get() + " " + onDimensionChange.getPrevValue().location(), Color.WHITE);
+                //PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.get() + " " + onDimensionChange.getPrevValue().location(), Color.WHITE);
                 getProperFile(mode.get(), onDimensionChange.getPrevValue()).save(loadedChunksMap);
             }
             loadProperFile();
@@ -261,9 +261,22 @@ public class ChunkTrailsWindow extends GuiWindow {
 
     private void saveProperFile() {
         Thread thread = new Thread(() -> {
-            HashMap<Vector,Boolean> copyMap = (HashMap<Vector, Boolean>) loadedChunksMap.clone();
-            PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
-            getProperFile(mode.get(), MC.level.dimension()).save(copyMap);
+            boolean shouldLoop;
+            do {
+                try {
+                    getProperFile(mode.get(), MC.level.dimension()).save(loadedChunksMap);
+                    shouldLoop = false;
+                    System.out.println("saved!");
+                } catch (ConcurrentModificationException e) {
+                    //Loops if a concurrent modification happens to force the save
+                    shouldLoop = true;
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            } while (shouldLoop);
         });
         thread.setDaemon(false);
         thread.setName("Chunk Trails Save Thread");

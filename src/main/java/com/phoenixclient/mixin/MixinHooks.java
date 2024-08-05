@@ -25,4 +25,6 @@ public class MixinHooks {
     public static boolean noFog = false;
 
     public static boolean showTrueDurability = false;
+
+    public static boolean alwaysRiptideTrident = false;
 }
