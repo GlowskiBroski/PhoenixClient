@@ -1,40 +1,45 @@
-package com.phoenixclient.module;
+package com.phoenixclient.gui.hud.element;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
+import com.phoenixclient.event.EventAction;
 import com.phoenixclient.event.events.PacketEvent;
-import com.phoenixclient.event.events.RenderLevelEvent;
+import com.phoenixclient.util.actions.DoOnce;
 import com.phoenixclient.util.actions.OnChange;
+import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.file.CSVFile;
 import com.phoenixclient.util.math.Vector;
-import com.phoenixclient.util.render.Draw3DUtil;
-import com.phoenixclient.util.render.TextBuilder;
+import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.setting.Container;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.material.FluidState;
 
 import java.awt.*;
 import java.util.*;
 
 import static com.phoenixclient.PhoenixClient.MC;
-import static net.minecraft.util.Mth.clamp;
 
-/**
- * Pallet mode taken from Trouser-Streak Meteor Addon.
- */
-public class ChunkTrails extends Module {
+public class ChunkTrailsWindow extends GuiWindow {
 
-    private HashMap<Vector, Boolean> loadedChunksMap = new HashMap<>(); //Key: ChunkPos, Value isNewChunk -- Save/Load this data as a CSV every time the client is loaded
+    private final ResourceLocation chunkTrailTexture = ResourceLocation.fromNamespaceAndPath("phoenixclient", "pc_chunktrailtexture");
+    public HashMap<Vector, Boolean> loadedChunksMap = new HashMap<>(); //Key: ChunkPos, Value isNewChunk -- Save/Load this data as a CSV every time the client is loaded
 
     //TODO: Make these server dependent
     private final CSVFile palletFileOW = new CSVFile("PhoenixClient/chunks", "newChunksPalletOverworld.csv");
@@ -49,47 +54,57 @@ public class ChunkTrails extends Module {
     private final CSVFile copperFileNE = new CSVFile("PhoenixClient/chunks", "newChunksCopperNether.csv");
     private final CSVFile copperFileEN = new CSVFile("PhoenixClient/chunks", "newChunksCopperEnd.csv");
 
-    private final OnChange<ResourceKey<Level>> onDimensionChange = new OnChange<>();
-
     private final SettingGUI<String> mode = new SettingGUI<>(
             this,
             "Mode",
             "Type of algorithm for new chunk detection",
             "Pallet").setModeData("Pallet", "Liquid", "Copper");
 
-    private final SettingGUI<Integer> range = new SettingGUI<>(
+    public final SettingGUI<Integer> windowSize = new SettingGUI<>(
             this,
-            "Extended Range",
-            "Extra range added on to the render distance for chunks",
-            0).setSliderData(0, 16, 1);
+            "Radar Size",
+            "Window size/Range of the radar. Larger = more lag",
+            64).setSliderData(32, 256, 16);
 
-    private final SettingGUI<Boolean> showNew = new SettingGUI<>(
+    public final SettingGUI<Double> scale = new SettingGUI<>(
             this,
-            "Show New",
-            "Highlights new chunks in RED",
-            true);
+            "Chunk Scale",
+            "Size of chunks in pixel (2 is 1 chunk / 4 pixels, 1 is 10 chunks/pixel). Smaller = more lag",
+            1d).setSliderData(.1, 2, .1);
 
-    private final SettingGUI<Boolean> showOld = new SettingGUI<>(
-            this,
-            "Show old",
-            "Highlights old chunks in GREEN",
-            true);
+    private final OnChange<ResourceKey<Level>> onDimensionChange = new OnChange<>();
+    private final DoOnce init = new DoOnce();
 
-    private final SettingGUI<Integer> yHeight = new SettingGUI<>(
-            this,
-            "Height",
-            "Y level of chunk highlights",
-            -64).setSliderData(-64,320,1);
+    private final StopWatch chunkTrailUpdateWatch = new StopWatch();
+    private final StopWatch chunkTrailSaveWatch = new StopWatch();
 
-    public ChunkTrails() {
-        super("ChunkTrails", "Highlights new chunks in red and old chunks in green. Follow green chunks as a trail!", Category.SERVER, false, -1);
-        addSettings(mode, range, showNew, showOld,yHeight);
-        addEventSubscriber(Event.EVENT_PACKET, this::onPacket);
-        addEventSubscriber(Event.EVENT_RENDER_LEVEL, this::onRender);
-        addEventSubscriber(Event.EVENT_PLAYER_UPDATE, this::onUpdate);
+    public ChunkTrailsWindow(Screen screen, Vector pos) {
+        super(screen, "ChunkTrailsWindow", pos, new Vector(65, 65));
+        addSettings(mode, windowSize, scale);
+        new EventAction(Event.EVENT_PLAYER_UPDATE, () -> onUpdate(Event.EVENT_PLAYER_UPDATE)).subscribe();
+        new EventAction(Event.EVENT_PACKET, () -> onPacket(Event.EVENT_PACKET)).subscribe();
+    }
+
+    @Override
+    protected void drawWindow(GuiGraphics graphics, Vector mousePos) {
+        int size = windowSize.get();
+        setSize(new Vector(size + 1, size + 1));
+
+        //Render Chunk Trail Texture.
+        chunkTrailUpdateWatch.start();
+        if (chunkTrailUpdateWatch.hasTimePassedMS(250)) {
+            updateChunkTrailTexture();
+            chunkTrailUpdateWatch.restart();
+        }
+        DrawUtil.drawTexturedRect(graphics, chunkTrailTexture, getPos(), getSize());
+
+        //Draw Center Chunk
+        Vector center = getPos().getAdded(size / 2, size / 2);
+        DrawUtil.drawRectangle(graphics, center, new Vector(1, 1), Color.BLUE);
     }
 
     public void onPacket(PacketEvent event) {
+        if (!isPinned()) return;
         if (MC.level == null) return;
         if (event.getPacket() instanceof ClientboundLevelChunkWithLightPacket p) { //This is the only packet sent to the client with chunk data
             ChunkPos pos = new ChunkPos(p.getX(), p.getZ());
@@ -108,73 +123,67 @@ public class ChunkTrails extends Module {
         }
     }
 
-    public void onRender(RenderLevelEvent event) {
-        try {
-            for (Vector chunkPos : getLoadedChunkPositions()) {
-                if (!loadedChunksMap.containsKey(chunkPos)) continue;
-                boolean isNew = loadedChunksMap.get(chunkPos);
-
-                if (showNew.get() && isNew) {
-                    Color color = Color.RED;
-                    Draw3DUtil.drawOutlineBox(event.getLevelPoseStack(), new AABB(0, 0, 0, 16, 0, 16), chunkPos.getMultiplied(16).y(yHeight.get()), color);
-                }
-
-                if (showOld.get() && !isNew) {
-                    Color color = Color.GREEN;
-                    Draw3DUtil.drawOutlineBox(event.getLevelPoseStack(), new AABB(0, 0, 0, 16, 0, 16), chunkPos.getMultiplied(16).y(yHeight.get()), color);
-                }
-            }
-        } catch (NullPointerException | ConcurrentModificationException e) {
-            //This shouldn't happen, but it may due to the desync between the render thread and game thread with the packets
-        }
-    }
-
     public void onUpdate(Event event) {
+        if (!isPinned()) return;
+        init.run(() -> {
+            //Load Current File
+            PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
+            setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
+            onDimensionChange.run(MC.level.dimension(), () -> {});
+            mode.runOnChange(() -> {});
+        });
+
+        //Change save files when changing mode OR dimension
         mode.runOnChange(() -> {
             if (mode.getPrevious() != null) {
-                PhoenixClient.getNotificationManager().sendNotification("Saving: " + mode.getPrevious() + " " + MC.level.dimension().location(),Color.WHITE);
+                PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.getPrevious() + " " + MC.level.dimension().location(), Color.WHITE);
                 getProperFile(mode.getPrevious(), MC.level.dimension()).save(loadedChunksMap);
             }
-            loadCurrentFile();
+            loadProperFile();
         });
         onDimensionChange.run(MC.level.dimension(), () -> {
             if (onDimensionChange.getPrevValue() != null) {
-                PhoenixClient.getNotificationManager().sendNotification("Saving: " + mode.get() + " " + onDimensionChange.getPrevValue().location(),Color.WHITE);
+                PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.get() + " " + onDimensionChange.getPrevValue().location(), Color.WHITE);
                 getProperFile(mode.get(), onDimensionChange.getPrevValue()).save(loadedChunksMap);
             }
-            loadCurrentFile();
+            loadProperFile();
         });
+
+        chunkTrailSaveWatch.start();
+        if (chunkTrailSaveWatch.hasTimePassedS(50)) {
+            saveProperFile();
+            chunkTrailSaveWatch.restart();
+        }
     }
 
-    @Override
-    public String getModTag() {
-        return mode.get();
+
+    private void updateChunkTrailTexture() {
+        int size = (int) (windowSize.get() / scale.get());
+        NativeImage image = new NativeImage(NativeImage.Format.RGBA, size, size, false);
+
+        Vector playerChunkPos = new Vector((int) MC.player.getX() / 16, 0, (int) MC.player.getZ() / 16);
+        for (Vector vec : getSurroundingChunkPositions()) {
+            Vector xzPos = vec.getSubtracted(playerChunkPos);
+            Vector xyPos = xzPos.y(xzPos.getZ()).z(0);
+            int x = Math.clamp((int) xyPos.getX() + size / 2,0,size - 1);
+            int y = Math.clamp((int) xyPos.getY() + size / 2,0,size - 1);
+            if (loadedChunksMap.containsKey(vec)) {
+                boolean isNew = loadedChunksMap.get(vec);
+                Color color = isNew ? Color.RED : Color.GREEN;
+                int hash = color.getAlpha() << 24 | color.getBlue() << 16 | color.getGreen() << 8 | color.getRed();
+                image.setPixelRGBA(x,y,hash);
+            } else {
+                image.setPixelRGBA(x,y,0);
+            }
+        }
+        DynamicTexture tex = new DynamicTexture(image);
+        tex.upload();
+        MC.getTextureManager().register(chunkTrailTexture, tex);
     }
 
-    @Override
-    public void onEnabled() {
-        if (updateDisableOnEnabled()) return;
-        //Load Current File
-        PhoenixClient.getNotificationManager().sendNotification("Loading: " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
-        setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
-        onDimensionChange.run(MC.level.dimension(),() -> {});
-        mode.runOnChange(() -> {});
-    }
-
-    @Override
-    public void onDisabled() {
-        //Save Current File
-        PhoenixClient.getNotificationManager().sendNotification("Saving: " + mode.get() + " " + MC.level.dimension().location(),Color.WHITE);
-        getProperFile(mode.get(), MC.level.dimension()).save(loadedChunksMap);
-
-        //Release memory
-        loadedChunksMap = new HashMap<>();
-        System.gc();
-    }
-
-    private ArrayList<Vector> getLoadedChunkPositions() {
+    private ArrayList<Vector> getSurroundingChunkPositions() {
         ArrayList<Vector> chunkList = new ArrayList<>();
-        int renderDistance = MC.options.renderDistance().get() + range.get();
+        int renderDistance = (int) (windowSize.get() / 2 / scale.get());
 
         for (int x = -renderDistance; x <= renderDistance; x++) {
             for (int z = -renderDistance; z <= renderDistance; z++) {
@@ -210,9 +219,19 @@ public class ChunkTrails extends Module {
         throw new IllegalStateException("Unexpected value: " + mode);
     }
 
-    private void loadCurrentFile() {
-        PhoenixClient.getNotificationManager().sendNotification("Loading: " + mode.get() + " " + MC.level.dimension().location(),Color.WHITE);
+    private void loadProperFile() {
+        PhoenixClient.getNotificationManager().sendNotification("Loading: " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
         setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
+    }
+
+    private void saveProperFile() {
+        Thread thread = new Thread(() -> {
+            PhoenixClient.getNotificationManager().sendNotification("Saving: " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
+            getProperFile(mode.get(), MC.level.dimension()).save(loadedChunksMap);
+        });
+        thread.setDaemon(false);
+        thread.setName("Chunk Trails Save Thread");
+        thread.start();
     }
 
     private void setMapFromFile(CSVFile file) {
@@ -224,27 +243,38 @@ public class ChunkTrails extends Module {
         loadedChunksMap = newMap;
     }
 
+    //-----------------------------------------------------------------------
 
+    private boolean liquidData(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
+        for (int x = 0; x < 16; x++) {
+            for (int y = -64; y < 320; y++) {
+                for (int z = 0; z < 16; z++) {
+                    FluidState fluid = chunk.getFluidState(x, y, z);
+                    if (!fluid.isEmpty() && !fluid.isSource()) return false;
+                }
+            }
+        }
+        return true;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    private boolean copperData(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
+        for (int x = 0; x < 16; x++) {
+            for (int y = -64; y < 320; y++) {
+                for (int z = 0; z < 16; z++) {
+                    Block block = chunk.getBlockState(new BlockPos(x, y, z)).getBlock();
+                    if (block.equals(Blocks.COPPER_ORE)) return true;
+                }
+            }
+        }
+        return false;
+    }
 
     //TODO: Review this, and streamline this. it is VERY difficult to read. make less nesting...
     private boolean palletData(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
         FriendlyByteBuf buf = packet.getChunkData().getReadBuffer();
         boolean isNewChunk = false;
         boolean chunkIsBeingUpdated = false;
-        Container<Boolean> beingUpdatedDetector = new Container<>(false);
+        com.phoenixclient.util.setting.Container<Boolean> beingUpdatedDetector = new Container<>(false);
 
 
         if (buf.readableBytes() < 3) return false; // Ensure we have at least 3 bytes (short + byte)
@@ -411,14 +441,5 @@ public class ChunkTrails extends Module {
 
         return isNewChunk || chunkIsBeingUpdated;
     }
-
-    private boolean liquidData(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
-        return true;
-    }
-
-    private boolean copperData(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
-        return true;
-    }
-
 
 }

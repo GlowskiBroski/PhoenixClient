@@ -26,6 +26,7 @@ public class HUDGUI extends GUI {
     private final SignTextListWindow signTextListWindow = new SignTextListWindow(this, Vector.NULL());
 
     private final PacketFlowListWindow packetFlowList = new PacketFlowListWindow(this, Vector.NULL());
+    private final ChunkTrailsWindow chunkRadar = new ChunkTrailsWindow(this, Vector.NULL());
 
     private final LogoWindow logoWindow = new LogoWindow(this, Vector.NULL());
 
@@ -47,6 +48,7 @@ public class HUDGUI extends GUI {
                 storageList,
                 signTextListWindow,
                 //packetFlowList,
+                chunkRadar,
 
                 moduleKeybindListWindow,
                 moduleList,

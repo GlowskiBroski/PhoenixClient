@@ -8,6 +8,7 @@ import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.setting.SettingGUI;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -51,6 +52,7 @@ public abstract class Module implements ISettingParent, Comparable<Module> {
 
     public void enable() {
         enabled.set(true);
+        if (PhoenixClient.getNotificationManager().enableDisable.get()) PhoenixClient.getNotificationManager().sendNotification(getTitle() + " Enabled!", Color.WHITE);
         onEnabled();
         for (EventAction action : getEventActions()) action.subscribe();
     }
@@ -58,6 +60,7 @@ public abstract class Module implements ISettingParent, Comparable<Module> {
     public void disable() {
         for (EventAction action : getEventActions()) action.unsubscribe();
         onDisabled();
+        if (PhoenixClient.getNotificationManager().enableDisable.get()) PhoenixClient.getNotificationManager().sendNotification(getTitle() + " Disabled!", Color.WHITE);
         enabled.set(false);
     }
 
@@ -117,7 +120,7 @@ public abstract class Module implements ISettingParent, Comparable<Module> {
 
     protected boolean updateDisableOnEnabled() {
         if (MC.player == null) {
-            disable();
+            enabled.set(false);
             for (EventAction action : getEventActions()) action.unsubscribe();
             return true;
         }

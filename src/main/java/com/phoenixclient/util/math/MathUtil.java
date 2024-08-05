@@ -2,6 +2,7 @@ package com.phoenixclient.util.math;
 
 public class MathUtil {
 
+    @Deprecated //TODO: use Math.Clamp you fucking idiot
     public static Number getBoundValue(Number value, Number low, Number high) {
         if (value.doubleValue() < low.doubleValue()) value = low;
         if (value.doubleValue() > high.doubleValue()) value = high;
