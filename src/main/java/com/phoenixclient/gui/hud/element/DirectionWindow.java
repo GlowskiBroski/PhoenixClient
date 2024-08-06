@@ -1,5 +1,6 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
@@ -11,15 +12,13 @@ import net.minecraft.core.Direction;
 
 import java.awt.*;
 
-import static com.phoenixclient.PhoenixClient.MC;
-
 public class DirectionWindow extends GuiWindow {
 
     private final SettingGUI<Boolean> label;
     private final SettingGUI<String> mode;
 
-    public DirectionWindow(Screen screen, Vector pos) {
-        super(screen, "DirectionWindow", pos, new Vector(60, 13));
+    public DirectionWindow(Screen screen) {
+        super(screen, "DirectionWindow","Displays the players cardinal/coordinate direction", new Vector(60, 13),true);
         this.label = new SettingGUI<>(this, "Label", "Show the label", false);
         this.mode = new SettingGUI<>(this, "Mode", "Mode of Direction", "All").setModeData("All", "Compass", "Coordinate");
         addSettings(label, mode);

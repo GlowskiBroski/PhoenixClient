@@ -4,6 +4,7 @@ import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.gui.WidgetUtil;
 import com.phoenixclient.gui.element.GuiButton;
 import com.phoenixclient.gui.element.GuiWidget;
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
@@ -21,8 +22,8 @@ public class SettingsWindow extends GuiWindow {
     private final GuiButton closeButton;
     private final GuiWindow parentWindow;
 
-    public SettingsWindow(Screen screen, GuiWindow parentWindow, Vector pos) {
-        super(screen, parentWindow.getTitle() + "_settings", pos, new Vector(100, 20));
+    public SettingsWindow(Screen screen, GuiWindow parentWindow) {
+        super(screen, parentWindow.getTitle() + "_settings", "NULL", new Vector(100, 20),true);
         this.parentWindow = parentWindow;
         ColorManager closeButtonManager = new ColorManager(new Color(200, 0, 0));
         this.closeButton = new GuiButton(getScreen(), "X", getPos(), getSize(), closeButtonManager, (args) -> {
@@ -48,8 +49,7 @@ public class SettingsWindow extends GuiWindow {
             if (!widget.shouldDrawSetting()) continue;
             backgroundHeight += 18;
         }
-        Color BGC = colorManager.getBackgroundColor();
-        DrawUtil.drawRectangleRound(graphics,getPos().getAdded(0,getSize().getY()),new Vector(getSize().getX(),backgroundHeight),new Color(BGC.getRed(), BGC.getGreen(), BGC.getBlue(), BGC.getAlpha() / 2));
+        DrawUtil.drawRectangleRound(graphics,getPos().getAdded(0,getSize().getY()),new Vector(getSize().getX(),backgroundHeight),colorManager.getBackgroundColor());
 
         drawWidgets(graphics, mousePos);
     }

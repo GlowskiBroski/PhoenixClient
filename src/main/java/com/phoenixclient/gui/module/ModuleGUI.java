@@ -21,10 +21,11 @@ public class ModuleGUI extends GUI {
     private final ModuleMenu movementMenu = new ModuleMenu(this, Module.Category.MOTION,new Vector(2,topHeight + 52 * 2));
     private final ModuleMenu renderMenu = new ModuleMenu(this, Module.Category.RENDER,new Vector(2,topHeight + 52 * 3));
     private final ModuleMenu serverMenu = new ModuleMenu(this, Module.Category.SERVER,new Vector(2,topHeight + 52 * 4));
+    private final ModuleMenu managerMenu = new ModuleMenu(this, Module.Category.MANAGERS,new Vector(2,topHeight + 52 * 5));
 
     public ModuleGUI(Component title) {
         super(title);
-        addGuiElements(combatMenu,playerMenu, movementMenu, renderMenu,serverMenu,moduleOptionsMenu);
+        addGuiElements(combatMenu,playerMenu, movementMenu, renderMenu,serverMenu,moduleOptionsMenu,managerMenu);
     }
 
     //TODO: Autoscale this gui against the gui scale: use the code you made in ShulkerView to accomplish :)

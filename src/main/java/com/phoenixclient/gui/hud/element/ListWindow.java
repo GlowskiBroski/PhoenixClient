@@ -1,5 +1,6 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
@@ -28,25 +29,34 @@ public abstract class ListWindow extends GuiWindow {
     protected final SettingGUI<Double> scale;
     protected final SettingGUI<String> side;
 
-    protected LinkedHashMap<String,ListInfo> previousList = null;
+    protected LinkedHashMap<String, ListInfo> previousList = null;
 
-    private final HashMap<String,Double> animationFadeInMap = new HashMap<>();
-    private final HashMap<String,Double> animationFadeOutMap = new HashMap<>(); //TODO: Implement this
+    private final HashMap<String, Double> animationFadeInMap = new HashMap<>();
+    private final HashMap<String, Double> animationFadeOutMap = new HashMap<>(); //TODO: Implement this
 
-    private final HashMap<Integer,AnimationSet> animationLocationMap = new HashMap<>();
+    private final HashMap<Integer, AnimationSet> animationLocationMap = new HashMap<>();
 
-    public ListWindow(Screen screen, String title, Vector pos) {
-        super(screen, title, pos, Vector.NULL());
+    public ListWindow(Screen screen, String title, String description, boolean defaultEnabled) {
+        super(screen, title, description, Vector.NULL(), defaultEnabled);
         this.label = new SettingGUI<>(this, "Label", "Show the label", true);
         this.scale = new SettingGUI<>(this, "Scale", "The scale of the list", 1d).setSliderData(.25d, 1d, .05d);
         //TODO: ADD CENTER MODE
-        this.side = new SettingGUI<>(this, "Side", "The side of the list", "Left").setModeData("Left","Right");
+        this.side = new SettingGUI<>(this, "Side", "The side of the list", "Left").setModeData("Left", "Right");
         addSettings(label, scale, side);
     }
 
     protected abstract LinkedHashMap<String, ListInfo> getListMap();
 
     protected abstract String getLabel();
+
+    @Override
+    public void onDisabled() {
+        super.onDisabled();
+        previousList.clear();
+        animationFadeInMap.clear();
+        animationFadeOutMap.clear();
+        animationLocationMap.clear();
+    }
 
     //this MAY cause performance problems. I think I fixed some, but the animations may still be problematic
 
@@ -123,24 +133,24 @@ public abstract class ListWindow extends GuiWindow {
     private void updateAnimationExpand(Map.Entry<String, ListInfo> set, int index) {
         if (!previousList.containsKey(set.getKey())) {
             animationFadeInMap.put(set.getKey(), 0d);
-            animationLocationMap.put(index,new AnimationSet(true,0));
+            animationLocationMap.put(index, new AnimationSet(true, 0));
         }
     }
 
-    private void updateAnimationRetract(LinkedHashMap<String , ListInfo> listMap, float scale) {
+    private void updateAnimationRetract(LinkedHashMap<String, ListInfo> listMap, float scale) {
         int removedIndex = 0;
-        for (Map.Entry<String , ListInfo> prevSet : previousList.entrySet()) {
+        for (Map.Entry<String, ListInfo> prevSet : previousList.entrySet()) {
             if (!listMap.containsKey(prevSet.getKey())) {
-                animationLocationMap.put(removedIndex - 1,new AnimationSet(false,(int)(DrawUtil.getFontTextHeight(scale) + 2 * scale)));
+                animationLocationMap.put(removedIndex - 1, new AnimationSet(false, (int) (DrawUtil.getFontTextHeight(scale) + 2 * scale)));
                 break;
             }
-            removedIndex ++;
+            removedIndex++;
         }
     }
 
     private void updateAnimationOffset(float scale) {
         double rate = 2;
-        int max = (int)((DrawUtil.getFontTextHeight() + 2) * scale);
+        int max = (int) ((DrawUtil.getFontTextHeight() + 2) * scale);
         int min = 0;
 
         for (Map.Entry<Integer, AnimationSet> set : animationLocationMap.entrySet()) {
@@ -160,8 +170,8 @@ public abstract class ListWindow extends GuiWindow {
         if (previousList != null) nextList = (LinkedHashMap<String, ListInfo>) previousList.clone();
 
         for (Map.Entry<String, ListInfo> prevSet : currentList.entrySet()) {
-            if (nextList.containsKey(prevSet.getKey())) nextList.put(prevSet.getKey(),prevSet.getValue());
-            else nextList.put(prevSet.getKey(),prevSet.getValue());
+            if (nextList.containsKey(prevSet.getKey())) nextList.put(prevSet.getKey(), prevSet.getValue());
+            else nextList.put(prevSet.getKey(), prevSet.getValue());
         }
 
         ArrayList<String> removalQueue = new ArrayList<>();
@@ -194,13 +204,14 @@ public abstract class ListWindow extends GuiWindow {
     protected record ListInfo(String tag, Color colorMain, Color colorTag) {
         //For ListInfos without a tag
         public ListInfo(Color colorMain) {
-            this("",colorMain,new Color(0,0,0,0));
+            this("", colorMain, new Color(0, 0, 0, 0));
         }
     }
 
     public static class AnimationSet {
         public boolean expand;
         public int offset;
+
         public AnimationSet(boolean expand, int offset) {
             this.expand = expand;
             this.offset = offset;

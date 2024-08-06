@@ -1,7 +1,7 @@
 package com.phoenixclient.gui.module.element;
 
 import com.phoenixclient.PhoenixClient;
-import com.phoenixclient.util.actions.StopWatch;
+import com.phoenixclient.gui.element.GuiToggle;
 import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
@@ -10,38 +10,36 @@ import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.render.TextBuilder;
+import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.awt.*;
 
-import static com.phoenixclient.PhoenixClient.MC;
-
 //TODO: Make buttons smaller once more modules are added
 
-public class ModuleToggle extends GuiWidget {
-
-    private final String title;
+public class ModuleToggle extends GuiToggle {
 
     private final Module module;
 
-    protected float toggleFade;
     public boolean selectedSettings;
+    public int selectionFade = 200;
 
     public ModuleToggle(Screen screen, Module module, Vector pos, Vector size, ColorManager colorManager) {
-        super(screen,pos,size);
+        super(screen,module.getTitle(),(SettingGUI<Boolean>) module.getEnabledContainer(),pos,size,colorManager);
         this.module = module;
-        this.title = module.getTitle();
-        this.colorManager = colorManager;
-        this.toggleFade = 0;
         this.selectedSettings = false;
     }
 
-    public int selectionFade = 200;
-
     @Override
     protected void drawWidget(GuiGraphics graphics, Vector mousePos) {
-        //Draw Background
+
+        //Tooltip Override
+        setTooltipVisible(false);
+        if (isMouseOver()) hoverWatch.start();
+        else hoverWatch.stop();
+
+        //Draw Background (THIS IS DIFFERENT, THEREFORE WE IGNORE THE SUPER CALL)
         Color bgc = colorManager.getBackgroundColor();
         DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(bgc.getRed()/2,bgc.getGreen()/2,bgc.getBlue()/2,100));
 
@@ -52,11 +50,8 @@ public class ModuleToggle extends GuiWidget {
         //Draw Text
         double scale = 1;
         if (DrawUtil.getFontTextWidth(getTitle()) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(getTitle()) + 2);
-        //DrawUtil.drawFontText(graphics, getTitle(), getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE,true,(float)scale,false);
 
-        TextBuilder.start(getTitle(),getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE)
-                .scale((float)scale)
-                .draw(graphics);
+        TextBuilder.start(getTitle(),getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE).scale((float)scale).draw(graphics);
 
         //Draw Selection Blip
         if (selectedSettings) DrawUtil.drawRectangleRound(graphics,pos.get(),size.get(),new Color(255,255,255, MathUtil.getBoundValue(selectionFade,0,255).intValue()));
@@ -83,18 +78,11 @@ public class ModuleToggle extends GuiWidget {
     @Override
     public void runAnimation(int speed) {
         super.runAnimation(speed);
-        toggleFade = getNextFade(module.isEnabled(), toggleFade, 0, 150, 2f * speed);
         if (selectionFade <= 0) {
             selectedSettings = false;
             selectionFade = 200;
         }
         if (selectedSettings) selectionFade -= speed;
-    }
-
-
-
-    public String getTitle() {
-        return title;
     }
 
     public Module getModule() {

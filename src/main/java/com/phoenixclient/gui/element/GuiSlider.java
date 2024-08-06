@@ -30,7 +30,7 @@ public class GuiSlider<T extends Number> extends GuiWidget {
     }
 
     public GuiSlider(Screen screen, SettingGUI<T> setting, Vector pos, Vector size, ColorManager colorManager) {
-        this(screen, setting.getName(), setting, pos, size, colorManager);
+        this(screen, setting.getTitle(), setting, pos, size, colorManager);
     }
 
 

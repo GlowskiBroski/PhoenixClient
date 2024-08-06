@@ -1,5 +1,6 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
@@ -17,8 +18,8 @@ public class SpeedWindow extends GuiWindow {
     private final SettingGUI<Boolean> label;
     public SettingGUI<String> mode;
 
-    public SpeedWindow(Screen screen, Vector pos) {
-        super(screen, "SpeedWindow", pos, Vector.NULL());
+    public SpeedWindow(Screen screen) {
+        super(screen, "SpeedWindow", "Displays the players current speed, in blocks (m) per second", Vector.NULL(),true);
         this.label = new SettingGUI<>(this, "Label", "Show the label", true);
         this.mode = new SettingGUI<>(this, "Mode", "Detects whether speed is in XY or XYZ", "2D").setModeData("2D", "3D");
         addSettings(label, mode);

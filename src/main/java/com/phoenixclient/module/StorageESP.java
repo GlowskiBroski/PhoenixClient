@@ -88,7 +88,7 @@ public class StorageESP extends Module {
     public void onRender(RenderLevelEvent event) {
         PoseStack levelStack = event.getLevelPoseStack();
 
-        for (BlockEntity e : StorageListWindow.BLOCK_ENTITY_LIST) {
+        for (BlockEntity e : StorageListWindow.getBlockEntities()) {
             AABB bb = AABB.ofSize(new Vector(e.getBlockPos()).getVec3(), 1, 1, 1);
             AABB chestBB = AABB.ofSize(new Vector(e.getBlockPos()).getVec3(), .875, .875, .875);
 

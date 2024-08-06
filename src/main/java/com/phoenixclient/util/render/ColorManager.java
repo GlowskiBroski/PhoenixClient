@@ -103,7 +103,8 @@ public class ColorManager {
         GREEN(new Color(54, 220, 66),new Color(23, 98, 12),new Color(92, 190, 100)),
         SEAGREEN(new Color(40,215,165),new Color(17,56,88),new Color(40,215,215)),
         BLUE(new Color(50, 150, 255),new Color(8, 67, 117),new Color(50, 175, 250)),
-        LIGHTBLUE(new Color(Color.HSBtoRGB(.52f,200/255f,200/255f)),new Color(Color.HSBtoRGB(.59f,175/255f,100/255f)),new Color(Color.HSBtoRGB(.52f,200/255f,255/255f))),
+        //LIGHTBLUE(new Color(Color.HSBtoRGB(.52f,200/255f,200/255f)),new Color(Color.HSBtoRGB(.59f,175/255f,100/255f)),new Color(Color.HSBtoRGB(.52f,200/255f,255/255f))),
+        LIGHTBLUE(new Color(Color.HSBtoRGB(.50f,200/255f,200/255f)),new Color(Color.HSBtoRGB(.61f,175/255f,100/255f)),new Color(Color.HSBtoRGB(.54f,200/255f,255/255f))),
         PURPLE(new Color(192, 56, 239), new Color(72, 12, 98),new Color(172, 92, 190));
 
         final Color baseColor;

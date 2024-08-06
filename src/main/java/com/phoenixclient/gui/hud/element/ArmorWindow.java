@@ -1,5 +1,6 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.setting.SettingGUI;
@@ -18,8 +19,8 @@ public class ArmorWindow extends GuiWindow {
     public SettingGUI<String> mode;
     public SettingGUI<Double> scale;
 
-    public ArmorWindow(Screen screen, Vector pos) {
-        super(screen, "ArmorWindow",pos, new Vector(65,15));
+    public ArmorWindow(Screen screen) {
+        super(screen, "ArmorWindow","Shows the players currently worn armor", new Vector(65,15),true);
         this.mode = new SettingGUI<>(this,"Mode","The direction the armor is rendered","Horizontal").setModeData("Horizontal","Vertical");
         this.scale = new SettingGUI<>(this,"Scale","The scale of the armor",1d).setSliderData(.25d,1d,.05d);
         addSettings(mode,scale);

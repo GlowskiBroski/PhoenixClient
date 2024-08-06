@@ -1,5 +1,6 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
@@ -23,8 +24,8 @@ public class InventoryWindow extends GuiWindow {
     public SettingGUI<Integer> transparency;
     public SettingGUI<Double> scale;
 
-    public InventoryWindow(Screen screen, Vector pos) {
-        super(screen,"InventoryWindow" ,pos, new Vector(178,82));
+    public InventoryWindow(Screen screen) {
+        super(screen,"InventoryWindow" ,"Displays the player's inventory", new Vector(178,82),true);
         transparency = new SettingGUI<>(this,"Transparency","The transparency of the inventory window",125).setSliderData(0,255,1);
         scale = new SettingGUI<>(this,"Scale","The scale of the inventory window",1d).setSliderData(.25d,1d,.05d);
         addSettings(transparency,scale);

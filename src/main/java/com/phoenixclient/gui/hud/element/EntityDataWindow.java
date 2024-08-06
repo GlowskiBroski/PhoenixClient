@@ -1,5 +1,6 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
@@ -7,7 +8,6 @@ import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
@@ -35,8 +35,8 @@ public class EntityDataWindow extends GuiWindow {
     private String currentOwnerName;
     private Entity prevHoveredEntity;
 
-    public EntityDataWindow(Screen screen, Vector pos) {
-        super(screen, "EntityDataWindow", pos, Vector.NULL());
+    public EntityDataWindow(Screen screen) {
+        super(screen, "EntityDataWindow", "Displays data about the hovered entity, including health, owner, name, etc.", Vector.NULL(),false);
         this.label = new SettingGUI<>(this,"Label","Show the label",true);
         addSettings(label);
     }

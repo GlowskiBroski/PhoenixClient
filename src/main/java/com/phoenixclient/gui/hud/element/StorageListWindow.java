@@ -1,36 +1,25 @@
 package com.phoenixclient.gui.hud.element;
 
-import com.phoenixclient.event.Event;
-import com.phoenixclient.event.EventAction;
-import com.phoenixclient.event.events.PacketEvent;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
 public class StorageListWindow extends ListWindow {
 
-    public static ArrayList<BlockEntity> BLOCK_ENTITY_LIST = new ArrayList<>();
-
     private final SettingGUI<Integer> range;
 
-    public StorageListWindow(Screen screen, Vector pos) {
-        super(screen, "StorageListWindow", pos);
+    public StorageListWindow(Screen screen) {
+        super(screen, "StorageListWindow", "Lists all nearby storage blocks, and their counts",false);
         this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",320).setSliderData(1,400,1);
         addSettings(range);
     }
@@ -44,7 +33,6 @@ public class StorageListWindow extends ListWindow {
 
     @Override
     protected LinkedHashMap<String , ListInfo> getListMap() {
-        BLOCK_ENTITY_LIST = getBlockEntities();
 
         LinkedHashMap<String, ListInfo> currentList = new LinkedHashMap<>();
         for (BlockEntity blockEntity : getBlockEntities()) {
@@ -93,14 +81,14 @@ public class StorageListWindow extends ListWindow {
         return Mth.sqrt(x * x + y * y + z * z);
     }
 
-    private static ArrayList<BlockEntity> getBlockEntities() {
+    public static ArrayList<BlockEntity> getBlockEntities() {
         ArrayList<BlockEntity> list = new ArrayList<>();
         for (LevelChunk chunk : getLoadedChunks()) list.addAll(chunk.getBlockEntities().values());
         return list;
     }
 
     //TODO: Rework this using a mixin because its slow
-    private static ArrayList<LevelChunk> getLoadedChunks() {
+    public static ArrayList<LevelChunk> getLoadedChunks() {
         ArrayList<LevelChunk> chunkList = new ArrayList<>();
         int renderDistance = MC.options.renderDistance().get();
 

@@ -1,5 +1,6 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
@@ -19,8 +20,8 @@ public class CoordinatesWindow extends GuiWindow {
     private final SettingGUI<String> coordinatesMode;
     private final SettingGUI<String> coordinatesSide;
 
-    public CoordinatesWindow(Screen screen, Vector pos) {
-        super(screen, "CoordinatesWindow", pos, Vector.NULL());
+    public CoordinatesWindow(Screen screen) {
+        super(screen, "CoordinatesWindow", "Displays the players coordinates",Vector.NULL(),true);
         this.label = new SettingGUI<>(this, "Label", "Show the label", true);
         this.showNether = new SettingGUI<>(this, "Nether", "Shows the nether coordinates conversion", false);
         this.coordinatesMode = new SettingGUI<>(this, "Mode", "Mode of coordinates", "Horizontal").setModeData("Horizontal", "Vertical");

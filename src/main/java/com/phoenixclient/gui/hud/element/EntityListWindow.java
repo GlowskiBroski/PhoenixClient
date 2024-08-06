@@ -9,9 +9,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
@@ -20,8 +18,8 @@ public class EntityListWindow extends ListWindow {
     private final SettingGUI<Integer> range;
     private final SettingGUI<Boolean> combineItems;
 
-    public EntityListWindow(Screen screen, Vector pos) {
-        super(screen, "EntityListWindow", pos);
+    public EntityListWindow(Screen screen) {
+        super(screen, "EntityListWindow","Lists all nearby entities, with their count. This includes items",false);
         this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",64).setSliderData(1,400,1);
         this.combineItems = new SettingGUI<>(this,"Combine Items","Combines items into 1 category",true);
         addSettings(range,combineItems);

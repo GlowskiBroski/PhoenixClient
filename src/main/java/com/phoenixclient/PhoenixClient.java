@@ -2,6 +2,7 @@ package com.phoenixclient;
 
 import com.phoenixclient.gui.GuiManager;
 import com.phoenixclient.gui.NotificationManager;
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.module.*;
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.RotationManager;
@@ -21,14 +22,17 @@ import java.util.List;
 public class PhoenixClient implements ModInitializer {
 
     public static final Minecraft MC = Minecraft.getInstance();
+    private static final LinkedHashMap<String,Module> MODULES_LIST = new LinkedHashMap<>(); //Key value pair: ModName, Module
 
     private static final SettingManager SETTING_MANAGER = new SettingManager(new CSVFile("PhoenixClient", "settings"));
-    private static final GuiManager GUI_MANAGER = new GuiManager();
-    private static final ColorManager COLOR_MANAGER = new ColorManager(ColorManager.Theme.SEAGREEN);
+    private static final ColorManager COLOR_MANAGER = new ColorManager(ColorManager.Theme.LIGHTBLUE);
     private static final RotationManager ROTATION_MANAGER = new RotationManager();
+
+    //Managers that act as modules
+    private static final GuiManager GUI_MANAGER = new GuiManager();
     private static final NotificationManager NOTIFICATION_MANAGER = new NotificationManager();
+
     private static FontRenderer FONT_RENDERER = new FontRenderer("Arial", Font.PLAIN);
-    private static final LinkedHashMap<String,Module> MODULES_LIST = new LinkedHashMap<>(); //Key value pair: ModName, Module
 
 
     @Override
@@ -91,6 +95,9 @@ public class PhoenixClient implements ModInitializer {
 
         //Toggle all mods that are saved as "Enabled"
         for (Module module : getModules()) if (module.isEnabled()) module.enable();
+
+        //Toggle all windows that are saved as "Enabled"
+        for (GuiWindow window : getGuiManager().getHudGui().getWindows()) if (window.isEnabled()) window.enable();
     }
 
     public static Module getModule(String modName) {

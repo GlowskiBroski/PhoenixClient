@@ -3,8 +3,8 @@ package com.phoenixclient.gui.hud.element;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
-import com.phoenixclient.event.EventAction;
 import com.phoenixclient.event.events.PacketEvent;
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.actions.DoOnce;
 import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.actions.StopWatch;
@@ -39,29 +39,10 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 public class ChunkTrailsWindow extends GuiWindow {
 
-    private final ResourceLocation chunkTrailResourceLocation = ResourceLocation.fromNamespaceAndPath("phoenixclient", "pc_chunktrailtexture");
-    private DynamicTexture chunkTrailTexture = null;
-    private DynamicTexture prevChunkTrailTexture = null;
-
-    public HashMap<Vector, Boolean> loadedChunksMap = new HashMap<>(); //Key: ChunkPos, Value isNewChunk -- Save/Load this data as a CSV every time the client is loaded
-
-    //TODO: Make these server dependent
-    private final CSVFile paletteFileOW = new CSVFile("PhoenixClient/chunks", "newChunksPaletteOverworld.csv");
-    private final CSVFile paletteFileNE = new CSVFile("PhoenixClient/chunks", "newChunksPaletteNether.csv");
-    private final CSVFile paletteFileEN = new CSVFile("PhoenixClient/chunks", "newChunksPaletteEnd.csv");
-
-    private final CSVFile liquidFileOW = new CSVFile("PhoenixClient/chunks", "newChunksLiquidOverworld.csv");
-    private final CSVFile liquidFileNE = new CSVFile("PhoenixClient/chunks", "newChunksLiquidNether.csv");
-    private final CSVFile liquidFileEN = new CSVFile("PhoenixClient/chunks", "newChunksLiquidEnd.csv");
-
-    private final CSVFile copperFileOW = new CSVFile("PhoenixClient/chunks", "newChunksCopperOverworld.csv");
-    private final CSVFile copperFileNE = new CSVFile("PhoenixClient/chunks", "newChunksCopperNether.csv");
-    private final CSVFile copperFileEN = new CSVFile("PhoenixClient/chunks", "newChunksCopperEnd.csv");
-
     private final SettingGUI<String> mode = new SettingGUI<>(
             this,
             "Mode",
-            "Type of algorithm for new chunk detection",
+            "Type of algorithm for new chunk detection (Palette - 1.18+, Copper - Post 1.12, Liquid - All)",
             "Palette").setModeData("Palette", "Liquid", "Copper");
 
     public final SettingGUI<Integer> windowSize = new SettingGUI<>(
@@ -88,17 +69,37 @@ public class ChunkTrailsWindow extends GuiWindow {
             "Places image updating into a separate thread. GREATLY reduces lag. This may destroy your PC, only use this if you know you can!!",
             false);
 
+    private final ResourceLocation chunkTrailResourceLocation = ResourceLocation.fromNamespaceAndPath("phoenixclient", "pc_chunktrailtexture");
+    private DynamicTexture chunkTrailTexture = null;
+    private DynamicTexture prevChunkTrailTexture = null;
+
+    //TODO: If you plan on storing multiple modes in 1 file, make this into a boolean array
+    public HashMap<Vector, Boolean> loadedChunksMap = new HashMap<>(); //Key: ChunkPos, Value isNewChunk -- Save/Load this data as a CSV every time the client is loaded
+
+    //TODO: Make these server dependent
+    private final CSVFile paletteFileOW = new CSVFile("PhoenixClient/chunks", "newChunksPaletteOverworld.csv");
+    private final CSVFile paletteFileNE = new CSVFile("PhoenixClient/chunks", "newChunksPaletteNether.csv");
+    private final CSVFile paletteFileEN = new CSVFile("PhoenixClient/chunks", "newChunksPaletteEnd.csv");
+
+    private final CSVFile liquidFileOW = new CSVFile("PhoenixClient/chunks", "newChunksLiquidOverworld.csv");
+    private final CSVFile liquidFileNE = new CSVFile("PhoenixClient/chunks", "newChunksLiquidNether.csv");
+    private final CSVFile liquidFileEN = new CSVFile("PhoenixClient/chunks", "newChunksLiquidEnd.csv");
+
+    private final CSVFile copperFileOW = new CSVFile("PhoenixClient/chunks", "newChunksCopperOverworld.csv");
+    private final CSVFile copperFileNE = new CSVFile("PhoenixClient/chunks", "newChunksCopperNether.csv");
+    private final CSVFile copperFileEN = new CSVFile("PhoenixClient/chunks", "newChunksCopperEnd.csv");
+
     private final OnChange<ResourceKey<Level>> onDimensionChange = new OnChange<>();
     private final DoOnce init = new DoOnce();
 
     private final StopWatch chunkTrailUpdateWatch = new StopWatch();
     private final StopWatch chunkTrailSaveWatch = new StopWatch();
 
-    public ChunkTrailsWindow(Screen screen, Vector pos) {
-        super(screen, "ChunkTrailsWindow", pos, new Vector(65, 65));
+    public ChunkTrailsWindow(Screen screen) {
+        super(screen, "ChunkTrailsWindow","A radar that highlights new chunks (in red) and old chunks (in green). Use this to follow chunk trails.", new Vector(65, 65),false);
         addSettings(mode, windowSize, scale, updateDelay, multiThreadUpdates);
-        new EventAction(Event.EVENT_PLAYER_UPDATE, () -> onUpdate(Event.EVENT_PLAYER_UPDATE)).subscribe();
-        new EventAction(Event.EVENT_PACKET, () -> onPacket(Event.EVENT_PACKET)).subscribe();
+        addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
+        addEventSubscriber(Event.EVENT_PACKET,this::onPacket);
     }
 
     @Override
@@ -131,12 +132,35 @@ public class ChunkTrailsWindow extends GuiWindow {
         DrawUtil.drawRectangle(graphics, center.getAdded(0,-1), new Vector(1, 1), Color.BLUE);
 
         //Draw Directions
-        TextBuilder.start("N",getPos().getAdded(getSize().getX() / 2 - DrawUtil.getFontTextWidth("N",.5) / 2,2).multiply(1/.5),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
-        TextBuilder.start("W",getPos().getAdded(2,getSize().getY() / 2 - DrawUtil.getDefaultTextHeight(.5) / 2).multiply(1/.5),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
-        TextBuilder.start("S",getPos().getAdded(getSize().getX() / 2 - DrawUtil.getFontTextWidth("S",.5) / 2,getSize().getY() - DrawUtil.getFontTextHeight(.5) - 1).multiply(1/.5),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
-        TextBuilder.start("E",getPos().getAdded(getSize().getX() - DrawUtil.getFontTextWidth("E",.5) - 2,getSize().getY() / 2 - DrawUtil.getDefaultTextHeight(.5) / 2).multiply(1/.5),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
+        TextBuilder.start("N",getPos().getAdded(getSize().getX() / 2 - DrawUtil.getFontTextWidth("N",.5) / 2,2),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
+        TextBuilder.start("W",getPos().getAdded(2,getSize().getY() / 2 - DrawUtil.getDefaultTextHeight(.5) / 2),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
+        TextBuilder.start("S",getPos().getAdded(getSize().getX() / 2 - DrawUtil.getFontTextWidth("S",.5) / 2,getSize().getY() - DrawUtil.getFontTextHeight(.5) - 1),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
+        TextBuilder.start("E",getPos().getAdded(getSize().getX() - DrawUtil.getFontTextWidth("E",.5) - 2,getSize().getY() / 2 - DrawUtil.getDefaultTextHeight(.5) / 2),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
 
         prevChunkTrailTexture = chunkTrailTexture;
+    }
+
+    @Override
+    public void onEnabled() {
+        super.onEnabled();
+        if (MC.player == null) return;
+        //Load Current File
+        PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
+        setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
+        onDimensionChange.run(MC.level.dimension(), () -> {});
+        mode.runOnChange(() -> {});
+    }
+
+    @Override
+    public void onDisabled() {
+        super.onDisabled();
+        //Save Current File
+        PhoenixClient.getNotificationManager().sendNotification("Saving: " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
+        getProperFile(mode.get(), MC.level.dimension()).save(loadedChunksMap);
+
+        //Release memory
+        loadedChunksMap = new HashMap<>();
+        System.gc();
     }
 
     public void onPacket(PacketEvent event) {
@@ -162,10 +186,11 @@ public class ChunkTrailsWindow extends GuiWindow {
 
     public void onUpdate(Event event) {
         if (!isPinned()) return;
+        if (MC.level == null) return;
         init.run(() -> {
             //Load Current File
             PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
-            setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
+            setMapFromFile(getProperFile(mode.get(), MC.level.dimension())); //It crashed here for me some times. I added a null check for the level, but it crashed because of the vector not loading from the hashmap properly?
             onDimensionChange.run(MC.level.dimension(), () -> {});
             mode.runOnChange(() -> {});
         });
@@ -186,13 +211,12 @@ public class ChunkTrailsWindow extends GuiWindow {
             loadProperFile();
         });
 
-        chunkTrailSaveWatch.start();
+        chunkTrailSaveWatch.start(); //Autosave every 30 seconds
         if (chunkTrailSaveWatch.hasTimePassedS(30)) {
             saveProperFile();
             chunkTrailSaveWatch.restart();
         }
     }
-
 
     private DynamicTexture getUpdatedChunkTrailTexture() {
         int size = (int) (windowSize.get() / scale.get());
@@ -286,9 +310,17 @@ public class ChunkTrailsWindow extends GuiWindow {
     private void setMapFromFile(CSVFile file) {
         HashMap<String, String[]> loadedMap = file.getDataAsMap();
         HashMap<Vector, Boolean> newMap = new HashMap<>();
+
         for (Map.Entry<String, String[]> set : loadedMap.entrySet()) {
-            newMap.put(Vector.getFromString(set.getKey()), Boolean.parseBoolean(set.getValue()[0]));
+            //TODO: Monitor this Try/Catch block. With larger files, it may be super slow?
+            try {
+                newMap.put(Vector.getFromString(set.getKey()), Boolean.parseBoolean(set.getValue()[0]));
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Issue loading chunk from - " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
+                PhoenixClient.getNotificationManager().sendNotification("Removing corrupt data...", Color.WHITE);
+            }
         }
+
         loadedChunksMap = newMap;
     }
 

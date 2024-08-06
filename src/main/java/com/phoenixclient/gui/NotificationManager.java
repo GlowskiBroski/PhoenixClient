@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
+
 public class NotificationManager extends Module {
 
     private final ArrayList<Notification> notificationList = new ArrayList<>();
@@ -23,9 +24,17 @@ public class NotificationManager extends Module {
             "Shows module enable/disable notifications",
             false); //TODO: Maybe make this true? depending on if you like it or not
 
+
+    //TODO: Add Length Limiter. If the notification list exceeds a certain length, delete the first one in the list to make room
+    public final SettingGUI<Integer> maximumNotifications = new SettingGUI<>(
+            this,
+            "Maximum Size",
+            "The maximum notifications allowed in the list. If notification exceed, the top ones will be removed",
+            5).setSliderData(0,10,5); //TODO: IMPLEMENT THIS
+
     public NotificationManager() {
-        super("Notifications", "GUI manager for Phoenix Client", Category.RENDER, true, -1);
-        addSettings(enableDisable);
+        super("Notifications", "Notification manager for PhoenixClient. Disable to disable all notifications", Category.MANAGERS, true, -1);
+        addSettings(enableDisable,maximumNotifications);
         addEventSubscriber(Event.EVENT_RENDER_HUD, this::renderHud);
     }
 

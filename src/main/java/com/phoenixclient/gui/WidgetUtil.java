@@ -42,7 +42,7 @@ public class WidgetUtil {
         @Override
         public int compare(GuiWidget widget1, GuiWidget widget2) {
             int typeWeight = getTypeWeight(widget1) - getTypeWeight(widget2);
-            int letterWeight = getIndexFromLetter(widget1.getSetting().getName().charAt(0)) - getIndexFromLetter(widget2.getSetting().getName().charAt(0));
+            int letterWeight = getIndexFromLetter(widget1.getSetting().getTitle().charAt(0)) - getIndexFromLetter(widget2.getSetting().getTitle().charAt(0));
 
             return typeWeight + letterWeight;
         }

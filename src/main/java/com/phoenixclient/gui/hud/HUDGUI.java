@@ -6,64 +6,58 @@ import com.phoenixclient.util.math.Vector;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static com.phoenixclient.PhoenixClient.MC;
+
 public class HUDGUI extends GUI {
 
-    // DEFINE WINDOWS
-    // -----------------------------------------------------------------
-
-    private final ArmorWindow armor = new ArmorWindow(this, Vector.NULL());
-    private final CoordinatesWindow coordinates = new CoordinatesWindow(this, Vector.NULL());
-    private final DirectionWindow direction = new DirectionWindow(this, Vector.NULL());
-    private final FPSWindow fps = new FPSWindow(this, Vector.NULL());
-    private final InventoryWindow inventory = new InventoryWindow(this, Vector.NULL());
-    private final SpeedWindow speed = new SpeedWindow(this, Vector.NULL());
-    private final TPSWindow tps = new TPSWindow(this, Vector.NULL());
-    private final ModuleListWindow moduleList = new ModuleListWindow(this, Vector.NULL());
-
-    //Optional windows: TODO: Add the ability to disable these shitters
-    private final EntityListWindow entityList = new EntityListWindow(this, Vector.NULL()); //Disable by default
-    private final EntityDataWindow entityData = new EntityDataWindow(this, Vector.NULL()); //Disable by default
-    private final StorageListWindow storageList = new StorageListWindow(this, Vector.NULL()); //Disable by default
-    private final ModuleKeybindListWindow moduleKeybindListWindow = new ModuleKeybindListWindow(this, Vector.NULL()); //Disable by default
-    private final SignTextListWindow signTextListWindow = new SignTextListWindow(this, Vector.NULL()); //Disable by default
-    private final PacketFlowListWindow packetFlowList = new PacketFlowListWindow(this, Vector.NULL()); //Disable by default
-    private final ChunkTrailsWindow chunkRadar = new ChunkTrailsWindow(this, Vector.NULL()); //Disable by default
-
-    private final LogoWindow logoWindow = new LogoWindow(this, Vector.NULL());
-
-    // -----------------------------------------------------------------
+    private final ArrayList<GuiWindow> windowList = new ArrayList<>();
 
     public HUDGUI(Component title) {
         super(title);
-        addGuiElements(
-                inventory,
-                armor,
+        addWindows(
+                new FPSWindow(this),
+                new TPSWindow(this),
+                new DirectionWindow(this),
+                new SpeedWindow(this),
+                new CoordinatesWindow(this),
 
-                fps,
-                tps,
-                direction,
-                speed,
-                coordinates,
+                new InventoryWindow(this),
+                new ArmorWindow(this),
 
-                entityList,
-                storageList,
-                signTextListWindow,
-                //packetFlowList,
-                chunkRadar,
+                new ModuleListWindow(this),
+                new EntityListWindow(this),
+                new StorageListWindow(this),
+                new SignTextListWindow(this),
+                //new PacketFlowListWindow(this, Vector.NULL()),
 
-                moduleKeybindListWindow,
-                moduleList,
+                new ModuleKeybindListWindow(this),
 
-                entityData,
+                new EntityDataWindow(this),
+                new ChunkTrailsWindow(this),
 
-                logoWindow
+                new LogoWindow(this, Vector.NULL())
         );
+
+        addGuiElements(windowList.toArray(new GuiWindow[0]));
+
+        WindowToggleMenu toggleMenu = new WindowToggleMenu(this,Vector.NULL(),new Vector(100,20));
+        addGuiElements(toggleMenu);
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        drawHintText(guiGraphics, "Shift Click a window to see options!");
+        drawHintText(guiGraphics, "Hold SPACE to open window enable/disable menu!\\nShift Click a window to see options!");
     }
 
+    private void addWindows(GuiWindow... windows) {
+        windowList.addAll(Arrays.asList(windows));
+    }
+
+    public ArrayList<GuiWindow> getWindows() {
+        return windowList;
+    }
 }

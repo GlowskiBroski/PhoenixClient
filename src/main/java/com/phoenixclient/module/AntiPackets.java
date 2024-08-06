@@ -3,6 +3,7 @@ package com.phoenixclient.module;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
 import com.phoenixclient.event.events.PacketEvent;
+import com.phoenixclient.util.setting.Setting;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;

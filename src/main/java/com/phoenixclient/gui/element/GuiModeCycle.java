@@ -39,7 +39,7 @@ public class GuiModeCycle<T> extends GuiWidget {
 
         //Draw the text
         double scale = 1;
-        String text = getSetting().getName() + ": " + getSetting().get();
+        String text = getSetting().getTitle() + ": " + getSetting().get();
         if (DrawUtil.getFontTextWidth(text) > getSize().getX() - 2) scale = (getSize().getX() - 2)/(DrawUtil.getFontTextWidth(text) + 2);
         TextBuilder.start(text,getPos().getAdded(getSize().getX()/2 - DrawUtil.getFontTextWidth(text)/2,1 + getSize().getY()/2 - DrawUtil.getFontTextHeight()/2),Color.WHITE).scale((float)scale).draw(graphics);
     }

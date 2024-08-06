@@ -1,7 +1,7 @@
 package com.phoenixclient.gui.hud.element;
 
 import com.phoenixclient.event.Event;
-import com.phoenixclient.event.EventAction;
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
@@ -21,11 +21,11 @@ public class TPSWindow extends GuiWindow {
     private int ticks = 0;
     private int tps;
 
-    public TPSWindow(Screen screen, Vector pos) {
-        super(screen, "TPSWindow", pos, Vector.NULL());
+    public TPSWindow(Screen screen) {
+        super(screen, "TPSWindow","Displays the servers ticks per second (20 max)", Vector.NULL(),true);
         this.label = new SettingGUI<>(this, "Label","Show the label",true);
         addSettings(label);
-        packetEvent.subscribe();
+        addEventSubscriber(Event.EVENT_PACKET,this::onPacket);
     }
 
     @Override
@@ -39,9 +39,7 @@ public class TPSWindow extends GuiWindow {
     }
 
     //TODO: This is like actually stupid how this functions, make it better
-
-    private final EventAction packetEvent = new EventAction(Event.EVENT_PACKET, () -> {
-        PacketEvent event = Event.EVENT_PACKET;
+    private void onPacket(PacketEvent event) {
         tpsWatch.run(20 * 1000, () -> {
             tps = ticks;
             ticks = 0;
@@ -49,5 +47,6 @@ public class TPSWindow extends GuiWindow {
         if (event.getPacket() instanceof ClientboundSetTimePacket) {
             ticks++;
         }
-    });
+    }
+
 }

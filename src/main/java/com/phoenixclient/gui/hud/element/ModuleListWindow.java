@@ -7,7 +7,6 @@ import com.phoenixclient.util.render.DrawUtil;
 
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.setting.SettingGUI;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.awt.*;
@@ -23,8 +22,8 @@ public class ModuleListWindow extends ListWindow {
     protected final SettingGUI<String> vert;
     private final SettingGUI<Boolean> rainbow;
 
-    public ModuleListWindow(Screen screen, Vector pos) {
-        super(screen, "ModuleListWindow", pos);
+    public ModuleListWindow(Screen screen) {
+        super(screen, "ModuleListWindow", "Lists all currently enabled modules and their tags",true);
         this.vert = new SettingGUI<>(this, "Vert", "The vertical side of the list", "Top").setModeData("Top","Bottom");
         this.rainbow = new SettingGUI<>(this, "Rainbow", "Make the mods list rainbow", false);
         addSettings(vert,rainbow);

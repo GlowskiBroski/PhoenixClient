@@ -73,8 +73,7 @@ public class ModuleOptionsMenu extends GuiWidget {
                     if (!widget.shouldDrawSetting()) continue;
                     backgroundHeight += 16;
                 }
-                Color BGC = colorManager.getBackgroundColor();
-                DrawUtil.drawRectangleRound(graphics, getPos().getAdded(0, getSize().getY()), new Vector(getSize().getX(), backgroundHeight), new Color(BGC.getRed(), BGC.getGreen(), BGC.getBlue(), BGC.getAlpha() / 2));
+                DrawUtil.drawRectangleRound(graphics, getPos().getAdded(0, getSize().getY()), new Vector(getSize().getX(), backgroundHeight), colorManager.getBackgroundColor());
 
                 drawWidgets(graphics, mousePos);
                 keyBindSelector.setPos(getPos().getAdded(2,getSize().getY() + backgroundHeight - keyBindSelector.getSize().getY() - 2));

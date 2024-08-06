@@ -38,7 +38,7 @@ public class Tridents extends Module {
     }
 
     public void onKeyPress(KeyPressEvent event) {
-
+        if (MC.player == null) return;
         if (!MC.player.getMainHandItem().getItem().equals(Items.TRIDENT)) return;
         if (event.getKey() == Key.KEY_SPACE.getId() && event.getState() == 1) {
             MC.getConnection().send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.RELEASE_USE_ITEM,MC.player.getBlockPosBelowThatAffectsMyMovement(), Direction.DOWN));
@@ -54,8 +54,6 @@ public class Tridents extends Module {
             if (MC.player.onGround()) MC.player.move(MoverType.SELF, new Vec3(0.0, 1.1999999284744263, 0.0));
 
         }
-
-
     }
 
     @Override

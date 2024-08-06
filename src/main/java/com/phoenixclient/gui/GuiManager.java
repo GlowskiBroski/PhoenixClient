@@ -9,14 +9,10 @@ import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.gui.module.ModuleGUI;
 import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.module.Module;
-import com.phoenixclient.util.actions.DoOnce;
 import com.phoenixclient.util.input.Key;
-import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
-import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.FontRenderer;
-import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
@@ -28,7 +24,6 @@ import java.util.ConcurrentModificationException;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
-//TODO: Maybe add a set of boolean for each window to be disabled? Maybe not?
 public class GuiManager extends Module {
 
     public static final KeyMapping MODULE_KEY_MAPPING = new KeyMapping("Module GUI Toggle", GLFW.GLFW_KEY_RIGHT_CONTROL, "Phoenix Client");
@@ -47,20 +42,20 @@ public class GuiManager extends Module {
     private final SettingGUI<String> font = new SettingGUI<>(
             this,
             "Font",
-            "Custom font for the HUD",
+            "Custom font for the all GUI/HUD elements",
             "Arial").setModeData("Segoe Print", "Arial", "Verdana", "Impact", "Default");
 
     public final SettingGUI<Boolean> blur = new SettingGUI<>(
             this,
-            "Blur",
+            "GUI Blur",
             "Adds a blur effect to the background of the GUI menus",
             true);
 
     private final SettingGUI<String> theme = new SettingGUI<>(
             this,
             "Theme",
-            "Color theme for the HUD",
-            "Sea Green").setModeData("Red", "Orange", "Green", "Sea Green", "Blue", "Light Blue", "Purple", "Rainbow", "Custom");
+            "Color theme for the module menu and HUD elements",
+            "Light Blue").setModeData("Red", "Orange", "Green", "Sea Green", "Blue", "Light Blue", "Purple", "Rainbow", "Custom");
 
     public final SettingGUI<Double> baseColorHue = new SettingGUI<>(
             this,
@@ -81,26 +76,9 @@ public class GuiManager extends Module {
             .52d).setSliderData(0, 1, .01).setDependency(theme, "Custom");
 
     public GuiManager() {
-        super("GUI", "GUI manager for Phoenix Client", Category.RENDER, true, -1);
+        super("Graphics", "2D Graphics manager for Phoenix Client. Disable to disable the HUD", Category.MANAGERS, true, -1);
         addSettings(font, theme, blur, baseColorHue, depthColorHue, widgetColorHue);
-        addEventSubscriber(Event.EVENT_RENDER_HUD, (event) -> {
-            font.runOnChange(() -> PhoenixClient.setFontRenderer(new FontRenderer(font.get(), Font.PLAIN)));
-            theme.runOnChange(() -> {
-                ColorManager.Theme theme = switch (this.theme.get()) {
-                    case "Red" -> ColorManager.Theme.RED;
-                    case "Orange" -> ColorManager.Theme.ORANGE;
-                    case "Green" -> ColorManager.Theme.GREEN;
-                    case "Sea Green" -> ColorManager.Theme.SEAGREEN;
-                    case "Blue" -> ColorManager.Theme.BLUE;
-                    case "Light Blue" -> ColorManager.Theme.LIGHTBLUE;
-                    case "Purple" -> ColorManager.Theme.PURPLE;
-                    default -> ColorManager.Theme.LIGHTBLUE;
-                };
-                PhoenixClient.getColorManager().setTheme(theme);
-                PhoenixClient.getColorManager().setRainbow(this.theme.get().equals("Rainbow"));
-                PhoenixClient.getColorManager().setCustom(this.theme.get().equals("Custom"));
-            });
-        });
+        addEventSubscriber(Event.EVENT_RENDER_HUD, this::updateThemeAndFont);
         addEventSubscriber(Event.EVENT_RENDER_HUD, this::renderHud);
     }
 
@@ -145,6 +123,25 @@ public class GuiManager extends Module {
         String mapping = InputConstants.getKey(key, action).getName();
         if (HUD_KEY_MAPPING.saveString().equals(mapping)) getHudGui().toggleOpen();
         if (MODULE_KEY_MAPPING.saveString().equals(mapping)) getModuleGui().toggleOpen();
+    }
+
+    private void updateThemeAndFont(Event event) {
+        font.runOnChange(() -> PhoenixClient.setFontRenderer(new FontRenderer(font.get(), Font.PLAIN)));
+        theme.runOnChange(() -> {
+            ColorManager.Theme theme = switch (this.theme.get()) {
+                case "Red" -> ColorManager.Theme.RED;
+                case "Orange" -> ColorManager.Theme.ORANGE;
+                case "Green" -> ColorManager.Theme.GREEN;
+                case "Sea Green" -> ColorManager.Theme.SEAGREEN;
+                case "Blue" -> ColorManager.Theme.BLUE;
+                case "Light Blue" -> ColorManager.Theme.LIGHTBLUE;
+                case "Purple" -> ColorManager.Theme.PURPLE;
+                default -> ColorManager.Theme.LIGHTBLUE;
+            };
+            PhoenixClient.getColorManager().setTheme(theme);
+            PhoenixClient.getColorManager().setRainbow(this.theme.get().equals("Rainbow"));
+            PhoenixClient.getColorManager().setCustom(this.theme.get().equals("Custom"));
+        });
     }
 
     @Deprecated

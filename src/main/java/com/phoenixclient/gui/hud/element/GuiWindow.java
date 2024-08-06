@@ -1,10 +1,12 @@
 package com.phoenixclient.gui.hud.element;
 
 import com.phoenixclient.PhoenixClient;
+import com.phoenixclient.event.EventAction;
 import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.input.Mouse;
+import com.phoenixclient.util.interfaces.IToggleableEventSubscriber;
 import com.phoenixclient.util.render.ColorManager;
-import com.phoenixclient.util.setting.ISettingParent;
+import com.phoenixclient.util.interfaces.ISettingParent;
 import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
@@ -19,68 +21,113 @@ import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
+//TODO: This class needs to be cleaned. It is messy
 
-public abstract class GuiWindow extends GuiWidget implements ISettingParent {
+public abstract class GuiWindow extends GuiWidget implements IToggleableEventSubscriber, ISettingParent {
 
-    private final ArrayList<SettingGUI<?>> settingList;
+    private final ArrayList<EventAction> eventActionList = new ArrayList<>();
+    private final ArrayList<SettingGUI<?>> settingList = new ArrayList<>();
 
     private final String title;
+    private final String description;
+
+    private final Container<Boolean> enabled;
 
     protected Container<Boolean> pinned;
     protected  Container<Vector> posScale;
-
     private final Container<String> anchorX;
     private final Container<String> anchorY;
-
     protected Container<Boolean> drawBackground;
+
+    private SettingsWindow settingsWindow;
+    private boolean settingsOpen;
 
     private boolean dragging;
     private Vector dragOffset;
 
     private double pinFade;
 
-    private SettingsWindow settingsWindow;
-    private boolean settingsOpen;
-
     protected final OnChange<Double> onWidthChange = new OnChange<>();
     protected final OnChange<Double> onHeightChange = new OnChange<>();
 
-    public GuiWindow(Screen screen, String title, Vector pos, Vector size) {
-        super(screen, pos, size);
+    public GuiWindow(Screen screen, String title, String description, Vector size, boolean defaultEnabled) {
+        super(screen, Vector.NULL(), size);
         this.title = title;
-        this.settingList = new ArrayList<>();
+        this.description = description;
         this.settingsOpen = false;
 
         this.dragOffset = Vector.NULL();
 
         this.pinFade = 0;
 
-        if (this instanceof SettingsWindow) {
-            this.pinned = new Container<>(false);
-            this.posScale = new Container<>(new Vector(.1, .1));
-            this.anchorX = new Container<>("NONE");
-            this.anchorY = new Container<>("NONE");
+        boolean defaultPinned = false;
+        Vector defaultPosScale = new Vector(.1,.1); //Start windows at 10% of the screens height/width
+        String defaultAnchorX = "NONE";
+        String defaultAnchorY = "NONE";
+        boolean defaultDrawBackground = true;
+
+        if (isSettingsWindow()) {
+            this.pinned = new Container<>(defaultPinned);
+            this.posScale = new Container<>(defaultPosScale);
+            this.anchorX = new Container<>(defaultAnchorX);
+            this.anchorY = new Container<>(defaultAnchorY);
             this.drawBackground = new Container<>(false);
+            this.enabled = new Container<>(true);
         } else {
             SettingManager manager = PhoenixClient.getSettingManager();
-            this.pinned = new Setting<>(manager, title + "_pinned", false);
-            this.posScale = new Setting<>(manager, title + "_posScale", new Vector(.1, .1));
-            this.anchorX = new Setting<>(manager, title + "_anchorX", "NONE");
-            this.anchorY = new Setting<>(manager, title + "_anchorY", "NONE");
+            this.pinned = new Setting<>(manager, title + "_pinned", defaultPinned);
+            this.posScale = new Setting<>(manager, title + "_posScale", defaultPosScale);
+            this.anchorX = new Setting<>(manager, title + "_anchorX", defaultAnchorX);
+            this.anchorY = new Setting<>(manager, title + "_anchorY", defaultAnchorY);
 
-            this.drawBackground = new SettingGUI<>(this, "Draw Background", "Draws a dark background around a HUD element", true);
+            this.enabled = new SettingGUI<>(this,"enabled","Is the window enabled",defaultEnabled);
+            this.drawBackground = new SettingGUI<>(this, "Draw Background", "Draws a dark background around a HUD element", defaultDrawBackground);
             addSettings((SettingGUI<?>) drawBackground);
-
-            //TODO: Add a setting for each window to the GUI manager
-            //PhoenixClient.getGuiManager().addSettings();
         }
     }
 
+    @Override
+    public String getKey() {
+        return getTitle();
+    }
+
+    @Override
+    public ArrayList<EventAction> getEventActions() {
+        return eventActionList;
+    }
+
+    @Override
+    public ArrayList<SettingGUI<?>> getSettings() {
+        return settingList;
+    }
+
+    @Override
+    public void onEnabled() {}
+
+    @Override
+    public void onDisabled() {
+        this.pinned.set(false);
+        this.posScale.set(new Vector(.1,.1));
+        this.anchorX.set("NONE");
+        this.anchorY.set("NONE");
+        this.setSettingsOpen(false);
+    }
+
+    @Override
+    public Container<Boolean> getEnabledContainer() {
+        return enabled;
+    }
+
     protected abstract void drawWindow(GuiGraphics graphics, Vector mousePos);
+
+    @Override
+    public void draw(GuiGraphics graphics, Vector mousePos) {
+        if (!isEnabled()) return;
+        super.draw(graphics, mousePos);
+    }
 
     @Override
     public void drawWidget(GuiGraphics graphics, Vector mousePos) {
@@ -103,7 +150,6 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
         if (isHudGui) bindWindowCoordinates();
 
         if (drawBackground.get()) {
-            //TODO: Potentially add small shadow effect to all windows when background enabled
             DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(0, 0, 0, 175));
             DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(150, 150, 150, 175), true);
         }
@@ -119,6 +165,7 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
 
     @Override
     public void mousePressed(int button, int state, Vector mousePos) {
+        if (!isEnabled()) return;
         if (settingsOpen) settingsWindow.mousePressed(button, state, mousePos);
 
         if (state == Mouse.ACTION_CLICK && isMouseOver()) {
@@ -142,11 +189,13 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
 
     @Override
     public void keyPressed(int key, int scancode, int modifiers) {
+        if (!isEnabled()) return;
         if (settingsOpen) settingsWindow.keyPressed(key, scancode, modifiers);
     }
 
     @Override
     public void runAnimation(int speed) {
+        if (!isEnabled()) return;
         super.runAnimation(speed);
         if (settingsOpen) settingsWindow.runAnimation(speed);
         if (isPinned()) {
@@ -192,7 +241,6 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
             anchorX.set("NONE");
             anchorY.set("NONE");
         } else if (dragging) {
-
             if (getPos().getX() <= 0)
                 anchorX.set("L");
             else if (getPos().getX() + getSize().getX() >= getScreen().width)
@@ -202,7 +250,6 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
                 anchorY.set("U");
             else if (getPos().getY() + getSize().getY() >= getScreen().height)
                 anchorY.set("D");
-
         }
     }
 
@@ -223,17 +270,16 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
     protected void updateWindowPositionFromSize() {
     }
 
+
     private void drawAnchoredLines(GuiGraphics graphics, Vector mousePos) {
         switch (anchorX.get()) {
             case "L" -> DrawUtil.drawRectangle(graphics, getPos(), new Vector(1, getSize().getY()), Color.RED);
-            case "R" ->
-                    DrawUtil.drawRectangle(graphics, getPos().getAdded(getSize().getX() - 1, 0), new Vector(1, getSize().getY()), Color.RED);
+            case "R" -> DrawUtil.drawRectangle(graphics, getPos().getAdded(getSize().getX() - 1, 0), new Vector(1, getSize().getY()), Color.RED);
         }
 
         switch (anchorY.get()) {
             case "U" -> DrawUtil.drawRectangle(graphics, getPos(), new Vector(getSize().getX(), 1), Color.RED);
-            case "D" ->
-                    DrawUtil.drawRectangle(graphics, getPos().getAdded(0, getSize().getY() - 1), new Vector(getSize().getX(), 1), Color.RED);
+            case "D" -> DrawUtil.drawRectangle(graphics, getPos().getAdded(0, getSize().getY() - 1), new Vector(getSize().getX(), 1), Color.RED);
         }
     }
 
@@ -244,15 +290,18 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
         }
     }
 
-    private void openSettingWindow() {
-        this.settingsWindow = new SettingsWindow(getScreen(), this, new Vector(getScreen().width / 2f - 100 / 2f, getScreen().height / 2f - 100 / 2f)) {
+
+    public void openSettingWindow() {
+        this.settingsWindow = new SettingsWindow(getScreen(), this) {
             @Override
             public boolean shouldDrawPin() {
                 return false;
             }
         };
+        this.settingsWindow.setPos(new Vector(getScreen().width / 2f - 100 / 2f, getScreen().height / 2f - 100 / 2f));
         setSettingsOpen(true);
     }
+
 
     public void setSettingsOpen(boolean settingsOpen) {
         this.settingsOpen = settingsOpen;
@@ -265,9 +314,12 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
         updateAnchoredCoordinates();
     }
 
-
     public String getTitle() {
         return title;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public boolean isPinned() {
@@ -280,15 +332,6 @@ public abstract class GuiWindow extends GuiWidget implements ISettingParent {
 
     private boolean isSettingsWindow() {
         return this instanceof SettingsWindow;
-    }
-
-
-    protected void addSettings(SettingGUI<?>... settings) {
-        settingList.addAll(Arrays.asList(settings));
-    }
-
-    protected ArrayList<SettingGUI<?>> getSettings() {
-        return settingList;
     }
 
 }

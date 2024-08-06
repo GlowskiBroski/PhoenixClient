@@ -1,5 +1,6 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
@@ -14,8 +15,8 @@ public class FPSWindow extends GuiWindow {
 
     private final SettingGUI<Boolean> label;
 
-    public FPSWindow(Screen screen, Vector pos) {
-        super(screen, "FPSWindow", pos, Vector.NULL());
+    public FPSWindow(Screen screen) {
+        super(screen, "FPSWindow", "Displays the framerate of the game", Vector.NULL(),true);
         this.label = new SettingGUI<>(this, "Label","Show the label",true);
         addSettings(label);
     }

@@ -7,12 +7,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
@@ -21,8 +18,8 @@ public class SignTextListWindow extends ListWindow {
     private final SettingGUI<Integer> range;
     private final SettingGUI<Boolean> coordinates;
 
-    public SignTextListWindow(Screen screen, Vector pos) {
-        super(screen, "SignTextListWindow", pos);
+    public SignTextListWindow(Screen screen) {
+        super(screen, "SignTextListWindow", "Lists all nearby sign text, and their count.",false);
         this.coordinates = new SettingGUI<>(this, "Show Coordinates", "Shows the coordinates for each sign", false);
         this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",320).setSliderData(1,400,1);
         addSettings(coordinates,range);
@@ -36,7 +33,7 @@ public class SignTextListWindow extends ListWindow {
     @Override
     protected LinkedHashMap<String , ListInfo> getListMap() {
         LinkedHashMap<String, ListInfo> currentList = new LinkedHashMap<>();
-        for (BlockEntity blockEntity : StorageListWindow.BLOCK_ENTITY_LIST) {
+        for (BlockEntity blockEntity : StorageListWindow.getBlockEntities() ) {
             if (distanceTo(MC.player,blockEntity) > range.get()) continue;
 
             if (!(blockEntity instanceof SignBlockEntity s)) continue;

@@ -48,7 +48,7 @@ public class FreeCam extends Module {
             "Speed",
             "Flight Speed of FreeCam",
             1d)
-            .setSliderData(.1, 2, .1);
+            .setSliderData(.1, 3, .1);
 
     public FreeCam() {
         super("FreeCam", "Allows the camera to move out of the body (press <- -> to cycle through nearby players)", Category.PLAYER, false, -1);

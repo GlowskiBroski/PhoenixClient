@@ -29,7 +29,7 @@ public class GuiTextField extends GuiWidget {
     }
 
     public GuiTextField(Screen screen, SettingGUI<String> setting, Vector pos, Vector size) {
-        this(screen,setting.getName(),setting,pos,size);
+        this(screen,setting.getTitle(),setting,pos,size);
     }
 
     @Override

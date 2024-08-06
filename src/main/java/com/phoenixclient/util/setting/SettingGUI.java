@@ -2,6 +2,7 @@ package com.phoenixclient.util.setting;
 
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.actions.OnChange;
+import com.phoenixclient.util.interfaces.ISettingParent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +27,7 @@ public class SettingGUI<T> extends Setting<T> {
     private final OnChange<T> onChange;
 
     public SettingGUI(ISettingParent parent, String name, String description, T defaultValue) {
-        super(PhoenixClient.getSettingManager(), parent.getTitle() + "_" + name, defaultValue);
+        super(PhoenixClient.getSettingManager(), parent.getKey() + "_" + name, defaultValue);
         this.parent = parent;
         this.name = name;
         this.description = description;
@@ -69,7 +70,7 @@ public class SettingGUI<T> extends Setting<T> {
     }
 
 
-    public String getName() {
+    public String getTitle() {
         return name;
     }
 

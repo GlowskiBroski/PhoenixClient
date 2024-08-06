@@ -26,7 +26,7 @@ public class GuiToggle extends GuiWidget {
     }
 
     public GuiToggle(Screen screen, SettingGUI<Boolean> setting, Vector pos, Vector size, ColorManager colorManager) {
-        this(screen,setting.getName(),setting,pos,size,colorManager);
+        this(screen,setting.getTitle(),setting,pos,size,colorManager);
     }
 
 

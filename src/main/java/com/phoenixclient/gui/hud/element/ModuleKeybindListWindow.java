@@ -3,7 +3,6 @@ package com.phoenixclient.gui.hud.element;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.math.Vector;
-import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,8 +19,8 @@ public class ModuleKeybindListWindow extends ListWindow {
 
     private final HashMap<Module,Double> animationFadeColorMap = new HashMap<>();
 
-    public ModuleKeybindListWindow(Screen screen, Vector pos) {
-        super(screen, "KeybindListWindow", pos);
+    public ModuleKeybindListWindow(Screen screen) {
+        super(screen, "KeybindListWindow", "Lists all module keybinds, and highlights them if they are enabled",false);
         this.order = new SettingGUI<>(this, "Order", "The ordering of the list", "ABC").setModeData("Top","Bottom","ABC");
         addSettings(order);
     }

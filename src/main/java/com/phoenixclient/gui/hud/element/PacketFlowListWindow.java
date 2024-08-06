@@ -1,7 +1,5 @@
 package com.phoenixclient.gui.hud.element;
 
-import com.phoenixclient.event.Event;
-import com.phoenixclient.event.EventAction;
 import com.phoenixclient.event.events.PacketEvent;
 import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.math.Vector;
@@ -22,12 +20,12 @@ public class PacketFlowListWindow extends ListWindow {
     private SettingGUI<String> mode;
     private SettingGUI<Integer> history;
 
-    public PacketFlowListWindow(Screen screen, Vector pos) {
-        super(screen, "PacketInflowWindow", pos);
+    public PacketFlowListWindow(Screen screen) {
+        super(screen, "PacketInflowWindow", "Shows all packets send/received, with their counts, from the last time period",false);
         this.mode = new SettingGUI<>(this, "Mode", "Type of packets to log", "Inflow").setModeData("Inflow", "Outflow");
         this.history = new SettingGUI<>(this, "History", "The amount of time a packet will stay on the window after being sent", 5).setSliderData(1, 60, 1);
         addSettings(mode, history);
-        //packetEvent.subscribe();
+        //addEventSubscriber(Event.EVENT_PACKET,this::onPacket);
     }
 
     @Override
@@ -64,8 +62,7 @@ public class PacketFlowListWindow extends ListWindow {
     }
 
     //TODO: This kinda broke the packet event. Im guessing it caused exceptions in the thread
-    public EventAction packetEvent = new EventAction(Event.EVENT_PACKET, () -> {
-        PacketEvent event = Event.EVENT_PACKET;
+    public void onPacket(PacketEvent event) {
         switch (mode.get()) {
             case "Inflow" -> {
                 if (event.getType().equals(PacketEvent.Type.RECEIVE)) {
@@ -83,5 +80,6 @@ public class PacketFlowListWindow extends ListWindow {
             set.getValue().start();
             if (set.getValue().hasTimePassedS(history.get())) this.packetList.remove(set.getKey());
         }
-    });
+    }
+
 }

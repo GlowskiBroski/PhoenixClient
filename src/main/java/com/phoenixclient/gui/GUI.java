@@ -100,8 +100,12 @@ public class GUI extends Screen {
         }
 
         hintFade = hintFadeIn ? hintFade + 3 : hintFade - 3;
-
-        TextBuilder.start(hint,new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(hint) / 2, MC.getWindow().getGuiScaledHeight() - 14), new Color(255,255,255, MathUtil.getBoundValue(hintFade,0,255).intValue())).draw(guiGraphics);
+        String[] hints = hint.split("\\\\n");
+        int y = 0;
+        for (String s : hints) {
+            TextBuilder.start(s,new Vector((double) MC.getWindow().getGuiScaledWidth() / 2 - DrawUtil.getFontTextWidth(s) / 2, MC.getWindow().getGuiScaledHeight() - 14 + y), new Color(255,255,255, MathUtil.getBoundValue(hintFade,0,255).intValue())).draw(guiGraphics);
+            y -= 14;
+        }
     }
 
     public void toggleOpen() {
