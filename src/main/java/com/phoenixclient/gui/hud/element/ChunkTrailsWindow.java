@@ -37,6 +37,8 @@ import java.util.*;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
+//TODO: This class needs to be cleaned up
+
 public class ChunkTrailsWindow extends GuiWindow {
 
     private final SettingGUI<String> mode = new SettingGUI<>(
@@ -95,6 +97,8 @@ public class ChunkTrailsWindow extends GuiWindow {
     private final StopWatch chunkTrailUpdateWatch = new StopWatch();
     private final StopWatch chunkTrailSaveWatch = new StopWatch();
 
+    private boolean canAutoSave = true;
+
     public ChunkTrailsWindow(Screen screen) {
         super(screen, "ChunkTrailsWindow","A radar that highlights new chunks (in red) and old chunks (in green). Use this to follow chunk trails.", new Vector(65, 65),false);
         addSettings(mode, windowSize, scale, updateDelay, multiThreadUpdates);
@@ -107,19 +111,9 @@ public class ChunkTrailsWindow extends GuiWindow {
         int size = windowSize.get();
         setSize(new Vector(size + 1, size + 1));
 
-        //Render Chunk Trail Texture.
-        chunkTrailUpdateWatch.start();
-        if (chunkTrailUpdateWatch.hasTimePassedMS(updateDelay.get())) {
-            if (multiThreadUpdates.get()) {
-                Thread updateChunkTrailThread = new Thread(() -> chunkTrailTexture = getUpdatedChunkTrailTexture());
-                updateChunkTrailThread.setDaemon(true);
-                updateChunkTrailThread.start();
-            } else {
-                chunkTrailTexture = getUpdatedChunkTrailTexture();
-            }
-            chunkTrailUpdateWatch.restart();
-        }
+        updateChunkTrailTexture();
 
+        //Draw Chunk Trail Texture
         if (prevChunkTrailTexture != null) MC.getTextureManager().register(chunkTrailResourceLocation, prevChunkTrailTexture);
         DrawUtil.drawTexturedRect(graphics, chunkTrailResourceLocation, getPos(), getSize());
 
@@ -137,6 +131,7 @@ public class ChunkTrailsWindow extends GuiWindow {
         TextBuilder.start("S",getPos().getAdded(getSize().getX() / 2 - DrawUtil.getFontTextWidth("S",.5) / 2,getSize().getY() - DrawUtil.getFontTextHeight(.5) - 1),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
         TextBuilder.start("E",getPos().getAdded(getSize().getX() - DrawUtil.getFontTextWidth("E",.5) - 2,getSize().getY() / 2 - DrawUtil.getDefaultTextHeight(.5) / 2),Color.WHITE).defaultFont().scale(.5f).draw(graphics);
 
+        //Fix blinking bug with multithreading
         prevChunkTrailTexture = chunkTrailTexture;
     }
 
@@ -145,10 +140,12 @@ public class ChunkTrailsWindow extends GuiWindow {
         super.onEnabled();
         if (MC.player == null) return;
         //Load Current File
+        canAutoSave = false;
         PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
         setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
         onDimensionChange.run(MC.level.dimension(), () -> {});
         mode.runOnChange(() -> {});
+        canAutoSave = true;
     }
 
     @Override
@@ -180,41 +177,71 @@ public class ChunkTrailsWindow extends GuiWindow {
             };
 
             Vector keyPos = new Vector(pos.x, 0, pos.z);
+            canAutoSave = false;
             loadedChunksMap.putIfAbsent(keyPos, isNewChunk);
+            canAutoSave = true;
         }
     }
 
     public void onUpdate(Event event) {
         if (!isPinned()) return;
         if (MC.level == null) return;
-        init.run(() -> {
-            //Load Current File
-            PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
-            setMapFromFile(getProperFile(mode.get(), MC.level.dimension())); //It crashed here for me some times. I added a null check for the level, but it crashed because of the vector not loading from the hashmap properly?
-            onDimensionChange.run(MC.level.dimension(), () -> {});
-            mode.runOnChange(() -> {});
-        });
+        try {
+            init.run(() -> {
+                //Load Current File
+                canAutoSave = false;
+                PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
+                setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
+                onDimensionChange.run(MC.level.dimension(), () -> {
+                });
+                mode.runOnChange(() -> {
+                });
+                canAutoSave = true;
+            });
 
-        //Change save files when changing mode OR dimension
-        mode.runOnChange(() -> {
-            if (mode.getPrevious() != null) {
-                //PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.getPrevious() + " " + MC.level.dimension().location(), Color.WHITE);
-                getProperFile(mode.getPrevious(), MC.level.dimension()).save(loadedChunksMap);
-            }
-            loadProperFile();
-        });
-        onDimensionChange.run(MC.level.dimension(), () -> {
-            if (onDimensionChange.getPrevValue() != null) {
-                //PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.get() + " " + onDimensionChange.getPrevValue().location(), Color.WHITE);
-                getProperFile(mode.get(), onDimensionChange.getPrevValue()).save(loadedChunksMap);
-            }
-            loadProperFile();
-        });
+            //Change save files when changing mode OR dimension
+            mode.runOnChange(() -> {
+                canAutoSave = false;
+                if (mode.getPrevious() != null) {
+                    PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.getPrevious() + " " + MC.level.dimension().location(), Color.WHITE);
+                    getProperFile(mode.getPrevious(), MC.level.dimension()).save(loadedChunksMap);
+                }
+                loadProperFile();
+                canAutoSave = true;
+            });
+            onDimensionChange.run(MC.level.dimension(), () -> {
+                canAutoSave = false;
+                if (onDimensionChange.getPrevValue() != null) {
+                    PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.get() + " " + onDimensionChange.getPrevValue().location(), Color.WHITE);
+                    getProperFile(mode.get(), onDimensionChange.getPrevValue()).save(loadedChunksMap);
+                }
+                loadProperFile();
+                canAutoSave = true;
+            });
 
-        chunkTrailSaveWatch.start(); //Autosave every 30 seconds
-        if (chunkTrailSaveWatch.hasTimePassedS(30)) {
-            saveProperFile();
-            chunkTrailSaveWatch.restart();
+            chunkTrailSaveWatch.start(); //Autosave every 30 seconds
+            if (chunkTrailSaveWatch.hasTimePassedS(30)) {
+                if (canAutoSave) {
+                    saveProperFile();
+                    chunkTrailSaveWatch.restart();
+                }
+            }
+        } catch (ConcurrentModificationException e) {
+
+        }
+    }
+
+    private void updateChunkTrailTexture() {
+        chunkTrailUpdateWatch.start();
+        if (chunkTrailUpdateWatch.hasTimePassedMS(updateDelay.get())) {
+            if (multiThreadUpdates.get()) {
+                Thread updateChunkTrailThread = new Thread(() -> chunkTrailTexture = getUpdatedChunkTrailTexture());
+                updateChunkTrailThread.setDaemon(true);
+                updateChunkTrailThread.start();
+            } else {
+                chunkTrailTexture = getUpdatedChunkTrailTexture();
+            }
+            chunkTrailUpdateWatch.restart();
         }
     }
 
@@ -286,13 +313,15 @@ public class ChunkTrailsWindow extends GuiWindow {
     private void saveProperFile() {
         Thread thread = new Thread(() -> {
             boolean shouldLoop;
+            String mode = this.mode.get();
+            ResourceKey<Level> dimension = MC.level.dimension();
             do {
                 try {
-                    getProperFile(mode.get(), MC.level.dimension()).save(loadedChunksMap);
+                    getProperFile(mode, dimension).save(loadedChunksMap);
                     shouldLoop = false;
                     System.out.println("saved!");
                 } catch (ConcurrentModificationException e) {
-                    //Loops if a concurrent modification happens to force the save
+                    //Loops if a concurrent modification happens to force the save. This shouldn't happen, but is here just in case
                     shouldLoop = true;
                     try {
                         Thread.sleep(100);
@@ -311,14 +340,16 @@ public class ChunkTrailsWindow extends GuiWindow {
         HashMap<String, String[]> loadedMap = file.getDataAsMap();
         HashMap<Vector, Boolean> newMap = new HashMap<>();
 
-        for (Map.Entry<String, String[]> set : loadedMap.entrySet()) {
-            //TODO: Monitor this Try/Catch block. With larger files, it may be super slow?
-            try {
+        try {
+            for (Map.Entry<String, String[]> set : loadedMap.entrySet()) {
                 newMap.put(Vector.getFromString(set.getKey()), Boolean.parseBoolean(set.getValue()[0]));
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Issue loading chunk from - " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
-                PhoenixClient.getNotificationManager().sendNotification("Removing corrupt data...", Color.WHITE);
             }
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Issue loading data from - " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
+            PhoenixClient.getNotificationManager().sendNotification("Game likely crashed during saving", Color.WHITE);
+
+            //TODO: Every save, copy the file into a .old file. If this occurs, revert to the .old file
+            PhoenixClient.getNotificationManager().sendNotification("Reverting to previous save...", Color.WHITE);
         }
 
         loadedChunksMap = newMap;
@@ -351,6 +382,7 @@ public class ChunkTrailsWindow extends GuiWindow {
     }
 
     //TODO: Review this, and streamline this. it is VERY difficult to read. make less nesting...
+    //TODO: Look into how XaeroPlus implemented this. its hundreds of lines smaller...
     private boolean isNewChunkPalette(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
         FriendlyByteBuf buf = packet.getChunkData().getReadBuffer();
         boolean isNewChunk = false;

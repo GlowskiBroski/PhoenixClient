@@ -34,9 +34,8 @@ public class WindowToggle extends GuiToggle {
     protected void drawWidget(GuiGraphics graphics, Vector mousePos) {
         super.drawWidget(graphics, mousePos);
         //Draw Selection Blip
-        if (selectedSettings) {
+        if (selectedSettings && getWindow().isEnabled())
             DrawUtil.drawRectangleRound(graphics,pos.get(),size.get(),new Color(255,255,255, MathUtil.getBoundValue(selectionFade,0,255).intValue()));
-        }
     }
 
     @Override

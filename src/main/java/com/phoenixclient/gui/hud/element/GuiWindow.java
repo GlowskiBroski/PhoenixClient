@@ -90,33 +90,6 @@ public abstract class GuiWindow extends GuiWidget implements IToggleableEventSub
     }
 
     @Override
-    public String getKey() {
-        return getTitle();
-    }
-
-    @Override
-    public ArrayList<EventAction> getEventActions() {
-        return eventActionList;
-    }
-
-    @Override
-    public ArrayList<SettingGUI<?>> getSettings() {
-        return settingList;
-    }
-
-    @Override
-    public void onEnabled() {}
-
-    @Override
-    public void onDisabled() {
-        this.pinned.set(false);
-        this.posScale.set(new Vector(.1,.1));
-        this.anchorX.set("NONE");
-        this.anchorY.set("NONE");
-        this.setSettingsOpen(false);
-    }
-
-    @Override
     public Container<Boolean> getEnabledContainer() {
         return enabled;
     }
@@ -313,6 +286,37 @@ public abstract class GuiWindow extends GuiWidget implements IToggleableEventSub
         super.setSize(vector);
         updateAnchoredCoordinates();
     }
+
+    //Interface Getters
+
+    @Override
+    public String getKey() {
+        return getTitle();
+    }
+
+    @Override
+    public ArrayList<EventAction> getEventActions() {
+        return eventActionList;
+    }
+
+    @Override
+    public ArrayList<SettingGUI<?>> getSettings() {
+        return settingList;
+    }
+
+    @Override
+    public void onEnabled() {}
+
+    @Override
+    public void onDisabled() {
+        this.pinned.set(false);
+        this.posScale.set(new Vector(.1,.1));
+        this.anchorX.set("NONE");
+        this.anchorY.set("NONE");
+        this.setSettingsOpen(false);
+    }
+
+    //Native Getters
 
     public String getTitle() {
         return title;

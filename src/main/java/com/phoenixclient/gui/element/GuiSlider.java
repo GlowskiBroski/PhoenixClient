@@ -33,8 +33,6 @@ public class GuiSlider<T extends Number> extends GuiWidget {
         this(screen, setting.getTitle(), setting, pos, size, colorManager);
     }
 
-
-    //TODO: Clean the slider class draw method.
     @Override
     protected void drawWidget(GuiGraphics graphics, Vector mousePos) {
         if (sliding) updateSliderValue(mousePos);

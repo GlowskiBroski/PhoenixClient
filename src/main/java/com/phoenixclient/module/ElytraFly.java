@@ -25,7 +25,7 @@ public class ElytraFly extends Module {
             this,
             "Mode",
             "Mode of ElytaFly",
-            "Boost").setModeData("Boost","Hold","Sprint","Bounce");
+            "Boost").setModeData("Boost","Hold","Ground","Bounce");
 
     //Boost
     private final SettingGUI<Double> speedBoost = new SettingGUI<>(
@@ -56,20 +56,20 @@ public class ElytraFly extends Module {
             "Automatically uses rockets every 2 seconds",
             true).setDependency(mode, "Hold");
 
-    //Sprint
-    private final SettingGUI<Integer> speedCapSprint = new SettingGUI<>(
+    //Ground
+    private final SettingGUI<Integer> speedCapGround = new SettingGUI<>(
             this,
-            "Sprint Speed Cap",
+            "Ground Speed Cap",
             "Top speed of hold mode",
             100)
-            .setSliderData(0, 200, 5).setDependency(mode, "Sprint");
+            .setSliderData(0, 200, 5).setDependency(mode, "Ground");
 
-    private final SettingGUI<Integer> accelerationSprint = new SettingGUI<>(
+    private final SettingGUI<Integer> accelerationGround = new SettingGUI<>(
             this,
             "Acceleration",
             "Acceleration for the speed mod",
             7)
-            .setSliderData(1, 15, 1).setDependency(mode, "Sprint");
+            .setSliderData(1, 15, 1).setDependency(mode, "Ground");
 
     //Bounce
     private final SettingGUI<Integer> pitchBounce = new SettingGUI<>(
@@ -81,7 +81,7 @@ public class ElytraFly extends Module {
 
     public ElytraFly() {
         super("ElytraFly", "Allows control of the Elytra", Category.MOTION, false, -1);
-        addSettings(mode, speedBoost, glideSpeedHold, speedCapHold, useRocketsHold, speedCapSprint, pitchBounce, accelerationSprint);
+        addSettings(mode, speedBoost, glideSpeedHold, speedCapHold, useRocketsHold, speedCapGround, pitchBounce, accelerationGround);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }
 
@@ -93,7 +93,7 @@ public class ElytraFly extends Module {
         switch (mode.get()) {
             case "Boost" -> boost();
             case "Hold" -> hold();
-            case "Sprint" -> sprint();
+            case "Ground" -> ground();
             case "Bounce" -> bounce();
         }
     }
@@ -107,7 +107,7 @@ public class ElytraFly extends Module {
                 if (MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem && useRocketsHold.get()) startUseItem();
                 watch.restart();
             }
-            case "Sprint" -> {/*Nothing Extra ¯\_(ツ)_/¯*/}
+            case "Ground" -> {/*Nothing Extra ¯\_(ツ)_/¯*/}
             case "Bounce" -> {/*Nothing Extra ¯\_(ツ)_/¯*/}
         }
     }
@@ -121,7 +121,7 @@ public class ElytraFly extends Module {
                 if (MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem && useRocketsHold.get()) startUseItem();
                 watch.restart();
             }
-            case "Sprint" -> {
+            case "Ground" -> {
                 MixinHooks.keepElytraOnGround = false;
             }
             case "Bounce" -> {
@@ -173,7 +173,7 @@ public class ElytraFly extends Module {
     /**
      * Doesn't require jumping to work. Still bypasses GRIM
      */
-    public void sprint() {
+    public void ground() {
         if (MC.options.keyUp.isDown() && MC.player.inventoryMenu.getSlot(6).getItem().getItem().equals(Items.ELYTRA)) {
             if (!MC.player.isFallFlying()) {
                 MC.player.startFallFlying();
@@ -184,12 +184,12 @@ public class ElytraFly extends Module {
                 MixinHooks.keepElytraOnGround = true;
                 MC.player.setSprinting(false);
 
-                double acceleration = (double) accelerationSprint.get() / 100;
+                double acceleration = (double) accelerationGround.get() / 100;
                 Angle yaw = new Angle(MC.player.getRotationVector().y, true);
                 Angle pitch = new Angle(10, true);
 
                 double hMom = 20 * Math.sqrt(Math.pow(MC.player.getDeltaMovement().x, 2) + Math.pow(MC.player.getDeltaMovement().z, 2));
-                if (hMom <= speedCapSprint.get() && !MC.options.keyShift.isDown()) MC.player.addDeltaMovement(new Vector(yaw, pitch, acceleration).getVec3());
+                if (hMom <= speedCapGround.get() && !MC.options.keyShift.isDown()) MC.player.addDeltaMovement(new Vector(yaw, pitch, acceleration).getVec3());
 
                 if (MC.player.touchingUnloadedChunk()) MC.player.setDeltaMovement(0,0,0);
             }

@@ -3,6 +3,7 @@ package com.phoenixclient.gui;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.module.Module;
 import com.phoenixclient.util.math.Vector;
+import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
@@ -46,17 +47,25 @@ public class NotificationManager extends Module {
     private void renderHud(Event event) {
         GuiGraphics graphics = new GuiGraphics(MC, MC.renderBuffers().bufferSource());
 
+        int removals = Math.clamp(notificationList.size() - maximumNotifications.get(),0,notificationList.size());
+        for (int i = 0; i < removals; i++) {
+            notificationRemovalQueue.add(notificationList.get(i));
+        }
+
+        for (Notification notification : notificationRemovalQueue) notificationList.remove(notification);
+
         int yOff = 2;
         for (Notification notification : notificationList) {
+            double size = DrawUtil.getDefaultTextWidth(notification.text);
+            Vector pos = new Vector(MC.getWindow().getGuiScaledWidth() / 2 - size / 2, yOff);
+            DrawUtil.drawRectangleRound(graphics, pos.getSubtracted(2,2), new Vector(size + 4,12), new Color(0, 0, 0,(int)Math.clamp(notification.fade,0,175)));
+            DrawUtil.drawRectangleRound(graphics, pos.getSubtracted(2,2), new Vector(size + 4,12), new Color(150, 150, 150, (int)Math.clamp(notification.fade,0,175)), true);
             TextBuilder.start().text(notification.text).pos(new Vector(0, yOff)).centerX().color(notification.getFadeColor()).draw(graphics);
             notification.updateFadeOut();
             yOff += 12;
             if (notification.fade <= 0) notificationRemovalQueue.add(notification);
         }
-
-        for (Notification notification : notificationRemovalQueue) notificationList.remove(notification);
     }
-
 
     public void sendNotification(String text, Color color, float fadeSpeed) {
         notificationList.add(new Notification(text, color, fadeSpeed, 255));
@@ -65,7 +74,6 @@ public class NotificationManager extends Module {
     public void sendNotification(String text, Color color) {
         sendNotification(text,color,1);
     }
-
 
     private static class Notification {
         public final String text;

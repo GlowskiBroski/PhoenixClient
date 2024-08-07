@@ -23,40 +23,40 @@ public class Event {
 
     public static final RenderDebugEvent EVENT_RENDER_DEBUG = new RenderDebugEvent();
 
+    // -------------------------------------------------------------------------------
 
     private final ArrayList<EventAction> eventActions = new ArrayList<>();
+
+    private final ArrayList<EventAction> addition = new ArrayList<>();
+    private final ArrayList<EventAction> removalQueue = new ArrayList<>();
 
     private Object[] args = new Object[]{};
 
     public void post(Object... args) {
         this.args = args;
-        try {
-            for (EventAction event : getActions()) event.run();
+
+        try {//TODO: This is a new queue system. Do more checking with this to see if its viable
+            removalQueue.forEach((action) -> getActions().remove(action));
+            removalQueue.clear();
+            addition.forEach((action) -> getActions().add(action));
+            addition.clear();
         } catch (ConcurrentModificationException ignored) {
-            //If a concurrent modification exception ever occurs, think about potentially adding a queue subscribe/unsubscribe system
         }
+
+        for (EventAction event : getActions()) event.run();
+
     }
 
     public boolean subscribeAction(EventAction action) {
-        try {
-            if (!getActions().contains(action)) {
-                action.subscribed = true;
-                return getActions().add(action);
-            }
-        } catch (ConcurrentModificationException | NullPointerException e) {
-            return false;
-        }
-        return false;
+        if((getActions().contains(action))) return false;
+        action.subscribed = true;
+        return addition.add(action);
     }
 
 
     public boolean unsubscribeAction(EventAction action) {
-        try {
-            action.subscribed = false;
-            return getActions().remove(action);
-        } catch (ConcurrentModificationException | NullPointerException e) {
-            return false;
-        }
+        action.subscribed = false;
+        return removalQueue.add(action);
     }
 
 

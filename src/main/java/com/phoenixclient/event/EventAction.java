@@ -21,19 +21,11 @@ public class EventAction implements Runnable {
 
 
     public boolean subscribe() {
-        try {
-            return getEvent().subscribeAction(this);
-        } catch (Exception e) {
-            return false;
-        }
+        return getEvent().subscribeAction(this);
     }
 
     public boolean unsubscribe() {
-        try {
-            return getEvent().unsubscribeAction(this);
-        } catch (Exception e) {
-            return false;
-        }
+        return getEvent().unsubscribeAction(this);
     }
 
 
