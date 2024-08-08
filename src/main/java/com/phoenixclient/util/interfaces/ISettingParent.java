@@ -13,6 +13,6 @@ public interface ISettingParent {
 
     ArrayList<SettingGUI<?>> getSettings();
 
-    String getKey();
+    String getSettingsKey();
 
 }

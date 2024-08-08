@@ -89,10 +89,10 @@ public class InventoryWindow extends GuiWindow {
         //INFO: Width = 176, Height = 80
         double x = pos.getX();
         double y = pos.getY();
-        ResourceLocation GUI_TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/container/shulker_box.png");
+        ResourceLocation guiTexture = ResourceLocation.withDefaultNamespace("textures/gui/container/shulker_box.png");
         RenderSystem.enableBlend();
-        DrawUtil.drawTexturedRect(graphics,GUI_TEXTURE,pos.getAdded(new Vector(0,74)),new Vector(176,6),new Vector(0,160), new Vector(256,256));
-        DrawUtil.drawTexturedRect(graphics,GUI_TEXTURE,pos,new Vector(176,74),Vector.NULL(), new Vector(256,256));
+        DrawUtil.drawTexturedRect(graphics,guiTexture,pos.getAdded(new Vector(0,74)),new Vector(176,6),new Vector(0,160), new Vector(256,256));
+        DrawUtil.drawTexturedRect(graphics,guiTexture,pos,new Vector(176,74),Vector.NULL(), new Vector(256,256));
         TextBuilder.start(title, new Vector(x + 7, y + 6), new Color(50, 50, 50, 255)).shadowLess().defaultFont().draw(graphics);
         RenderSystem.disableBlend();
     }

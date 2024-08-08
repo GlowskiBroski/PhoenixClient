@@ -145,7 +145,7 @@ public abstract class GuiWidget {
     public boolean shouldDrawSetting() {
         if (!hasSetting()) return true;
         if (hasSetting() && getSetting().getDependency() == null) return true;
-        return (getSetting().getDependency().setting().get().equals(getSetting().getDependency().value()));
+        return getSetting().getDependency().isValidated();
     }
 
     public boolean hasSetting() {

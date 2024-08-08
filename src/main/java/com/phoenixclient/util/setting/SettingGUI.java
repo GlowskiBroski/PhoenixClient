@@ -27,7 +27,7 @@ public class SettingGUI<T> extends Setting<T> {
     private final OnChange<T> onChange;
 
     public SettingGUI(ISettingParent parent, String name, String description, T defaultValue) {
-        super(PhoenixClient.getSettingManager(), parent.getKey() + "_" + name, defaultValue);
+        super(PhoenixClient.getSettingManager(), parent.getSettingsKey() + "_" + name, defaultValue);
         this.parent = parent;
         this.name = name;
         this.description = description;
@@ -52,23 +52,18 @@ public class SettingGUI<T> extends Setting<T> {
         return this;
     }
 
-    public <E> SettingGUI<T> setDependency(SettingGUI<E> setting, E value) {
-        this.dependency = new Dependency<>(setting,value);
+    public <E> SettingGUI<T> setDependency(Container<E> setting, E value) {
+        this.dependency = new Dependency<>(setting, value);
         return this;
+    }
+
+    public OnChange<T> getChangeDetector() {
+        return onChange;
     }
 
     public void runOnChange(Runnable runnable) {
         onChange.run(get(),runnable);
     }
-
-    public void resetOnChange() {
-        onChange.reset();
-    }
-
-    public T getPrevious() {
-        return onChange.getPrevValue();
-    }
-
 
     public String getTitle() {
         return name;
@@ -111,7 +106,12 @@ public class SettingGUI<T> extends Setting<T> {
     }
 
 
-    public record Dependency<E>(SettingGUI<E> setting, E value) {
+    public record Dependency<E>(Container<E> container, E value) {
+
+        public boolean isValidated() {
+            return (container.get().equals(value));
+        }
+
     }
 
 }

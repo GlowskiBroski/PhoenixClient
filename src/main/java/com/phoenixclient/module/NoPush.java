@@ -8,6 +8,8 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 public class NoPush extends Module {
 
+    //TODO: Add no water/Lava push here
+
     public NoPush() {
         super("NoPush", "Stops entity collisions", Category.MOTION, false, -1);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);

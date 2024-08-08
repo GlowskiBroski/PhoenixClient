@@ -161,7 +161,7 @@ public class ShulkerView extends Module {
 
     private Color getShulkerFrameColor(ItemStack stack) {
         if (stack == null) return Color.WHITE;
-        return switch (stack.getItem().toString()) {
+        return switch (stack.getItem().toString().replace("minecraft:","")) {
             case "shulker_box" -> new Color(218, 160, 255);
             case "white_shulker_box" -> new Color(255, 255, 255);
             case "light_gray_shulker_box" -> new Color(150, 150, 150);

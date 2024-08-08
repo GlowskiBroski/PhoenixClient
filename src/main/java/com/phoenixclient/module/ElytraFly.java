@@ -11,6 +11,7 @@ import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -79,14 +80,29 @@ public class ElytraFly extends Module {
             75).setSliderData(0, 85, 1).setDependency(mode, "Bounce");
 
 
-    public ElytraFly() {
-        super("ElytraFly", "Allows control of the Elytra", Category.MOTION, false, -1);
-        addSettings(mode, speedBoost, glideSpeedHold, speedCapHold, useRocketsHold, speedCapGround, pitchBounce, accelerationGround);
-        addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
-    }
+    //Firework Extension
+    private final SettingGUI<Boolean> fastFirework = new SettingGUI<>(
+            this,
+            "Fast Fireworks",
+            "Increases the top speed of a firework from 30m/s to something higher",
+            false);
+
+    private final SettingGUI<Integer> speedFastFirework = new SettingGUI<>(
+            this,
+            "Firework Speed",
+            "Top speed of the firework rocket",
+            80)
+            .setSliderData(30, 120, 5).setDependency(fastFirework,true);
 
     private int step = 0;
+    private int fireworkStep = 14;
     private final StopWatch watch = new StopWatch();
+
+    public ElytraFly() {
+        super("ElytraFly", "Allows control of the Elytra", Category.MOTION, false, -1);
+        addSettings(mode, speedBoost, glideSpeedHold, speedCapHold, useRocketsHold, speedCapGround, pitchBounce, accelerationGround, speedFastFirework,fastFirework);
+        addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
+    }
 
     public void onPlayerUpdate(Event event) {
         if (!MC.player.inventoryMenu.getSlot(6).getItem().getItem().equals(Items.ELYTRA)) return;
@@ -95,6 +111,27 @@ public class ElytraFly extends Module {
             case "Hold" -> hold();
             case "Ground" -> ground();
             case "Bounce" -> bounce();
+        }
+
+        if (fastFirework.get() && MC.player.isFallFlying()) {
+            boolean fireworkActive = false;
+            for (Entity entity : MC.level.entitiesForRendering()) {
+                if (entity instanceof FireworkRocketEntity) {
+                    fireworkActive = true;
+                    break;
+                }
+            }
+
+            if (fireworkActive) {
+                Angle yaw = new Angle(MC.player.getRotationVector().y, true);
+                Angle pitch = new Angle(MC.player.getRotationVector().x, true);
+
+                MC.player.setDeltaMovement(new Vector(yaw, pitch, .12 * fireworkStep).getVec3());
+                fireworkStep = Math.clamp(fireworkStep + 3,0,(int)(speedFastFirework.get() / 2.38));
+            } else {
+                fireworkStep = 14;
+            }
+
         }
     }
 

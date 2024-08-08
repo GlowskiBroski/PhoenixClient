@@ -73,8 +73,7 @@ public class PhoenixClient implements ModInitializer {
                 new EntityESP(),
                 new StorageESP(),
                 new AutoCrossbow(),
-                new Tridents(),
-                new FastFirework()
+                new Tridents()
         );
 
         GUI_MANAGER.instantiateHUDGUI();
@@ -86,8 +85,7 @@ public class PhoenixClient implements ModInitializer {
         Mouse.MOUSE_CLICK_ACTION.subscribe();
 
 		Module.MODULE_KEYBIND_ACTION.subscribe();
-
-        GUI_MANAGER.constUpdateGuiOpen.subscribe();
+        GuiManager.GUI_OPEN_KEYBIND_ACTION.subscribe();
 
         ROTATION_MANAGER.updateSpoofedAngles.subscribe();
 
@@ -95,7 +93,11 @@ public class PhoenixClient implements ModInitializer {
         //getGuiManager().startAnimationThread();
 
         //Toggle all mods that are saved as "Enabled"
-        for (Module module : getModules()) if (module.isEnabled()) module.enable();
+        for (Module module : getModules())
+            if (module.isEnabled()) {
+                module.defaultEnabled = true;
+                module.enable();
+            }
 
         //Toggle all windows that are saved as "Enabled"
         for (GuiWindow window : getGuiManager().getHudGui().getWindows()) if (window.isEnabled()) window.enable();

@@ -51,7 +51,7 @@ public class ChunkTrailsWindow extends GuiWindow {
             this,
             "Radar Size",
             "Window size/Range of the radar. Larger = more lag",
-            64).setSliderData(32, 256, 16);
+            80).setSliderData(32, 256, 16);
 
     public final SettingGUI<Double> scale = new SettingGUI<>(
             this,
@@ -202,9 +202,9 @@ public class ChunkTrailsWindow extends GuiWindow {
             //Change save files when changing mode OR dimension
             mode.runOnChange(() -> {
                 canAutoSave = false;
-                if (mode.getPrevious() != null) {
-                    PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.getPrevious() + " " + MC.level.dimension().location(), Color.WHITE);
-                    getProperFile(mode.getPrevious(), MC.level.dimension()).save(loadedChunksMap);
+                if (mode.getChangeDetector().getPrevValue() != null) {
+                    PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.getChangeDetector().getPrevValue() + " " + MC.level.dimension().location(), Color.WHITE);
+                    getProperFile(mode.getChangeDetector().getPrevValue(), MC.level.dimension()).save(loadedChunksMap);
                 }
                 loadProperFile();
                 canAutoSave = true;

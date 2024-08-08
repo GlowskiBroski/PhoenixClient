@@ -1,13 +1,21 @@
 package com.phoenixclient.gui.module;
 
+import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.gui.GUI;
 import com.phoenixclient.gui.GuiManager;
 import com.phoenixclient.gui.module.element.ModuleOptionsMenu;
+import com.phoenixclient.gui.module.element.ModuleToggle;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.gui.module.element.ModuleMenu;
 import com.phoenixclient.module.Module;
+import com.phoenixclient.util.render.ColorManager;
+import com.phoenixclient.util.render.DrawUtil;
+import com.phoenixclient.util.render.TextBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
@@ -34,6 +42,49 @@ public class ModuleGUI extends GUI {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         drawHintText(guiGraphics,"Press " + Component.translatable(GuiManager.HUD_KEY_MAPPING.saveString()).getString() + " to open the HUD menu!");
+
+
+        // TEST DRAWING A BETTER GUI WINDOW COLOR PALETTE: TODO: Work on this more
+
+        if (true) return;
+
+        Vector pos = new Vector(2,400);
+        Vector size = new Vector(60,50);
+
+
+        //Background
+        Vector backgroundPos = pos.getAdded(pos.getX() + size.getX() - 9, 3);
+        //Vector backgroundSize = new Vector((double) (62 * (buttonList.size() % 2 == 0 ? buttonList.size() : buttonList.size() + 1)) / 2 + 9 + 4, size.getY() - 6);
+        Vector backgroundSize = new Vector(400 + 9 + 4, size.getY() - 6);
+        Color backgroundColor = new Color(30,40,120, 220);
+        DrawUtil.drawRectangleRound(guiGraphics, backgroundPos, backgroundSize, backgroundColor, 1.5, false);
+        DrawUtil.drawArrowHead(guiGraphics, backgroundPos.getAdded(backgroundSize).y(pos.getY() + 3), (float) size.getY() - 6, backgroundColor, false, false);
+
+
+        //Buttons
+        boolean even;
+        int i = 0;
+        int j = 0;
+        for (Module module : PhoenixClient.getModules()) {
+            if (module.getCategory().equals(Module.Category.MOTION)) {
+                even = j % 2 == 0;
+                DrawUtil.drawRectangleRound(guiGraphics,pos.getAdded(pos.getX() + size.getX() + 4 + (62 * (even ? j - i : i)), even ? 5 : 26), new Vector(60, 19),new Color(57, 83, 190,255));
+                j++;
+                if (!even) i++;
+            }
+        }
+
+
+        //Body
+        DrawUtil.drawArrow(guiGraphics, pos, (float)size.getY(), new Color(0, 0, 0), false);
+        DrawUtil.drawArrow(guiGraphics, pos, (float)size.getY(), new Color(0, 194, 255), true);
+        //DrawUtil.drawArrow(guiGraphics, pos.getAdded(size.getMultiplied(.25 / 1.5)).getAdded(2, 0), (float) size.getY() / 1.5f, new Color(30, 40, 120), false);
+        //Title
+        Vector cpos = pos.getAdded(new Vector(size.getX() / 2 - DrawUtil.getFontTextWidth("Title") / 2, 1 + size.getY() / 2 - DrawUtil.getFontTextHeight() / 2));
+        TextBuilder.start("Title", cpos.getAdded(7, 0), Color.WHITE).scale((float) 1).draw(guiGraphics);
+
+
+
     }
 
 }

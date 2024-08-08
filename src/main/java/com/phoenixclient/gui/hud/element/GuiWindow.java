@@ -290,7 +290,7 @@ public abstract class GuiWindow extends GuiWidget implements IToggleableEventSub
     //Interface Getters
 
     @Override
-    public String getKey() {
+    public String getSettingsKey() {
         return getTitle();
     }
 

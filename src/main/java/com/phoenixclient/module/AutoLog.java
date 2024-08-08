@@ -20,6 +20,8 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 public class AutoLog extends Module {
 
+    //TODO: Add "below totem count"
+
     private final SettingGUI<Boolean> minecartTNT = new SettingGUI<>(
             this,
             "TNT Minecarts",

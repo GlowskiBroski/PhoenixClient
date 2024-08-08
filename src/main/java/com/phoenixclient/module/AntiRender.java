@@ -112,7 +112,7 @@ public class AntiRender extends Module {
 
     @Override
     public void onEnabled() {
-        for (SettingGUI<?> setting : getSettings()) setting.resetOnChange();
+        for (SettingGUI<?> setting : getSettings()) setting.getChangeDetector().reset();
     }
 
     @Override

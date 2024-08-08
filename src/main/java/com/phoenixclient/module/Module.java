@@ -3,7 +3,6 @@ package com.phoenixclient.module;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
-import com.phoenixclient.util.interfaces.IToggleable;
 import com.phoenixclient.util.interfaces.IToggleableEventSubscriber;
 import com.phoenixclient.util.interfaces.ISettingParent;
 import com.phoenixclient.util.input.Key;
@@ -35,6 +34,8 @@ public abstract class Module implements IToggleableEventSubscriber, ISettingPare
     private final SettingGUI<Boolean> enabled;
     private final SettingGUI<Integer> keyBind;
 
+    public boolean defaultEnabled = false;
+
     public Module(String title, String description, Category category, boolean defaultEnabled, int defaultKeyBind) {
         this.title = title;
         this.description = description;
@@ -46,7 +47,8 @@ public abstract class Module implements IToggleableEventSubscriber, ISettingPare
     @Override
     public void enable() {
         IToggleableEventSubscriber.super.enable();
-        if (PhoenixClient.getNotificationManager().enableDisable.get()) PhoenixClient.getNotificationManager().sendNotification(getTitle() + " Enabled!", Color.WHITE);
+        if (!defaultEnabled && PhoenixClient.getNotificationManager().enableDisable.get()) PhoenixClient.getNotificationManager().sendNotification(getTitle() + " Enabled!", Color.WHITE);
+        defaultEnabled = false;
     }
 
     @Override
@@ -79,7 +81,7 @@ public abstract class Module implements IToggleableEventSubscriber, ISettingPare
     }
 
     @Override
-    public String getKey() {
+    public String getSettingsKey() {
         return getTitle();
     }
 

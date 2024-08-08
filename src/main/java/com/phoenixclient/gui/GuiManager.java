@@ -32,11 +32,6 @@ public class GuiManager extends Module {
     private HUDGUI hudGUI;
     private ModuleGUI moduleGUI;
 
-    /**
-     * This action is subscribed on instantiation and detects for key presses to open any of the client's GUIs
-     */
-    public EventAction constUpdateGuiOpen = new EventAction(Event.EVENT_KEY_PRESS, this::updateGuiOpen);
-
     private boolean isFirstEnable = true;
 
     private final SettingGUI<String> font = new SettingGUI<>(
@@ -111,20 +106,6 @@ public class GuiManager extends Module {
         }
     }
 
-    private void updateGuiOpen() {
-        int key = Event.EVENT_KEY_PRESS.getKey();
-        int action = Event.EVENT_KEY_PRESS.getState();
-
-        if (action != GLFW.GLFW_PRESS) return;
-
-        if (key == Key.KEY_ESC.getId())
-            PhoenixClient.getSettingManager().saveAll(); //Whenever the GUI closes, save all settings
-
-        String mapping = InputConstants.getKey(key, action).getName();
-        if (HUD_KEY_MAPPING.saveString().equals(mapping)) getHudGui().toggleOpen();
-        if (MODULE_KEY_MAPPING.saveString().equals(mapping)) getModuleGui().toggleOpen();
-    }
-
     private void updateThemeAndFont(Event event) {
         font.runOnChange(() -> PhoenixClient.setFontRenderer(new FontRenderer(font.get(), Font.PLAIN)));
         theme.runOnChange(() -> {
@@ -178,4 +159,22 @@ public class GuiManager extends Module {
     public ModuleGUI getModuleGui() {
         return moduleGUI;
     }
+
+
+    /**
+     * This action is subscribed on instantiation and detects for key presses to open any of the client's GUIs
+     */
+    public static EventAction GUI_OPEN_KEYBIND_ACTION = new EventAction(Event.EVENT_KEY_PRESS, () -> {
+        int key = Event.EVENT_KEY_PRESS.getKey();
+        int action = Event.EVENT_KEY_PRESS.getState();
+
+        if (action != GLFW.GLFW_PRESS) return;
+
+        if (key == Key.KEY_ESC.getId())
+            PhoenixClient.getSettingManager().saveAll(); //Whenever the GUI closes, save all settings
+
+        String mapping = InputConstants.getKey(key, action).getName();
+        if (HUD_KEY_MAPPING.saveString().equals(mapping)) PhoenixClient.getGuiManager().getHudGui().toggleOpen();
+        if (MODULE_KEY_MAPPING.saveString().equals(mapping)) PhoenixClient.getGuiManager().getModuleGui().toggleOpen();
+    });
 }

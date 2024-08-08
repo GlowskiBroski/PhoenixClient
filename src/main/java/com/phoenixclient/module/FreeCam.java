@@ -92,6 +92,7 @@ public class FreeCam extends Module {
     }
 
     public void onPacket(PacketEvent event) {
+        if (MC.player == null) disable();
         Packet<?> packet = event.getPacket();
         if (packet instanceof ServerboundMovePlayerPacket.Rot) {
             if (!packet.equals(interactRotationPacket)) event.setCancelled(true);

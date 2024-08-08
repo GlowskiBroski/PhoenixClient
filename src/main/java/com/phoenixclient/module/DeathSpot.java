@@ -65,7 +65,7 @@ public class DeathSpot extends Module {
             doOnce.run(() -> {
                 Vector pos = (previousDeathLocation = new Vector(MC.player.getPosition(0)));
                 if (chatMessage.get()) {
-                    ConsoleUtil.sendMessage("Death Location: (" + Math.floor(pos.getX()) + ", " + Math.floor(pos.getY()) + ", " + Math.floor(pos.getZ()));
+                    ConsoleUtil.sendMessage("Death Location: (" + Math.floor(pos.getX()) + ", " + Math.floor(pos.getY()) + ", " + Math.floor(pos.getZ()) + ")");
                 }
             });
         }
