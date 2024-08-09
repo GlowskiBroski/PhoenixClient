@@ -1,6 +1,8 @@
 package com.phoenixclient.gui.hud.element;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.events.PacketEvent;
@@ -9,6 +11,7 @@ import com.phoenixclient.util.actions.DoOnce;
 import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.file.CSVFile;
+import com.phoenixclient.util.math.Angle;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.DrawUtil;
 import com.phoenixclient.util.render.TextBuilder;
@@ -16,6 +19,7 @@ import com.phoenixclient.util.setting.Container;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -29,6 +33,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.*;
 import net.minecraft.world.level.material.FluidState;
+import org.joml.Matrix4f;
 
 import java.awt.*;
 import java.util.*;
@@ -122,6 +127,19 @@ public class ChunkTrailsWindow extends GuiWindow {
         DrawUtil.drawRectangle(graphics, center.getAdded(0,1), new Vector(1, 1), Color.BLUE);
         DrawUtil.drawRectangle(graphics, center.getAdded(1,0), new Vector(1, 1), Color.BLUE);
         DrawUtil.drawRectangle(graphics, center.getAdded(0,-1), new Vector(1, 1), Color.BLUE);
+
+
+        //Draw Direction Line
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        Matrix4f matrix = graphics.pose().last().pose();
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP,DefaultVertexFormat.POSITION_COLOR);
+        Color c = Color.BLUE;
+        Vector unitVector = new Angle(MC.player.getYRot() + 90,true).getUnitVector().getMultiplied(10);
+        bufferBuilder.addVertex(matrix, (float) center.getX() + .5f,(float) center.getY() + .5f, 0).setColor(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
+        bufferBuilder.addVertex(matrix, (float) center.getAdded(unitVector).getX() + .5f,(float) center.getAdded(unitVector).getY() + .5f, 0).setColor(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
+        BufferUploader.drawWithShader(bufferBuilder.build());
+
 
         //Draw Directions
         TextBuilder.start("N",getPos().getAdded(getSize().getX() / 2 - DrawUtil.getFontTextWidth("N",.5) / 2,2),Color.WHITE).defaultFont().scale(.5f).draw(graphics);

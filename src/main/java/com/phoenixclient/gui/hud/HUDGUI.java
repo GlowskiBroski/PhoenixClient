@@ -21,6 +21,7 @@ public class HUDGUI extends GUI {
                 new FPSWindow(this),
                 new TPSWindow(this),
                 new DirectionWindow(this),
+                new RotationWindow(this),
                 new SpeedWindow(this),
                 new CoordinatesWindow(this),
 
