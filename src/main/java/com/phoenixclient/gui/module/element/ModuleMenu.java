@@ -67,7 +67,9 @@ public class ModuleMenu extends GuiWidget {
         Vector backgroundSize = new Vector((double) (62 * (buttonList.size() % 2 == 0 ? buttonList.size() : buttonList.size() + 1)) / 2 + 9 + 4, getSize().getY() - 6);
         ColorManager cm = colorManager;
         Color backgroundColor = new Color(cm.getDepthColor().getRed(), cm.getDepthColor().getGreen(), cm.getDepthColor().getBlue(), 220);
+        //Color backgroundColor = new Color(0, 0, 0, 175);
         DrawUtil.drawRectangleRound(graphics, backgroundPos, backgroundSize, backgroundColor, 1.5, false);
+        //DrawUtil.drawRectangleRound(graphics, backgroundPos, backgroundSize, colorManager.getBaseColor(), 1.5, true);
         DrawUtil.drawArrowHead(graphics, backgroundPos.getAdded(backgroundSize).y(getPos().getY() + 3), (float) getSize().getY() - 6, backgroundColor, false, false);
 
         //Buttons

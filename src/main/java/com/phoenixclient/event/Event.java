@@ -7,6 +7,8 @@ import java.util.ConcurrentModificationException;
 
 public class Event {
 
+    //TODO: Look into synchronization for this class
+
     public static final KeyPressEvent EVENT_KEY_PRESS = new KeyPressEvent();
     public static final MouseClickEvent EVENT_MOUSE_CLICK = new MouseClickEvent();
 

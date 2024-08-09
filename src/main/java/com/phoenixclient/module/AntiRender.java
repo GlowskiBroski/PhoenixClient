@@ -16,6 +16,7 @@ import static com.phoenixclient.PhoenixClient.MC;
 // No Warden Fog
 // No Pumpkin Overlay
 // No Chat Verification Message Notification - I hate it so much
+// No Boss Bar
 
 public class AntiRender extends Module {
 

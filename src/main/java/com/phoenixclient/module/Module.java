@@ -47,14 +47,16 @@ public abstract class Module implements IToggleableEventSubscriber, ISettingPare
     @Override
     public void enable() {
         IToggleableEventSubscriber.super.enable();
-        if (!defaultEnabled && PhoenixClient.getNotificationManager().enableDisable.get()) PhoenixClient.getNotificationManager().sendNotification(getTitle() + " Enabled!", Color.WHITE);
+        if (!defaultEnabled && PhoenixClient.getNotificationManager().enableDisable.get())
+            PhoenixClient.getNotificationManager().sendNotification(getTitle() + " Enabled!", new Color(220, 255, 220,255));
         defaultEnabled = false;
     }
 
     @Override
     public void disable() {
         IToggleableEventSubscriber.super.disable();
-        if (PhoenixClient.getNotificationManager().enableDisable.get()) PhoenixClient.getNotificationManager().sendNotification(getTitle() + " Disabled!", Color.WHITE);
+        if (PhoenixClient.getNotificationManager().enableDisable.get())
+            PhoenixClient.getNotificationManager().sendNotification(getTitle() + " Disabled!", new Color(255,220,200,255));
     }
 
     @Override

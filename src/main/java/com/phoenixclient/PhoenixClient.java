@@ -55,7 +55,7 @@ public class PhoenixClient implements ModInitializer {
                 new Step(),
                 new ShulkerView(),
                 new Speed(),
-                new PacketTest(),
+                new TestModule(),
                 new NoPush(),
                 new Flight(),
                 new NoSlow(),

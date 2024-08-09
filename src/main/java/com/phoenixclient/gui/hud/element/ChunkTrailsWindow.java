@@ -27,9 +27,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.*;
 import net.minecraft.world.level.material.FluidState;
 
 import java.awt.*;
@@ -183,7 +181,7 @@ public class ChunkTrailsWindow extends GuiWindow {
         }
     }
 
-    public void onUpdate(Event event) {
+    public synchronized void onUpdate(Event event) {
         if (!isPinned()) return;
         if (MC.level == null) return;
         try {
@@ -381,6 +379,7 @@ public class ChunkTrailsWindow extends GuiWindow {
         return false;
     }
 
+
     //TODO: Review this, and streamline this. it is VERY difficult to read. make less nesting...
     //TODO: Look into how XaeroPlus implemented this. its hundreds of lines smaller...
     private boolean isNewChunkPalette(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
@@ -554,5 +553,7 @@ public class ChunkTrailsWindow extends GuiWindow {
 
         return isNewChunk || chunkIsBeingUpdated;
     }
+
+
 
 }

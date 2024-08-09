@@ -1,31 +1,14 @@
 package com.phoenixclient.module;
 
-import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
-import com.phoenixclient.event.EventAction;
-import com.phoenixclient.event.events.PacketEvent;
-import com.phoenixclient.mixin.MixinHooks;
-import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.input.Key;
-import com.phoenixclient.util.input.Mouse;
-import com.phoenixclient.util.math.Vector;
-import com.phoenixclient.util.setting.SettingGUI;
-import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
 import net.minecraft.network.protocol.game.*;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.inventory.BrewingStandMenu;
 import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.level.GameType;
-
-import java.util.UUID;
+import net.minecraft.world.item.Items;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
@@ -33,15 +16,44 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 //Maybe see if you can bypass the firework star crafting limit?
 
-public class PacketTest extends Module {
+public class TestModule extends Module {
 
-    public PacketTest() {
-        super("PacketTest", "Development Packet Mod - DO NOT ENABLE THIS", Category.SERVER, false, -1);
-        addEventSubscriber(Event.EVENT_PACKET,this::onPacket);
+    public TestModule() {
+        super("TestModule", "Development Mod - DO NOT ENABLE THIS", Category.SERVER, false, -1);
+        //addEventSubscriber(Event.EVENT_PACKET,this::onPacket);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
+
+
     }
 
 
+    public void onUpdate(Event event) {
+        if (Key.KEY_UP.isKeyDown()) {
+            MC.getConnection().send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS,MC.player.blockPosition(),Direction.DOWN));
+        }
+        if (Key.KEY_DOWN.isKeyDown()) {
+            MC.getConnection().handleDisconnect(new ClientboundDisconnectPacket(Component.translatable("TestModule Disconnect")));
+        }
+
+        if (Key.KEY_ENTER.isKeyDown()) {
+            if (MC.player.containerMenu instanceof BrewingStandMenu m && m.getSlot(2).getItem().getItem().equals(Items.GLASS_BOTTLE)) {
+                MC.gameMode.handleInventoryMouseClick(m.containerId, 2, 0, ClickType.QUICK_MOVE, MC.player);
+                MC.gameMode.handleInventoryMouseClick(m.containerId, 5, 0, ClickType.QUICK_MOVE, MC.player);
+                //MC.gameMode.handleInventoryMouseClick(m.containerId);
+            }
+        }
+
+        if (Key.KEY_PERIOD.isKeyDown()) {
+            if (MC.player.containerMenu instanceof BrewingStandMenu m) {
+                MC.gameMode.handleInventoryMouseClick(m.containerId, 5, 0, ClickType.QUICK_MOVE, MC.player);
+            }
+        }
+
+    }
+
+
+
+    /*
     Packet<?> exceptionPacket = null;
 
     Entity backup = null;
@@ -123,5 +135,7 @@ public class PacketTest extends Module {
         backup = null;
     }
 
+
+     */
 
 }

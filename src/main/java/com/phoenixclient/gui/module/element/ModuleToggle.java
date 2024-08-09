@@ -39,6 +39,9 @@ public class ModuleToggle extends GuiToggle {
         if (isMouseOver()) hoverWatch.start();
         else hoverWatch.stop();
 
+        //super.drawWidget(graphics,mousePos);
+
+        //*
         //Draw Background (THIS IS DIFFERENT, THEREFORE WE IGNORE THE SUPER CALL)
         Color bgc = colorManager.getBackgroundColor();
         DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(bgc.getRed()/2,bgc.getGreen()/2,bgc.getBlue()/2,100));
@@ -53,6 +56,7 @@ public class ModuleToggle extends GuiToggle {
 
         TextBuilder.start(getTitle(),getPos().getAdded(new Vector(2, 1 + getSize().getY() / 2 - DrawUtil.getFontTextHeight() / 2)), Color.WHITE).scale((float)scale).draw(graphics);
 
+         //*/
         //Draw Selection Blip
         if (selectedSettings) DrawUtil.drawRectangleRound(graphics,pos.get(),size.get(),new Color(255,255,255, MathUtil.getBoundValue(selectionFade,0,255).intValue()));
 
