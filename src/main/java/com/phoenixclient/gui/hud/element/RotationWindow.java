@@ -30,12 +30,15 @@ public class RotationWindow extends GuiWindow {
 
 
         String yawLabel = (this.label.get() ? "Yaw " : "");
-        String yawText = String.valueOf(MathUtil.roundDouble(MC.player.getYRot(),1));
+        float yRot = MC.player.getYRot();
+        while (yRot > 180) yRot -= 180;
+        while (yRot < -180) yRot += 360;
+        String yawText = String.valueOf(MathUtil.roundDouble(yRot,1));
 
-        setSize(new Vector(Math.max((int) DrawUtil.getFontTextWidth(yawLabel + yawText),(int) DrawUtil.getFontTextWidth(pitchLabel + pitchText)) + 6,24));
+        setSize(new Vector(Math.max((int) DrawUtil.getFontTextWidth(yawLabel + yawText),(int) DrawUtil.getFontTextWidth(pitchLabel + pitchText)) + 6,22));
 
         TextBuilder.start(pitchLabel,getPos().getAdded(new Vector(2,2)),colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(pitchText).color(Color.WHITE).dynamic().draw(graphics);
-        TextBuilder.start(yawLabel,getPos().getAdded(new Vector(2,14)),colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(yawText).color(Color.WHITE).dynamic().draw(graphics);
+        TextBuilder.start(yawLabel,getPos().getAdded(new Vector(2,12)),colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(yawText).color(Color.WHITE).dynamic().draw(graphics);
 
     }
 

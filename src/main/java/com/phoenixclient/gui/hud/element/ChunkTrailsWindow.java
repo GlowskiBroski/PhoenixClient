@@ -183,7 +183,13 @@ public class ChunkTrailsWindow extends GuiWindow {
         if (event.getPacket() instanceof ClientboundLevelChunkWithLightPacket p) { //This is the only packet sent to the client with chunk data
             ChunkPos pos = new ChunkPos(p.getX(), p.getZ());
             LevelChunk chunk = new LevelChunk(MC.level, pos);
-            chunk.replaceWithPacketData(p.getChunkData().getReadBuffer(), p.getChunkData().getHeightmaps(), p.getChunkData().getBlockEntitiesTagsConsumer(p.getX(), p.getZ()));
+
+            try {
+                chunk.replaceWithPacketData(p.getChunkData().getReadBuffer(), p.getChunkData().getHeightmaps(), p.getChunkData().getBlockEntitiesTagsConsumer(p.getX(), p.getZ()));
+            } catch (Exception e) {
+                //TODO: This is causing issues with sodium for some reason
+                //The try/catch block fixes compatability.
+            }
 
             boolean isNewChunk = switch (mode.get()) {
                 case "Palette" -> isNewChunkPalette(p, chunk);
@@ -194,6 +200,7 @@ public class ChunkTrailsWindow extends GuiWindow {
 
             Vector keyPos = new Vector(pos.x, 0, pos.z);
             canAutoSave = false;
+            //TODO: Make a setting that allows this ONLY if its done loading. Right now, while swapping, you may accidentally load the data into the wrong file
             loadedChunksMap.putIfAbsent(keyPos, isNewChunk);
             canAutoSave = true;
         }
