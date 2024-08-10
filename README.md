@@ -20,7 +20,7 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
 
   *What does it look like?*
   - PhoenixClient takes a slightly different approach to the standard hacked client GUI, rendering its windows horizontally rather than vertically
-  - ![Screenshot](pictures/windows/modulemenu.png)
+  - ![Screenshot](pictures/windows/modulemenu.jpg)
 
   PhoenixClient currently has 33 Modules & counting. (Its very new, modules are scarce, but are not low quality)
 
@@ -41,16 +41,16 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
   *Options Menu:*
   - You are able to view all options for a particular window with SHIFT + Left Click (Described above in Controls)
   - When you active an options window, it will appear in the center of your screen and look like this:
-  - ![Screenshot](pictures/windows/optionsmenu.png)
+  - ![Screenshot](pictures/windows/optionsmenu.jpg)
 
   *Toggle Menu:*
   - You are able to view all window toggles by holding SPACE (Described above in Controls)
   - When you hold space, it will appear in the center of your screen and look like this:
-  - ![Screenshot](pictures/windows/hudtogglemenu.png)
+  - ![Screenshot](pictures/windows/hudtogglemenu.jpg)
 
   *What does it look like?*
   - PhoenixClient takes a slightly different approach to the standard hacked client GUI, rendering its windows horizontally rather than vertically
-  - ![Screenshot](pictures/windows/hudmenu.png)
+  - ![Screenshot](pictures/windows/hudmenu.jpg)
 
 
   PhoenixClient HUD currently offers 16 draggable windows. Here are those windows with their custom options, excluding the universal options from above
