@@ -10,18 +10,20 @@ Is the client safe? Yes. You are free to look through all of the code and assess
 
 PhoenixClient has 2 main feature sets; Its Modules & Its HUD
 
-Controls:
+***PhoenixClient HUD Editor***
+
+*Controls:*
   - Hold Left Click + Drag to move window positions on screen
   - Right Click to pin/unpin windows from the HUD
   - SHIFT + Left Click any window to open the options menu
   - Hold SPACE to hope the window toggle menu. Here you can enable/disable menus from the GUI entirely
     
-  Options:
+  *Options:*
   - Backgrounds: All windows have the option to enable/disable their backgrounds
   - Labels: Information Windows (FPS,TPS,Direction,Rotation,Speed,Coordinates,ModuleList,EntityList,StorageList,SignTextList,KeyBindList,EntityData) have the option to enable/disable their label
   - Rendering Side & Scale: List Windows (ModuleList,EntityList,StorageList,SignTextList,KeyBindList) have the option to change their scale & Rendering Side (L/R)
 
-  Options Menu:
+  *Options Menu:*
   - You are able to view all options for a particular window with SHIFT + Left Click (Described above in Controls)
 
   PhoenixClient HUD currently offers 16 draggable windows. Here are those windows with their custom options, excluding the universal options from above
