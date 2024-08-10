@@ -93,9 +93,11 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
     - You can change the rendering order of the list (UP,DOWN,ABC)
   - **EntityData**: Displays data about an entity when hovered over
     - This window is UNFINISHED
-  - **ChunkTrails**: A Radar module that highlights new chunks in RED and old chunks in GREEN. The radar comes with a direction line, NSEW indicators, and saves all data to the system
+  - **ChunkTrails**: A Radar window that highlights new chunks in RED and old chunks in GREEN. The radar comes with a direction line, NSEW indicators, and saves all data to the system
+    - ![Screenshot](pictures/windows/chunktrails.jpg)
     - ChunkTrails comes with 3 modes for detecting new chunks, Palette, Copper, and Liquid (Palette by default)
     - You can change the size of the radar, and the scale of each chunk/pixel.
     - MultiThreading Updates: Creating the radar image may be very laggy at lower settings. It is smart to enable MultiThreading if you know your CPU can handle it.
+    - NOTE: This is VERY NEW. It may be unstable as it is my first time creating a radar. It has not broken for me yet, so hopefully it works for you too
 
   - **Logo**: This just displays the PhoenixClient logo. It is enabled by default
