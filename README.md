@@ -1,5 +1,7 @@
 ![Screenshot](pictures/Logo2New.png)
 
+[![](https://img.shields.io/github/downloads/GlowskiBroski/PhoenixClient/total)](https://github.com/GlowskiBroski/PhoenixClient/releases)
+
 PhoenixClient is a new Minecraft Client developed for Fabric modloader for the latest versions of minecraft.
 It uses mojang official mappings, not loom mappings. If you would like to build the project, there are no special plugins to do so.
 
