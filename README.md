@@ -99,5 +99,3 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
     - You can change the size of the radar, and the scale of each chunk/pixel.
     - MultiThreading Updates: Creating the radar image may be very laggy at lower settings. It is smart to enable MultiThreading if you know your CPU can handle it.
     - NOTE: This is VERY NEW. It may be unstable as it is my first time creating a radar. It has not broken for me yet, so hopefully it works for you too
-
-  - **Logo**: This just displays the PhoenixClient logo. It is enabled by default
