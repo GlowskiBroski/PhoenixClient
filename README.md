@@ -7,6 +7,12 @@ The client began development on June 12th, 2024 and only has a few modules, but 
 
 Is the client safe? Yes. You are free to look through all of the code and assess for yourself :)
 
+# Installation
+  - Download the fabric installer and install the latest version corresponding to the client version: https://fabricmc.net/use/installer/
+     - Fabric API is NOT required for PhoenixClient 
+  - Download the PhoenixClient.jar from the Releases tab. Place this into the .minecraft/mods folder
+  - DONE! You've installed PhoenixClient. I recommend using Sodium, Iris, and other fabric mods alongside PhoenixClient for the best experience
+
 PhoenixClient has 2 main feature sets; Its Modules & Its HUD
 
 # PhoenixClient Module Menu
