@@ -17,21 +17,50 @@ Controls:
 
   PhoenixClient HUD currently offers 16 draggable windows
   - FPS
-    - 
+    - ![Screenshot](pictures/windows/fps.png)
+      
   - TPS
+    - ![Screenshot](pictures/windows/tps.png)
+   
   - Direction
+    - ![Screenshot](pictures/windows/direction.png)
+
   - Rotation
+    - ![Screenshot](pictures/windows/rotation.png)
+
   - Speed
+    - ![Screenshot](pictures/windows/speed.png)
+
   - Coordinates
+    - ![Screenshot](pictures/windows/coordinates.png)
+
   - Inventory
+    - ![Screenshot](pictures/windows/inventory.png)
+
   - Armor
+    - ![Screenshot](pictures/windows/armor.png)
+
   - ModuleList
+    - ![Screenshot](pictures/windows/modulelist.png)
+
   - EntityList
+    - ![Screenshot](pictures/windows/entitylist.png)
+
   - StorageList
+    - ![Screenshot](pictures/windows/storagelist.png)
+
   - SignTextList
+    - ![Screenshot](pictures/windows/signtextlist.png)
+
   - KeyBindList
+    - ![Screenshot](pictures/windows/keybindlist.png)
+
   - EntityData
+    - ![Screenshot](pictures/windows/entitydata.png)
+
   - ChunkTrails
+    - ![Screenshot](pictures/windows/chunktrails.png)
+
   - Logo
 
   Options:
