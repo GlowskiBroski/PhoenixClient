@@ -101,6 +101,7 @@ public class ChunkTrailsWindow extends GuiWindow {
     private final StopWatch chunkTrailSaveWatch = new StopWatch();
 
     private boolean canAutoSave = true;
+    private boolean canAddChunk = true;
 
     public ChunkTrailsWindow(Screen screen) {
         super(screen, "ChunkTrailsWindow","A radar that highlights new chunks (in red) and old chunks (in green). Use this to follow chunk trails.", new Vector(65, 65),false);
@@ -201,7 +202,7 @@ public class ChunkTrailsWindow extends GuiWindow {
             Vector keyPos = new Vector(pos.x, 0, pos.z);
             canAutoSave = false;
             //TODO: Make a setting that allows this ONLY if its done loading. Right now, while swapping, you may accidentally load the data into the wrong file
-            loadedChunksMap.putIfAbsent(keyPos, isNewChunk);
+            if (canAddChunk) loadedChunksMap.putIfAbsent(keyPos, isNewChunk);
             canAutoSave = true;
         }
     }
@@ -213,40 +214,47 @@ public class ChunkTrailsWindow extends GuiWindow {
             init.run(() -> {
                 //Load Current File
                 canAutoSave = false;
+                canAddChunk = false;
                 PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
                 setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
                 onDimensionChange.run(MC.level.dimension(), () -> {
                 });
-                mode.runOnChange(() -> {
-                });
+                mode.runOnChange(() -> {});
                 canAutoSave = true;
+                canAddChunk = true;
             });
 
             //Change save files when changing mode OR dimension
             mode.runOnChange(() -> {
                 canAutoSave = false;
+                canAddChunk = false;
                 if (mode.getChangeDetector().getPrevValue() != null) {
                     PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.getChangeDetector().getPrevValue() + " " + MC.level.dimension().location(), Color.WHITE);
                     getProperFile(mode.getChangeDetector().getPrevValue(), MC.level.dimension()).save(loadedChunksMap);
                 }
                 loadProperFile();
+                canAddChunk = true;
                 canAutoSave = true;
             });
             onDimensionChange.run(MC.level.dimension(), () -> {
                 canAutoSave = false;
+                canAddChunk = false;
                 if (onDimensionChange.getPrevValue() != null) {
                     PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.get() + " " + onDimensionChange.getPrevValue().location(), Color.WHITE);
                     getProperFile(mode.get(), onDimensionChange.getPrevValue()).save(loadedChunksMap);
                 }
                 loadProperFile();
+                canAddChunk = true;
                 canAutoSave = true;
             });
 
             chunkTrailSaveWatch.start(); //Autosave every 30 seconds
             if (chunkTrailSaveWatch.hasTimePassedS(30)) {
                 if (canAutoSave) {
+                    canAddChunk = false;
                     saveProperFile();
                     chunkTrailSaveWatch.restart();
+                    canAddChunk = true;
                 }
             }
         } catch (ConcurrentModificationException e) {

@@ -105,6 +105,12 @@ public class DirectionWindow extends GuiWindow {
 
         String label = (this.label.get() ? "Direction " : "");
         String directionString = (coordinate.get() ? coordinateDirection : "") + (compass.get() ? (coordinate.get() ? " " : "") + cardinalDirection : "");
+        switch (mode.get()) {
+            case "Cardinal" -> setSize(new Vector(DrawUtil.getFontTextWidth(label + (coordinate.get() ? "[+Z]" : "") + (compass.get() ? (coordinate.get() ? " " : "") + "South" : "")) + 2, getSize().getY()));
+            case "Ordinal" -> setSize(new Vector(DrawUtil.getFontTextWidth(label + (coordinate.get() ? "[+Z+X]" : "") + (compass.get() ? (coordinate.get() ? " " : "") + "NW" : "")) + 4, getSize().getY()));
+        }
+
+        if (!compass.get() && !coordinate.get()) setSize(new Vector(60,13));
 
         Vector pos = new Vector(getPos().getX() + getSize().getX() / 2 - DrawUtil.getFontTextWidth(label + directionString) / 2 - 1, getPos().getY() + 2);
         TextBuilder.start(label, pos, colorManager.getHudLabelColor()).draw(graphics).nextAdj().text(directionString).color(Color.WHITE).draw(graphics);

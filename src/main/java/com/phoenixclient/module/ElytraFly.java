@@ -212,6 +212,14 @@ public class ElytraFly extends Module {
      */
     public void ground() {
         if (MC.options.keyUp.isDown() && MC.player.inventoryMenu.getSlot(6).getItem().getItem().equals(Items.ELYTRA)) {
+
+            /* TODO: Implement this
+            if (rubberBanding) {
+                MixinHooks.keepElytraOnGround = false;
+                return;
+            }
+            */
+
             if (!MC.player.isFallFlying()) {
                 MC.player.startFallFlying();
                 MC.getConnection().send(new ServerboundPlayerCommandPacket(MC.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING));
