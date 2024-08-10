@@ -10,7 +10,7 @@ Is the client safe? Yes. You are free to look through all of the code and assess
 
 PhoenixClient has 2 main feature sets; Its Modules & Its HUD
 
-***PhoenixClient HUD Editor***
+'''***PhoenixClient HUD Editor***'''
 
 *Controls:*
   - Hold Left Click + Drag to move window positions on screen
