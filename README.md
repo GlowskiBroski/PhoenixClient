@@ -22,6 +22,12 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
   - PhoenixClient takes a slightly different approach to the standard hacked client GUI, rendering its windows horizontally rather than vertically
   - ![Screenshot](pictures/windows/modulemenu.jpg)
 
+  *Noteable & Unique Modules:*
+  - ElytraFly: Ground Mode - VERY fast elytra fly. Works on 2B2T/GRIM (~120m/s). Its like an airplane taking off. While you are on the ground, you will accelerate, and can reach high speeds. 
+  - Banners: An exploit that modifies the loom table to allow for banner patterns past 6, and up to 20.
+  - FreeCam: Interact Mode - The player will have rotation packets sent towards your hitResult location. This allows you to place blocks and attack in freecam much easier
+  - ContainerSort - Allows you to hold space and sort any inventory block you are working in. I LOVE it and it keeps me organized
+
   PhoenixClient currently has 33 Modules & counting. (Its very new, modules are scarce, but are not low quality)
 
 # PhoenixClient HUD Editor
@@ -48,8 +54,8 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
   - When you hold space, it will appear in the center of your screen and look like this:
   - ![Screenshot](pictures/windows/hudtogglemenu.jpg)
 
-  *Universal Options:*
-  - Window Anchoring: when a window is dragged against a wall, it will have a red line on that wall. It is now 'anchored'. If the window changes, it will do so as if it is glued to that wall
+  *Window Achoring:*
+  - When a window is dragged against a wall, it will have a red line on that wall. It is now 'anchored'. If the window changes, it will do so as if it is glued to that wall
   
   *What does it look like?*
   - PhoenixClient takes a slightly different approach to the standard hacked client GUI, rendering its windows horizontally rather than vertically
