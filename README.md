@@ -11,9 +11,23 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
 
 # PhoenixClient Module Menu
 
+*Controls:*
+  - RCONTROL (Changeable in the default minecraft keybinds menu) to open the module menu
+  - Right click any module to open its settings window
+
+  *Options:*
+  - Custom font, color theming, and background blur can all be modified by opening the settings of the Graphics Manager Module
+
+  *What does it look like?*
+  - PhoenixClient takes a slightly different approach to the standard hacked client GUI, rendering its windows horizontally rather than vertically
+  - ![Screenshot](pictures/windows/modulemenu.png)
+
+  PhoenixClient currently has 33 Modules & counting. (Its very new, modules are scarce, but are not low quality)
+
 # PhoenixClient HUD Editor
 
 *Controls:*
+  - RALT (Changeable in the default minecraft keybinds menu) to open the HUD menu
   - Hold Left Click + Drag to move window positions on screen
   - Right Click to pin/unpin windows from the HUD
   - SHIFT + Left Click any window to open the options menu
@@ -26,6 +40,18 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
 
   *Options Menu:*
   - You are able to view all options for a particular window with SHIFT + Left Click (Described above in Controls)
+  - When you active an options window, it will appear in the center of your screen and look like this:
+  - ![Screenshot](pictures/windows/optionsmenu.png)
+
+  *Toggle Menu:*
+  - You are able to view all window toggles by holding SPACE (Described above in Controls)
+  - When you hold space, it will appear in the center of your screen and look like this:
+  - ![Screenshot](pictures/windows/hudtogglemenu.png)
+
+  *What does it look like?*
+  - PhoenixClient takes a slightly different approach to the standard hacked client GUI, rendering its windows horizontally rather than vertically
+  - ![Screenshot](pictures/windows/hudmenu.png)
+
 
   PhoenixClient HUD currently offers 16 draggable windows. Here are those windows with their custom options, excluding the universal options from above
   - **FPS**
@@ -87,12 +113,3 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
 
   - **Logo**
     - This just displays the PhoenixClient logo. It is enabled by default
-
-
-The client has 2 GUIs
-
-1) The Module GUI. Modules can be enabled/disabled in this menu. (Default Keybind: RCTRL)
-![Screenshot](pictures/mainGUI.jpg)
-
-2) The HUD GUI. HUD elements can be dragged around, pinned, and edited (Default Keybind: RALT)
-![Screenshot](pictures/hudGUI.jpg)
