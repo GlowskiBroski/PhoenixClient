@@ -33,7 +33,7 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
   - SHIFT + Left Click any window to open the options menu
   - Hold SPACE to hope the window toggle menu. Here you can enable/disable menus from the GUI entirely
     
-  *Options:*
+  *Universal Options:*
   - Backgrounds: All windows have the option to enable/disable their backgrounds
   - Labels: Information Windows (FPS,TPS,Direction,Rotation,Speed,Coordinates,ModuleList,EntityList,StorageList,SignTextList,KeyBindList,EntityData) have the option to enable/disable their label
   - Rendering Side & Scale: List Windows (ModuleList,EntityList,StorageList,SignTextList,KeyBindList) have the option to change their scale & Rendering Side (L/R)
@@ -54,62 +54,39 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
 
 
   PhoenixClient HUD currently offers 16 draggable windows. Here are those windows with their custom options, excluding the universal options from above
-  - **FPS**
-    - Displays the frames per second
-      
-  - **TPS**
-    - Displays the ticks per second (in single player it reads 40. IDK why)
-   
-  - **Direction**
-    - Displays the player facing direciton
+  - **FPS**: Displays the frames per second
+  - **TPS**: Displays the ticks per second (in single player it reads 40. IDK why)
+  - **Direction**: Displays the player facing direciton
     - You can change whether or not to have compasss directions, coordinate directions, or both
     - You can change whether or not to displace NE,NW,SE,SW or just the 4 cardinal directions
-
-  - **Rotation**
-    - Displays the YAW & PITCH of the player
-
-  - **Speed**
-    - Displays the speed in m/s (Blocks Per Second)
+  - **Rotation**: Displays the YAW & PITCH of the player
+  - **Speed**: Displays the speed in m/s (Blocks Per Second)
     - You can change whether or not to have just horizontal speed (XZ) or 3D speed (XYZ)
-
-  - **Coordinates**
-    - Displays the player coordinates
+  - **Coordinates**: Displays the player coordinates
     - You can choose to display nether conversion coordinates
-
-  - **Inventory**
-    - Displays the player inventory
+  - **Inventory**: Displays the player inventory
     - You can change the scale
     - You can change the transparency of the menu
-
-  - **Armor**
-    - Displays the player's currently worn armor
+  - **Armor**: Displays the player's currently worn armor
     - You can change the scale
-
-  - **ModuleList**
-    - Displays all enabled modules
+  - **ModuleList**: Displays all enabled modules
     - You can make it rainbow
     - You can change whether it renders from the top or the bottom
-
-  - **EntityList**
-    - Displays all nearby entities
+  - **EntityList**: Displays all nearby entities
     - You can combine all items into 1 entry, or split them apart. Split items render in RED. Shulker boxes render in PURPLE
     - You can change the range at which the list detects entities
-
-  - **StorageList**
+  - **StorageList**: Displays all nearby storage blocks
     - You can change the range at which the list detects storages
-
-  - **SignTextList**
+  - **SignTextList**: Displays all nearby sign text
     - You can change the range at which the list detects signs
     - You can enabled the coordinates for each sign
-
-  - **KeyBindList**
+  - **KeyBindList**: Displays all keybound modules & if they are active or not
     - You can change the rendering order of the list (UP,DOWN,ABC)
-
-  - **EntityData**
+  - **EntityData**: Displays data about an entity when hovered over
     - This window is UNFINISHED
+  - **ChunkTrails**: A Radar module that highlights new chunks in RED and old chunks in GREEN. The radar comes with a direction line, NSEW indicators, and saves all data to the system
+    - ChunkTrails comes with 3 modes for detecting new chunks, Palette, Copper, and Liquid (Palette by default)
+    - You can change the size of the radar, and the scale of each chunk/pixel.
+    - MultiThreading Updates: Creating the radar image may be very laggy at lower settings. It is smart to enable MultiThreading if you know your CPU can handle it.
 
-  - **ChunkTrails**
-    - I've got a lot to say about this. Ill hold off for a second
-
-  - **Logo**
-    - This just displays the PhoenixClient logo. It is enabled by default
+  - **Logo**: This just displays the PhoenixClient logo. It is enabled by default
