@@ -66,7 +66,7 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
   - When a window is dragged against a wall, it will have a red line on that wall. It is now 'anchored'. If the window changes, it will do so as if it is glued to that wall
   
   *What does it look like?*
-  - PhoenixClient takes a slightly different approach to the standard hacked client GUI, rendering its windows horizontally rather than vertically
+  - This is the HUD editor screen. All pin icons & anchor lines will not render outside of the editor.
   - ![Screenshot](pictures/windows/hudmenu.jpg)
 
 
