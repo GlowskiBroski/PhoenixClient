@@ -3,6 +3,7 @@ package com.phoenixclient.gui.hud;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.gui.GUI;
 import com.phoenixclient.gui.hud.element.*;
+import com.phoenixclient.util.input.Mouse;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.DrawUtil;
@@ -40,7 +41,7 @@ public class HUDGUI extends GUI {
                 new EntityListWindow(this),
                 new StorageListWindow(this),
                 new SignTextListWindow(this),
-                //new PacketFlowListWindow(this, Vector.NULL()),
+                //new PacketFlowListWindow(this),
 
                 new ModuleKeybindListWindow(this),
 
@@ -61,7 +62,21 @@ public class HUDGUI extends GUI {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         drawHintText(guiGraphics, "Hold SPACE to open window enable/disable menu!\\nShift Click a window to see options!");
 
-        //drawNametag(guiGraphics);
+        //Display Center Bars
+        if (PhoenixClient.getGuiManager().guideBars.get()) {
+            boolean isDraggingElement = false;
+            for (GuiWindow window : getWindows()) {
+                if (window.isDragging()) {
+                    isDraggingElement = true;
+                    break;
+                }
+            }
+            if (isDraggingElement) {
+                Color highlight = new Color(255, 255, 255, 50);
+                DrawUtil.drawRectangle(guiGraphics, new Vector(MC.getWindow().getGuiScaledWidth() / 2, 0), new Vector(1, MC.getWindow().getGuiScaledHeight()), highlight);
+                DrawUtil.drawRectangle(guiGraphics, new Vector(0, MC.getWindow().getGuiScaledHeight() / 2), new Vector(MC.getWindow().getGuiScaledWidth(), 1), highlight);
+            }
+        }
     }
 
     private void addWindows(GuiWindow... windows) {
@@ -72,68 +87,4 @@ public class HUDGUI extends GUI {
         return windowList;
     }
 
-
-
-    private void drawNametag(GuiGraphics guiGraphics) {
-        Player player = MC.player;
-
-        boolean showHealth = true;
-        boolean showPing = true;
-
-        String playerName = player.getDisplayName().getString();
-
-        float playerHeath = player.getHealth();
-        float maxHealth = player.getMaxHealth();
-        String healthString = " " + Math.round(playerHeath) + "/" + Math.round(maxHealth);
-
-        int ping = 0;
-        if (MC.getConnection() != null) {
-            PlayerInfo info = MC.getConnection().getPlayerInfo(player.getUUID());
-            if (info != null) ping = info.getLatency();
-        }
-        String pingString = " " + ping + "ms";
-
-
-        //TODO: Add distance string?
-
-
-        String nameplateText = playerName + healthString + pingString;
-
-        Vector pos = new Vector(200,100);
-        Vector size = new Vector(DrawUtil.getFontTextWidth(nameplateText) + 7,14);
-        Vector centerPos = pos.getAdded(size.getMultiplied(.5));
-
-
-        //Draw Background
-        DrawUtil.drawRectangleRound(guiGraphics, pos, size, new Color(0, 0, 0, 175));
-        DrawUtil.drawRectangleRound(guiGraphics, pos, size, PhoenixClient.getColorManager().getBaseColor(), true);
-
-        //Draw Player Name
-        TextBuilder
-                .start(playerName,pos.getAdded(0,1).getAdded(size.getMultiplied(.5)).getSubtracted(new Vector(DrawUtil.getFontTextWidth(nameplateText),DrawUtil.getFontTextHeight()).getMultiplied(.5)),Color.WHITE).draw(guiGraphics)
-                .nextAdj().text(healthString).color(ColorManager.getRedGreenScaledColor(playerHeath/maxHealth)).draw(guiGraphics)
-                .nextAdj().text(pingString).color(PhoenixClient.getColorManager().getWidgetColor()).draw(guiGraphics)
-        ;
-
-
-        Vector armorPos = centerPos.getSubtracted(32 + 7,24);
-        Vector addVec = new Vector(20,0);
-        for (int j = 0; j < 4; j++) {
-            ItemStack stack = player.inventoryMenu.getSlot(5 + j).getItem();
-            DrawUtil.drawItemStack(guiGraphics,stack,armorPos);
-            if (stack != null && stack.isDamageableItem()) {
-                String damage = stack.getMaxDamage() - stack.getDamageValue() + "";
-                TextBuilder.start(damage, armorPos.getAdded(8, -8).getSubtracted(DrawUtil.getFontTextWidth(damage) / 2, 0), ColorManager.getRedGreenScaledColor((double) (stack.getMaxDamage() - stack.getDamageValue()) / stack.getMaxDamage())).draw(guiGraphics);
-            }
-            armorPos.add(addVec);
-        }
-        /*
-        ItemStack main = player.getMainHandItem();
-        DrawUtil.drawItemStack(guiGraphics,main,armorPos);
-        armorPos.add(addVec);
-        ItemStack off = player.getOffhandItem();
-        DrawUtil.drawItemStack(guiGraphics,off,armorPos);
-        armorPos.add(addVec);
-         */
-    }
 }

@@ -7,7 +7,7 @@ import com.phoenixclient.util.setting.SettingGUI;
 public class NoSlow extends Module {
 
     public NoSlow() {
-        super("NoSlow", "Stops slowdown on use item", Category.PLAYER, false, -1);
+        super("NoSlow", "Stops slowdown on use item - UNIMPLEMENTED", Category.PLAYER, false, -1);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onUpdate);
     }
 

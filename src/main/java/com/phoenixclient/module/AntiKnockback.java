@@ -6,7 +6,7 @@ import com.phoenixclient.event.EventAction;
 public class AntiKnockback extends Module {
 
     public AntiKnockback() {
-        super("AntiKnockback", "Stops player knockback", Category.COMBAT, false, -1);
+        super("AntiKnockback", "Stops player knockback - UNIMPLEMENTED", Category.COMBAT, false, -1);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }
 

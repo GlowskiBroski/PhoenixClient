@@ -21,7 +21,7 @@ public class SignTextListWindow extends ListWindow {
     public SignTextListWindow(Screen screen) {
         super(screen, "SignTextListWindow", "Lists all nearby sign text, and their count.",false);
         this.coordinates = new SettingGUI<>(this, "Show Coordinates", "Shows the coordinates for each sign", false);
-        this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",320).setSliderData(1,400,1);
+        this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",320).setSliderData(5,1000,5);
         addSettings(coordinates,range);
     }
 

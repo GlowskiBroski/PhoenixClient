@@ -46,6 +46,12 @@ public class GuiManager extends Module {
             "Adds a blur effect to the background of the GUI menus",
             true);
 
+    public final SettingGUI<Boolean> guideBars = new SettingGUI<>(
+            this,
+            "HUD Guide Bars",
+            "Draws a middle and horizontal bar when dragging HUD windows",
+            true);
+
     private final SettingGUI<String> theme = new SettingGUI<>(
             this,
             "Theme",
@@ -72,7 +78,7 @@ public class GuiManager extends Module {
 
     public GuiManager() {
         super("Graphics", "2D Graphics manager for Phoenix Client. Disable to disable the HUD", Category.MANAGERS, true, -1);
-        addSettings(font, theme, blur, baseColorHue, depthColorHue, widgetColorHue);
+        addSettings(font, theme, blur, baseColorHue, depthColorHue, widgetColorHue, guideBars);
         addEventSubscriber(Event.EVENT_RENDER_HUD, this::updateThemeAndFont);
         addEventSubscriber(Event.EVENT_RENDER_HUD, this::renderHud);
     }

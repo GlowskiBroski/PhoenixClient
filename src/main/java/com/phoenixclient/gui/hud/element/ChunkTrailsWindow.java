@@ -350,7 +350,7 @@ public class ChunkTrailsWindow extends GuiWindow {
                 try {
                     getProperFile(mode, dimension).save(loadedChunksMap);
                     shouldLoop = false;
-                    System.out.println("saved!");
+                    //System.out.println("saved!");
                 } catch (ConcurrentModificationException e) {
                     //Loops if a concurrent modification happens to force the save. This shouldn't happen, but is here just in case
                     shouldLoop = true;

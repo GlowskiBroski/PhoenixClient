@@ -20,7 +20,7 @@ public class StorageListWindow extends ListWindow {
 
     public StorageListWindow(Screen screen) {
         super(screen, "StorageListWindow", "Lists all nearby storage blocks, and their counts",false);
-        this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",320).setSliderData(1,400,1);
+        this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",320).setSliderData(5,1000,5);
         addSettings(range);
     }
 

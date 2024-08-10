@@ -20,7 +20,7 @@ public class EntityListWindow extends ListWindow {
 
     public EntityListWindow(Screen screen) {
         super(screen, "EntityListWindow","Lists all nearby entities, with their count. This includes items",false);
-        this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",64).setSliderData(1,400,1);
+        this.range = new SettingGUI<>(this,"Range","Block range away from player of entities",70).setSliderData(5,1000,5);
         this.combineItems = new SettingGUI<>(this,"Combine Items","Combines items into 1 category",true);
         addSettings(range,combineItems);
     }

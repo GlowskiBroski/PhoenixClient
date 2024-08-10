@@ -330,6 +330,10 @@ public abstract class GuiWindow extends GuiWidget implements IToggleableEventSub
         return pinned.get();
     }
 
+    public boolean isDragging() {
+        return dragging;
+    }
+
     protected boolean shouldDrawPin() {
         return true;
     }
