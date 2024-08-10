@@ -17,49 +17,49 @@ Controls:
 
   PhoenixClient HUD currently offers 16 draggable windows
   - FPS
-    - ![Screenshot](pictures/windows/fps.png)
+    - ![Screenshot](pictures/windows/fps.jpg)
       
   - TPS
-    - ![Screenshot](pictures/windows/tps.png)
+    - ![Screenshot](pictures/windows/tps.jpg)
    
   - Direction
-    - ![Screenshot](pictures/windows/direction.png)
+    - ![Screenshot](pictures/windows/direction.jpg)
 
   - Rotation
-    - ![Screenshot](pictures/windows/rotation.png)
+    - ![Screenshot](pictures/windows/rotation.jpg)
 
   - Speed
-    - ![Screenshot](pictures/windows/speed.png)
+    - ![Screenshot](pictures/windows/speed.jpg)
 
   - Coordinates
-    - ![Screenshot](pictures/windows/coordinates.png)
+    - ![Screenshot](pictures/windows/coordinates.jpg)
 
   - Inventory
-    - ![Screenshot](pictures/windows/inventory.png)
+    - ![Screenshot](pictures/windows/inventory.jpg)
 
   - Armor
-    - ![Screenshot](pictures/windows/armor.png)
+    - ![Screenshot](pictures/windows/armor.jpg)
 
   - ModuleList
-    - ![Screenshot](pictures/windows/modulelist.png)
+    - ![Screenshot](pictures/windows/modulelist.jpg)
 
   - EntityList
-    - ![Screenshot](pictures/windows/entitylist.png)
+    - ![Screenshot](pictures/windows/entitylist.jpg)
 
   - StorageList
-    - ![Screenshot](pictures/windows/storagelist.png)
+    - ![Screenshot](pictures/windows/storagelist.jpg)
 
   - SignTextList
-    - ![Screenshot](pictures/windows/signtextlist.png)
+    - ![Screenshot](pictures/windows/signtextlist.jpg)
 
   - KeyBindList
-    - ![Screenshot](pictures/windows/keybindlist.png)
+    - ![Screenshot](pictures/windows/keybindlist.jpg)
 
   - EntityData
-    - ![Screenshot](pictures/windows/entitydata.png)
+    - ![Screenshot](pictures/windows/entitydata.jpg)
 
   - ChunkTrails
-    - ![Screenshot](pictures/windows/chunktrails.png)
+    - ![Screenshot](pictures/windows/chunktrails.jpg)
 
   - Logo
 
