@@ -1,11 +1,20 @@
 ![Screenshot](pictures/Logo2New.png)
 
+[![](https://img.shields.io/github/downloads/GlowskiBroski/PhoenixClient/total)](https://github.com/GlowskiBroski/PhoenixClient/releases)
+
 PhoenixClient is a new Minecraft Client developed for Fabric modloader for the latest versions of minecraft.
 It uses mojang official mappings, not loom mappings. If you would like to build the project, there are no special plugins to do so.
 
 The client began development on June 12th, 2024 and only has a few modules, but more are being added daily
 
 Is the client safe? Yes. You are free to look through all of the code and assess for yourself :)
+
+# Installation
+  - The latest release is for 1.21 **NOT 1.20.6**. Make sure you install the correct version of fabric
+  - Download the fabric installer and install the latest version corresponding to the client version: https://fabricmc.net/use/installer/
+     - Fabric API is NOT required for PhoenixClient 
+  - Download the PhoenixClient.jar from the Releases tab. Place this into the `.minecraft/mods` folder
+  - DONE! You've installed PhoenixClient. I recommend using Sodium, Iris, and other fabric mods alongside PhoenixClient for the best experience
 
 PhoenixClient has 2 main feature sets; Its Modules & Its HUD
 
@@ -58,7 +67,7 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
   - When a window is dragged against a wall, it will have a red line on that wall. It is now 'anchored'. If the window changes, it will do so as if it is glued to that wall
   
   *What does it look like?*
-  - PhoenixClient takes a slightly different approach to the standard hacked client GUI, rendering its windows horizontally rather than vertically
+  - This is the HUD editor screen. All pin icons & anchor lines will not render outside of the editor.
   - ![Screenshot](pictures/windows/hudmenu.jpg)
 
 
@@ -93,9 +102,10 @@ PhoenixClient has 2 main feature sets; Its Modules & Its HUD
     - You can change the rendering order of the list (UP,DOWN,ABC)
   - **EntityData**: Displays data about an entity when hovered over
     - This window is UNFINISHED
-  - **ChunkTrails**: A Radar module that highlights new chunks in RED and old chunks in GREEN. The radar comes with a direction line, NSEW indicators, and saves all data to the system
+  - **ChunkTrails**: A Radar window that highlights new chunks in RED and old chunks in GREEN. The radar comes with a direction line, NSEW indicators, and saves all data to the system
+    - ![Screenshot](pictures/windows/chunktrails.jpg)
     - ChunkTrails comes with 3 modes for detecting new chunks, Palette, Copper, and Liquid (Palette by default)
     - You can change the size of the radar, and the scale of each chunk/pixel.
     - MultiThreading Updates: Creating the radar image may be very laggy at lower settings. It is smart to enable MultiThreading if you know your CPU can handle it.
-
-  - **Logo**: This just displays the PhoenixClient logo. It is enabled by default
+    - NOTE: This is VERY NEW. It may be unstable as it is my first time creating a radar. It has not broken for me yet, so hopefully it works for you too
+    - If the game crashes during an autosave, the map may appear spotted. The cache is a hashmap, which is unordered, so depending on where it was during the save, random data will be lost, but pattens will be mostly preserved
