@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.*;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.events.PacketEvent;
-import com.phoenixclient.gui.hud.element.GuiWindow;
 import com.phoenixclient.util.actions.DoOnce;
 import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.actions.StopWatch;
@@ -40,7 +39,7 @@ import java.util.*;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
-//TODO: This class needs to be cleaned up
+//TODO: This class needs to be cleaned up. Really Badly
 
 public class ChunkTrailsWindow extends GuiWindow {
 
@@ -158,11 +157,12 @@ public class ChunkTrailsWindow extends GuiWindow {
         if (MC.player == null) return;
         //Load Current File
         canAutoSave = false;
-        PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
-        setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
+        canAddChunk = false;
+        loadFile(mode.get(), MC.level.dimension());
         onDimensionChange.run(MC.level.dimension(), () -> {});
         mode.runOnChange(() -> {});
         canAutoSave = true;
+        canAddChunk = true;
     }
 
     @Override
@@ -170,7 +170,7 @@ public class ChunkTrailsWindow extends GuiWindow {
         super.onDisabled();
         //Save Current File
         PhoenixClient.getNotificationManager().sendNotification("Saving: " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
-        getProperFile(mode.get(), MC.level.dimension()).save(loadedChunksMap);
+        getFile(mode.get(), MC.level.dimension()).save(loadedChunksMap);
 
         //Release memory
         loadedChunksMap = new HashMap<>();
@@ -189,7 +189,7 @@ public class ChunkTrailsWindow extends GuiWindow {
                 chunk.replaceWithPacketData(p.getChunkData().getReadBuffer(), p.getChunkData().getHeightmaps(), p.getChunkData().getBlockEntitiesTagsConsumer(p.getX(), p.getZ()));
             } catch (Exception e) {
                 //TODO: This is causing issues with sodium for some reason
-                //The try/catch block fixes compatability.
+                //The try/catch block fixes compatability.¯\_(ツ)_/¯
             }
 
             boolean isNewChunk = switch (mode.get()) {
@@ -201,7 +201,6 @@ public class ChunkTrailsWindow extends GuiWindow {
 
             Vector keyPos = new Vector(pos.x, 0, pos.z);
             canAutoSave = false;
-            //TODO: Make a setting that allows this ONLY if its done loading. Right now, while swapping, you may accidentally load the data into the wrong file
             if (canAddChunk) loadedChunksMap.putIfAbsent(keyPos, isNewChunk);
             canAutoSave = true;
         }
@@ -215,10 +214,8 @@ public class ChunkTrailsWindow extends GuiWindow {
                 //Load Current File
                 canAutoSave = false;
                 canAddChunk = false;
-                PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
-                setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
-                onDimensionChange.run(MC.level.dimension(), () -> {
-                });
+                loadFile(mode.get(),MC.level.dimension());
+                onDimensionChange.run(MC.level.dimension(), () -> {});
                 mode.runOnChange(() -> {});
                 canAutoSave = true;
                 canAddChunk = true;
@@ -230,35 +227,35 @@ public class ChunkTrailsWindow extends GuiWindow {
                 canAddChunk = false;
                 if (mode.getChangeDetector().getPrevValue() != null) {
                     PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.getChangeDetector().getPrevValue() + " " + MC.level.dimension().location(), Color.WHITE);
-                    getProperFile(mode.getChangeDetector().getPrevValue(), MC.level.dimension()).save(loadedChunksMap);
+                    getFile(mode.getChangeDetector().getPrevValue(), MC.level.dimension()).save(loadedChunksMap);
                 }
-                loadProperFile();
-                canAddChunk = true;
+                loadFile(mode.get(), MC.level.dimension());
                 canAutoSave = true;
+                canAddChunk = true;
             });
             onDimensionChange.run(MC.level.dimension(), () -> {
                 canAutoSave = false;
                 canAddChunk = false;
                 if (onDimensionChange.getPrevValue() != null) {
                     PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Saving " + mode.get() + " " + onDimensionChange.getPrevValue().location(), Color.WHITE);
-                    getProperFile(mode.get(), onDimensionChange.getPrevValue()).save(loadedChunksMap);
+                    getFile(mode.get(), onDimensionChange.getPrevValue()).save(loadedChunksMap);
                 }
-                loadProperFile();
-                canAddChunk = true;
+                loadFile(mode.get(), MC.level.dimension());
                 canAutoSave = true;
+                canAddChunk = true;
             });
 
             chunkTrailSaveWatch.start(); //Autosave every 30 seconds
             if (chunkTrailSaveWatch.hasTimePassedS(30)) {
                 if (canAutoSave) {
                     canAddChunk = false;
-                    saveProperFile();
+                    saveFile(mode.get(), MC.level.dimension());
                     chunkTrailSaveWatch.restart();
                     canAddChunk = true;
                 }
             }
         } catch (ConcurrentModificationException e) {
-
+            //Ever since I added canAddChunk, we shouldn't get these anymore... Keep the catch just in case of emergency
         }
     }
 
@@ -266,17 +263,17 @@ public class ChunkTrailsWindow extends GuiWindow {
         chunkTrailUpdateWatch.start();
         if (chunkTrailUpdateWatch.hasTimePassedMS(updateDelay.get())) {
             if (multiThreadUpdates.get()) {
-                Thread updateChunkTrailThread = new Thread(() -> chunkTrailTexture = getUpdatedChunkTrailTexture());
+                Thread updateChunkTrailThread = new Thread(() -> chunkTrailTexture = getChunkTrailTexture());
                 updateChunkTrailThread.setDaemon(true);
                 updateChunkTrailThread.start();
             } else {
-                chunkTrailTexture = getUpdatedChunkTrailTexture();
+                chunkTrailTexture = getChunkTrailTexture();
             }
             chunkTrailUpdateWatch.restart();
         }
     }
 
-    private DynamicTexture getUpdatedChunkTrailTexture() {
+    private DynamicTexture getChunkTrailTexture() {
         int size = (int) (windowSize.get() / scale.get());
         NativeImage image = new NativeImage(NativeImage.Format.RGBA, size, size, false);
 
@@ -312,7 +309,7 @@ public class ChunkTrailsWindow extends GuiWindow {
     }
 
 
-    private CSVFile getProperFile(String mode, ResourceKey<Level> dimension) {
+    private CSVFile getFile(String mode, ResourceKey<Level> dimension) {
         ResourceKey<Level> ow = Level.OVERWORLD;
         ResourceKey<Level> ne = Level.NETHER;
         ResourceKey<Level> en = Level.END;
@@ -336,21 +333,18 @@ public class ChunkTrailsWindow extends GuiWindow {
         throw new IllegalStateException("Unexpected value: " + mode);
     }
 
-    private void loadProperFile() {
-        PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode.get() + " " + MC.level.dimension().location(), Color.WHITE);
-        setMapFromFile(getProperFile(mode.get(), MC.level.dimension()));
+    private void loadFile(String mode, ResourceKey<Level> dimension) {
+        PhoenixClient.getNotificationManager().sendNotification("ChunkTrails: Loading " + mode + " " + dimension.location(), Color.WHITE);
+        setMapFromFile(getFile(mode, dimension));
     }
 
-    private void saveProperFile() {
+    private void saveFile(String mode, ResourceKey<Level> dimension) {
         Thread thread = new Thread(() -> {
             boolean shouldLoop;
-            String mode = this.mode.get();
-            ResourceKey<Level> dimension = MC.level.dimension();
             do {
                 try {
-                    getProperFile(mode, dimension).save(loadedChunksMap);
+                    getFile(mode, dimension).save(loadedChunksMap);
                     shouldLoop = false;
-                    //System.out.println("saved!");
                 } catch (ConcurrentModificationException e) {
                     //Loops if a concurrent modification happens to force the save. This shouldn't happen, but is here just in case
                     shouldLoop = true;
@@ -414,6 +408,7 @@ public class ChunkTrailsWindow extends GuiWindow {
 
 
     //TODO: Review this, and streamline this. it is VERY difficult to read. make less nesting...
+    // ---> This method is taken directly from Meteor Trouser-Streak addon
     //TODO: Look into how XaeroPlus implemented this. its hundreds of lines smaller...
     private boolean isNewChunkPalette(ClientboundLevelChunkWithLightPacket packet, LevelChunk chunk) {
         FriendlyByteBuf buf = packet.getChunkData().getReadBuffer();
@@ -586,7 +581,5 @@ public class ChunkTrailsWindow extends GuiWindow {
 
         return isNewChunk || chunkIsBeingUpdated;
     }
-
-
 
 }

@@ -24,12 +24,12 @@ public class NameTags extends Module {
 
     public void onRenderHUD(Event event) {
         GuiGraphics graphics = new GuiGraphics(MC,MC.renderBuffers().bufferSource());
-        drawPlayerNameTag(graphics);
+        drawPlayerNameTag(graphics, new Vector(MC.getWindow().getGuiScaledWidth() / 2,120));
     }
 
 
     //TODO: Create a transformation matrix to draw these 2D on screen through projection
-    private void drawPlayerNameTag(GuiGraphics guiGraphics) {
+    private void drawPlayerNameTag(GuiGraphics guiGraphics, Vector nametagPos) {
         Player player = MC.player;
 
         boolean showHealth = true;
@@ -53,9 +53,9 @@ public class NameTags extends Module {
 
 
         String nameplateText = playerName + healthString + pingString;
-
-        Vector pos = new Vector(200,100);
         Vector size = new Vector(DrawUtil.getFontTextWidth(nameplateText) + 7,14);
+
+        Vector pos = nametagPos.getSubtracted(size.getX() / 2, 0);
         Vector centerPos = pos.getAdded(size.getMultiplied(.5));
 
 

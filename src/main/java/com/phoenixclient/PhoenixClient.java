@@ -19,6 +19,8 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+//TODO: disable the default "punch a tree" tips panel it blocks the settings window
+
 public class PhoenixClient implements ModInitializer {
 
     public static final Minecraft MC = Minecraft.getInstance();

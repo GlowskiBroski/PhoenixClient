@@ -38,7 +38,7 @@ public abstract class MixinAbstractContainerScreen {
         containerItemList = list;
 
         event.post(item,list,mouseX,mouseY);
-        Event.EVENT_RENDER_INVENTORY_ITEM_TOOLTIP.updateCancelled(ci);
+        event.updateCancelled(ci);
     }
 
 

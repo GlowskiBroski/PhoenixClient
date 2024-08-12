@@ -9,6 +9,7 @@
     "MixinConnection",
     "MixinFogRenderer",
     "MixinGameRenderer",
+    "MixinGuiGraphics",
     "MixinKeyboardHandler",
     "MixinKeyMapping",
     "MixinLevelRenderer",

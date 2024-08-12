@@ -89,11 +89,6 @@ public abstract class GuiWindow extends GuiWidget implements IToggleableEventSub
         }
     }
 
-    @Override
-    public Container<Boolean> getEnabledContainer() {
-        return enabled;
-    }
-
     protected abstract void drawWindow(GuiGraphics graphics, Vector mousePos);
 
     @Override
@@ -287,7 +282,24 @@ public abstract class GuiWindow extends GuiWidget implements IToggleableEventSub
         updateAnchoredCoordinates();
     }
 
-    //Interface Getters
+    //Interface Getters/Setters --------
+
+    @Override
+    public void onEnabled() {}
+
+    @Override
+    public void onDisabled() {
+        this.pinned.set(false);
+        this.posScale.set(new Vector(.1,.1));
+        this.anchorX.set("NONE");
+        this.anchorY.set("NONE");
+        this.setSettingsOpen(false);
+    }
+
+    @Override
+    public Container<Boolean> getEnabledContainer() {
+        return enabled;
+    }
 
     @Override
     public String getSettingsKey() {
@@ -304,19 +316,7 @@ public abstract class GuiWindow extends GuiWidget implements IToggleableEventSub
         return settingList;
     }
 
-    @Override
-    public void onEnabled() {}
-
-    @Override
-    public void onDisabled() {
-        this.pinned.set(false);
-        this.posScale.set(new Vector(.1,.1));
-        this.anchorX.set("NONE");
-        this.anchorY.set("NONE");
-        this.setSettingsOpen(false);
-    }
-
-    //Native Getters
+    //Native Getters --------
 
     public String getTitle() {
         return title;

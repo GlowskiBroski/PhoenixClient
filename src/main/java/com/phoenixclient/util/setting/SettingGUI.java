@@ -19,6 +19,7 @@ public class SettingGUI<T> extends Setting<T> {
     private Double step;
 
     private T[] modes;
+    private String[] modeDescriptions;
 
     private boolean numbersOnly;
 
@@ -44,6 +45,12 @@ public class SettingGUI<T> extends Setting<T> {
     @SafeVarargs
     public final SettingGUI<T> setModeData(T... modes) {
         this.modes = modes;
+        return this;
+    }
+
+    //TODO: Implement this
+    public final SettingGUI<T> setModeDescriptions(String... descriptions) {
+        this.modeDescriptions = descriptions;
         return this;
     }
 

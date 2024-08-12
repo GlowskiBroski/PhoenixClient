@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
@@ -50,19 +51,26 @@ public class Tooltips extends Module {
     public Tooltips() {
         super("Tooltips", "Renders better tooltips for specific items", Category.RENDER, false, -1);
         addSettings(nbt, trueDurability, showRepairCost);
-        addEventSubscriber(Event.EVENT_RENDER_INVENTORY_ITEM_TOOLTIP, this::onRenderTooltip);
+        addEventSubscriber(Event.EVENT_RENDER_INVENTORY_ITEM_TOOLTIP, this::onRenderTooltipGeneral);
+        addEventSubscriber(Event.EVENT_DRAW_ITEM_TOOLTIP, this::onRenderTooltipSpecific);
     }
 
 
-    public void onRenderTooltip(RenderItemTooltipEvent event) {
-        ItemStack stack = event.getItemStack();
+    public void onRenderTooltipGeneral(RenderItemTooltipEvent event) {
+        renderTooltip(event.getItemStack(),event.getList());
+    }
 
+    public void onRenderTooltipSpecific(RenderItemTooltipEvent event) {
+        renderTooltip(event.getItemStack(),event.getList());
+    }
+
+    private void renderTooltip(ItemStack stack, List<Component> list) {
         //True Durability
         MixinHooks.showTrueDurability = trueDurability.get();
 
         //Draw NBT
         boolean isShulkerBox = stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof ShulkerBoxBlock;
-        if (nbt.get() && !stack.getItem().equals(Items.WRITTEN_BOOK) && !isShulkerBox) drawNbtData(stack);
+        if (nbt.get() && !stack.getItem().equals(Items.WRITTEN_BOOK) /*&& !isShulkerBox*/) drawNbtData(stack);
 
         //Enchantment Cost
         if (showRepairCost.get() && stack.getOrDefault(DataComponents.REPAIR_COST,0) > 0) {
@@ -72,10 +80,8 @@ public class Tooltips extends Module {
 
             Color color = ColorManager.getRedGreenScaledColor(scale);
 
-            event.getList().add(Component.literal("Repair Cost: " + cost).withColor(color.hashCode()));
+            list.add(Component.literal("Repair Cost: " + cost).withColor(color.hashCode()));
         }
-
-
     }
 
     @Override
@@ -98,7 +104,7 @@ public class Tooltips extends Module {
             if (c == '{') {
                 TextBuilder.start(print, pos, Color.WHITE).defaultFont().scale(scale).draw(graphics);
                 prevI = Math.clamp(i + 1, 0, str.length());
-                pos.add(new Vector(10, 10));
+                pos.add(new Vector(10, 10 * scale));
             }
             if (c == '}') {
                 if (!print.equals("}") && print.indexOf("}") == print.length() - 1) {
@@ -111,7 +117,7 @@ public class Tooltips extends Module {
 
                 TextBuilder.start(print, pos, Color.WHITE).defaultFont().scale(scale).draw(graphics);
                 prevI = Math.clamp(i, 0, str.length());
-                pos.add(new Vector(-10, 10));
+                pos.add(new Vector(-10, 10 * scale));
             }
         }
         TextBuilder.start("}", pos, Color.WHITE).defaultFont().scale(scale).draw(graphics);

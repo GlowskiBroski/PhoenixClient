@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,7 +27,8 @@ public class ElytraFly extends Module {
             this,
             "Mode",
             "Mode of ElytaFly",
-            "Boost").setModeData("Boost","Hold","Ground","Bounce");
+            "Firework").setModeData("Firework", "Boost", "Hold", "Ground", "Bounce")
+            .setModeDescriptions();
 
     //Boost
     private final SettingGUI<Double> speedBoost = new SettingGUI<>(
@@ -80,72 +82,63 @@ public class ElytraFly extends Module {
             75).setSliderData(0, 85, 1).setDependency(mode, "Bounce");
 
 
-    //Firework Extension
-    private final SettingGUI<Boolean> fastFirework = new SettingGUI<>(
-            this,
-            "Fast Fireworks",
-            "Increases the top speed of a firework from 30m/s to something higher",
-            false);
-
+    //Firework
     private final SettingGUI<Integer> speedFastFirework = new SettingGUI<>(
             this,
             "Firework Speed",
             "Top speed of the firework rocket",
             80)
-            .setSliderData(30, 120, 5).setDependency(fastFirework,true);
+            .setSliderData(30, 120, 5).setDependency(mode, "Firework");
+
+    //Broken Fly
+    private final SettingGUI<Boolean> brokenFly = new SettingGUI<>(
+            this,
+            "Broken Fly",
+            "Allows the player to continue flight even if the Elytra is broken",
+            false);
 
     private int step = 0;
     private int fireworkStep = 14;
     private final StopWatch watch = new StopWatch();
 
     public ElytraFly() {
-        super("ElytraFly", "Allows control of the Elytra", Category.MOTION, false, -1);
-        addSettings(mode, speedBoost, glideSpeedHold, speedCapHold, useRocketsHold, speedCapGround, pitchBounce, accelerationGround, speedFastFirework,fastFirework);
-        addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
+        super("ElytraFly", "Allows for different movement methods surrounding the Elytra", Category.MOTION, false, -1);
+        addSettings(mode, speedBoost, glideSpeedHold, speedCapHold, useRocketsHold, speedCapGround, pitchBounce, accelerationGround, speedFastFirework, brokenFly);
+        addEventSubscriber(Event.EVENT_PLAYER_UPDATE, this::onPlayerUpdate);
     }
 
     public void onPlayerUpdate(Event event) {
         if (!MC.player.inventoryMenu.getSlot(6).getItem().getItem().equals(Items.ELYTRA)) return;
+
+        mode.runOnChange(() -> MixinHooks.keepElytraOnGround = false);
+
         switch (mode.get()) {
             case "Boost" -> boost();
             case "Hold" -> hold();
             case "Ground" -> ground();
             case "Bounce" -> bounce();
+            case "Firework" -> firework();
         }
 
-        if (fastFirework.get() && MC.player.isFallFlying()) {
-            boolean fireworkActive = false;
-            for (Entity entity : MC.level.entitiesForRendering()) {
-                if (entity instanceof FireworkRocketEntity) {
-                    fireworkActive = true;
-                    break;
-                }
+        if (brokenFly.get()) {
+            ItemStack item = MC.player.inventoryMenu.getSlot(6).getItem();
+            if (item.getDamageValue() + 1 >= item.getMaxDamage() && !MC.player.isFallFlying()) {
+                MC.player.startFallFlying();
+                MC.getConnection().send(new ServerboundPlayerCommandPacket(MC.player, ServerboundPlayerCommandPacket.Action.START_FALL_FLYING));
             }
-
-            if (fireworkActive) {
-                Angle yaw = new Angle(MC.player.getRotationVector().y, true);
-                Angle pitch = new Angle(MC.player.getRotationVector().x, true);
-
-                MC.player.setDeltaMovement(new Vector(yaw, pitch, .12 * fireworkStep).getVec3());
-                fireworkStep = Math.clamp(fireworkStep + 3,0,(int)(speedFastFirework.get() / 2.38));
-            } else {
-                fireworkStep = 14;
-            }
-
         }
+
     }
 
     @Override
     public void onEnabled() {
         if (updateDisableOnEnabled()) return;
         switch (mode.get()) {
-            case "Boost" -> {/*Nothing Extra ¯\_(ツ)_/¯*/}
             case "Hold" -> {
-                if (MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem && useRocketsHold.get()) startUseItem();
+                if (MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem && useRocketsHold.get())
+                    startUseItem();
                 watch.restart();
             }
-            case "Ground" -> {/*Nothing Extra ¯\_(ツ)_/¯*/}
-            case "Bounce" -> {/*Nothing Extra ¯\_(ツ)_/¯*/}
         }
     }
 
@@ -153,14 +146,12 @@ public class ElytraFly extends Module {
     public void onDisabled() {
         if (MC.player == null) return;
         switch (mode.get()) {
-            case "Boost" -> {/*Nothing Extra ¯\_(ツ)_/¯*/}
             case "Hold" -> {
-                if (MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem && useRocketsHold.get()) startUseItem();
+                if (MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem && useRocketsHold.get())
+                    startUseItem();
                 watch.restart();
             }
-            case "Ground" -> {
-                MixinHooks.keepElytraOnGround = false;
-            }
+            case "Ground" -> MixinHooks.keepElytraOnGround = false;
             case "Bounce" -> {
                 MC.options.keyJump.setDown(false);
                 MixinHooks.keepElytraOnGround = false;
@@ -203,7 +194,7 @@ public class ElytraFly extends Module {
             if (MC.options.keyDown.isDown()) MC.player.setDeltaMovement(0, 0, 0);
 
             MC.player.setDeltaMovement(MC.player.getDeltaMovement().x(), .4 / 20 + -glideSpeedHold.get() / 20, MC.player.getDeltaMovement().z());
-            if (MC.player.touchingUnloadedChunk()) MC.player.setDeltaMovement(0,0,0);
+            if (MC.player.touchingUnloadedChunk()) MC.player.setDeltaMovement(0, 0, 0);
         }
     }
 
@@ -216,6 +207,7 @@ public class ElytraFly extends Module {
             /* TODO: Implement this
             if (rubberBanding) {
                 MixinHooks.keepElytraOnGround = false;
+                MC.player.setOnGround(true);
                 return;
             }
             */
@@ -234,9 +226,10 @@ public class ElytraFly extends Module {
                 Angle pitch = new Angle(10, true);
 
                 double hMom = 20 * Math.sqrt(Math.pow(MC.player.getDeltaMovement().x, 2) + Math.pow(MC.player.getDeltaMovement().z, 2));
-                if (hMom <= speedCapGround.get() && !MC.options.keyShift.isDown()) MC.player.addDeltaMovement(new Vector(yaw, pitch, acceleration).getVec3());
+                if (hMom <= speedCapGround.get() && !MC.options.keyShift.isDown())
+                    MC.player.addDeltaMovement(new Vector(yaw, pitch, acceleration).getVec3());
 
-                if (MC.player.touchingUnloadedChunk()) MC.player.setDeltaMovement(0,0,0);
+                if (MC.player.touchingUnloadedChunk()) MC.player.setDeltaMovement(0, 0, 0);
             }
         } else {
             MixinHooks.keepElytraOnGround = false;
@@ -305,6 +298,29 @@ public class ElytraFly extends Module {
                         if (hMom > 60) MotionUtil.addEntityMotionInLookDirection(MC.player, inc);
                     }
                 }
+            }
+        }
+    }
+
+    //TODO: Find a better way to detect if a firework is active or not
+    public void firework() {
+        if (MC.player.isFallFlying()) {
+            boolean fireworkActive = false;
+            for (Entity entity : MC.level.entitiesForRendering()) {
+                if (entity instanceof FireworkRocketEntity) {
+                    fireworkActive = true;
+                    break;
+                }
+            }
+
+            if (fireworkActive) {
+                Angle yaw = new Angle(MC.player.getRotationVector().y, true);
+                Angle pitch = new Angle(MC.player.getRotationVector().x, true);
+
+                MC.player.setDeltaMovement(new Vector(yaw, pitch, .12 * fireworkStep).getVec3());
+                fireworkStep = Math.clamp(fireworkStep + 3, 0, (int) (speedFastFirework.get() / 2.38));
+            } else {
+                fireworkStep = 14;
             }
         }
     }

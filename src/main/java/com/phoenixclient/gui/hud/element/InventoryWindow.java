@@ -73,7 +73,8 @@ public class InventoryWindow extends GuiWindow {
                     if (mouseOverX && mouseOverY) {
                         if (!list.get(l).getItem().equals(Items.AIR)) {
                             graphics.fillGradient(RenderType.guiOverlay(), (int) itemPos.getX(), (int) itemPos.getY(), (int) (itemPos.getX() + itemSize), (int) (itemPos.getY() + itemSize), -2130706433, -2130706433, 0);
-                            graphics.renderTooltip(MC.font, AbstractContainerScreen.getTooltipFromItem(MC, list.get(l)), list.get(l).getTooltipImage(), mouseX, mouseY);
+                            //graphics.renderTooltip(MC.font, AbstractContainerScreen.getTooltipFromItem(MC, list.get(l)), list.get(l).getTooltipImage(), mouseX, mouseY);
+                            graphics.renderTooltip(MC.font, list.get(l), mouseX, mouseY);
                         }
                     }
                 }
