@@ -37,7 +37,7 @@ public abstract class MixinAbstractContainerScreen {
         List<Component> list = getTooltipFromContainerItem(item);
         containerItemList = list;
 
-        event.post(item,list,mouseX,mouseY);
+        event.post(guiGraphics,item,list,mouseX,mouseY);
         event.updateCancelled(ci);
     }
 

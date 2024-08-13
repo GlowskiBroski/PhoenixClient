@@ -14,16 +14,15 @@ public class Event {
 
     public static final PacketEvent EVENT_PACKET = new PacketEvent();
 
-    public static final Event EVENT_RENDER_HUD = new Event();
+    public static final RenderScreenEvent EVENT_RENDER_HUD = new RenderScreenEvent();
     public static final RenderScreenEvent EVENT_RENDER_SCREEN = new RenderScreenEvent();
+
     public static final RenderItemTooltipEvent EVENT_DRAW_ITEM_TOOLTIP = new RenderItemTooltipEvent(); //This one is used every time the draw tooltip is called
     public static final RenderItemTooltipEvent EVENT_RENDER_INVENTORY_ITEM_TOOLTIP = new RenderItemTooltipEvent(); //this one is used every time a tooltip is rendered in a container
 
     public static final Event EVENT_PLAYER_UPDATE = new Event();
 
     public static final RenderLevelEvent EVENT_RENDER_LEVEL = new RenderLevelEvent();
-
-    public static final RenderDebugEvent EVENT_RENDER_DEBUG = new RenderDebugEvent();
 
     // -------------------------------------------------------------------------------
 

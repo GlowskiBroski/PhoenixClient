@@ -15,6 +15,7 @@ public class RenderItemTooltipEvent extends Event {
 
     private boolean cancelled = false;
 
+    private GuiGraphics graphics;
     private ItemStack item;
     private List<Component> list;
 
@@ -22,9 +23,10 @@ public class RenderItemTooltipEvent extends Event {
 
     @Override
     public void post(Object... args) {
-        this.item = (ItemStack) args[0];
-        this.list = (List<Component>) args[1];
-        this.mousePos = new Vector((int)args[2],(int)args[3]);
+        this.graphics = (GuiGraphics) args[0];
+        this.item = (ItemStack) args[1];
+        this.list = (List<Component>) args[2];
+        this.mousePos = new Vector((int) args[3], (int) args[4]);
         super.post(args);
     }
 
@@ -48,16 +50,16 @@ public class RenderItemTooltipEvent extends Event {
     }
 
     public GuiGraphics getGraphics() {
-        return new GuiGraphics(MC, MC.renderBuffers().bufferSource());
+        return graphics;
     }
 
-
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
-    }
 
     public boolean isCancelled() {
         return cancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 
 }

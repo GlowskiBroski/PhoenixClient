@@ -30,7 +30,7 @@ public abstract class MixinGuiGraphics {
     public void renderTooltipInject(Font font, ItemStack itemStack, int mouseX, int mouseY, CallbackInfo ci) {
         RenderItemTooltipEvent event = Event.EVENT_DRAW_ITEM_TOOLTIP;
         List<Component> list = Screen.getTooltipFromItem(MC, itemStack);
-        event.post(itemStack,list,mouseX,mouseY);
+        event.post(GuiGraphics.class.cast(this),itemStack,list,mouseX,mouseY);
         event.updateCancelled(ci);
         renderTooltip(font, list, itemStack.getTooltipImage(), mouseX, mouseY);
         ci.cancel();

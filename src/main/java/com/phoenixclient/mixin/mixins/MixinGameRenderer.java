@@ -1,14 +1,13 @@
 package com.phoenixclient.mixin.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.phoenixclient.mixin.MixinHooks;
 import com.phoenixclient.event.Event;
+import com.phoenixclient.mixin.MixinHooks;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,32 +16,30 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.phoenixclient.PhoenixClient.MC;
-
 @Mixin(GameRenderer.class)
 public abstract class MixinGameRenderer {
 
     @Shadow @Final private Camera mainCamera;
 
-    @Inject(method = "render", at = @At(value = "INVOKE",target = "Lnet/minecraft/client/renderer/GameRenderer;renderItemActivationAnimation(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
-    private void onRender(CallbackInfo ci) {
-        Event.EVENT_RENDER_HUD.post();
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;renderItemActivationAnimation(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
+    private void onRender(CallbackInfo ci, @Local(ordinal = 0) GuiGraphics guiGraphics, @Local(ordinal = 0) int i, @Local(ordinal = 1) int j) {
+        Event.EVENT_RENDER_HUD.post(guiGraphics,i,j);
     }
 
     //TODO: Please add guiGraphics as a parameter for the post
-    @Inject(method = "render", at = @At(value = "INVOKE",target = "Lnet/minecraft/client/gui/screens/Screen;handleDelayedNarration()V"), cancellable = true)
-    private void onRenderScreen(CallbackInfo ci) {
-        Event.EVENT_RENDER_SCREEN.post();
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;handleDelayedNarration()V"), cancellable = true)
+    private void onRenderScreen(DeltaTracker deltaTracker, boolean bl, CallbackInfo ci, @Local(ordinal = 0) GuiGraphics guiGraphics, @Local(ordinal = 0) int i, @Local(ordinal = 1) int j) {
+        Event.EVENT_RENDER_SCREEN.post(guiGraphics, i, j);
     }
 
 
-    @Inject(method = "renderLevel", at = @At(value = "FIELD",target = "Lnet/minecraft/client/renderer/GameRenderer;renderHand:Z"), cancellable = true)
+    @Inject(method = "renderLevel", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/GameRenderer;renderHand:Z"), cancellable = true)
     private void onRenderLevel(DeltaTracker deltaTracker, CallbackInfo ci, @Local(ordinal = 1) Matrix4f matrix4f2, @Local(ordinal = 1) float tickDelta) {
         PoseStack poseStack = new PoseStack();
-        poseStack.mulPose(matrix4f2);
+        poseStack.mulPose(matrix4f2); //Matrix4f2 is the POSITION MATRIX
         //Vec3 camPos = mainCamera.getPosition();
         //poseStack.translate(-camPos.x,-camPos.y,-camPos.z);
-        Event.EVENT_RENDER_LEVEL.post(poseStack,tickDelta);
+        Event.EVENT_RENDER_LEVEL.post(poseStack, tickDelta);
     }
 
     //TODO: This is MeteorClient's render event and mode. Look into it to try and fix your sad excuse for render mods

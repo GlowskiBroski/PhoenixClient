@@ -55,7 +55,7 @@ public class DeathSpot extends Module {
     public void onRender(RenderLevelEvent event) {
         if (MC.player == null) previousDeathLocation = Vector.NULL();
         if (waypoint.get() && !previousDeathLocation.equals(Vector.NULL()))
-            Draw3DUtil.drawOutlineBox(event.getLevelPoseStack(),new AABB(0,0,0,.6,1.8,.6),previousDeathLocation,new Color(132, 0, 255, 255));
+            Draw3DUtil.drawOutlineBox(event.getLevelPositionStack(),new AABB(0,0,0,.6,1.8,.6),previousDeathLocation,new Color(132, 0, 255, 255));
     }
 
     public void onPlayerUpdate(Event event) {

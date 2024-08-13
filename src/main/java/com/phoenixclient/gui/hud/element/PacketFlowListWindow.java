@@ -21,7 +21,7 @@ public class PacketFlowListWindow extends ListWindow {
     private final SettingGUI<Integer> history;
 
     public PacketFlowListWindow(Screen screen) {
-        super(screen, "PacketInflowWindow", "Shows all packets send/received, with their counts, from the last time period", false);
+        super(screen, "PacketInflowWindow", "Shows all packets send/received, with their counts, from the last time period - VERY EXPERIMENTAL", false);
         this.mode = new SettingGUI<>(this, "Mode", "Type of packets to log", "Inflow").setModeData("Inflow", "Outflow");
         this.history = new SettingGUI<>(this, "History", "The amount of time a packet will stay on the window after being sent", 5).setSliderData(1, 60, 1);
         addSettings(mode, history);
@@ -38,7 +38,6 @@ public class PacketFlowListWindow extends ListWindow {
         return forceAddedToBottom(printableList);
     }
 
-    //TODO: This kinda broke the packet event. Im guessing it caused exceptions in the thread
     public void onPacket(PacketEvent event) {
         StopWatch watch = new StopWatch();
         watch.start();

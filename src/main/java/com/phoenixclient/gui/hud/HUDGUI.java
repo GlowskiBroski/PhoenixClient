@@ -41,7 +41,7 @@ public class HUDGUI extends GUI {
                 new EntityListWindow(this),
                 new StorageListWindow(this),
                 new SignTextListWindow(this),
-                //new PacketFlowListWindow(this),
+                new PacketFlowListWindow(this),
 
                 new ModuleKeybindListWindow(this),
 
