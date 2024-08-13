@@ -9,7 +9,7 @@ public class ConsoleUtil {
 
     public static void sendMessage(String message) {
         try {
-            Minecraft.getInstance().player.sendSystemMessage(Component.translatable(PREFIX + message));
+            Minecraft.getInstance().player.sendSystemMessage(Component.translatable("\u00A7b" + PREFIX + "\u00A77" +  message));
         } catch (Exception e) {
             System.out.println("Could Not Send Message!");
         }

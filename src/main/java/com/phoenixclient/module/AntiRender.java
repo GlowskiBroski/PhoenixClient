@@ -15,7 +15,7 @@ import static com.phoenixclient.PhoenixClient.MC;
 // Blindness - Maybe separate into AntiPotion
 // No Warden Fog
 // No Pumpkin Overlay
-// No Chat Verification Message Notification - I hate it so much
+// No Chat Verification Message Notification - I hate it so much -- No Tips/MINE WOOD TO START SHIT
 // No Boss Bar
 
 public class AntiRender extends Module {
@@ -24,31 +24,31 @@ public class AntiRender extends Module {
             this,
             "No Bob",
             "Stops bobbing while walking",
-            true);
+            false);
 
     private final SettingGUI<Boolean> noHurtCam = new SettingGUI<>(
             this,
             "No Hurt Cam",
             "Stops camera tilting on hurt",
-            true);
+            false);
 
     private final SettingGUI<Boolean> noConfusion = new SettingGUI<>(
             this,
             "No Confusion",
             "Stops the confusion effect",
-            true);
+            false);
 
     private final SettingGUI<Boolean> noFireOverlay = new SettingGUI<>(
             this,
             "No Fire",
             "Stops the Fire Overlay",
-            true);
+            false);
 
     private final SettingGUI<Boolean> noSuffocationHud = new SettingGUI<>(
             this,
             "No Suffocation Hud",
             "Removes the block overlay",
-            true);
+            false);
 
     private final SettingGUI<Boolean> noCaveCulling = new SettingGUI<>(
             this,
@@ -62,9 +62,15 @@ public class AntiRender extends Module {
             "Stops all fog from being rendered",
             false);
 
+    private final SettingGUI<Boolean> noTips = new SettingGUI<>(
+            this,
+            "No Tips Window",
+            "Removes the \"Chat Message Verification\" and \"Mine Wood\" notifications",
+            true);
+
     public AntiRender() {
-        super("AntiRender", "Disables rendering of certain things", Category.RENDER, false, -1);
-        addSettings(noBob, noHurtCam, noConfusion, noFireOverlay, noSuffocationHud, noCaveCulling, noFog);
+        super("AntiRender", "Disables rendering of certain things", Category.RENDER, true, -1);
+        addSettings(noBob, noHurtCam, noConfusion, noFireOverlay, noSuffocationHud, noCaveCulling, noFog,noTips);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }
 

@@ -76,7 +76,8 @@ public class PhoenixClient implements ModInitializer {
                 new StorageESP(),
                 new AutoCrossbow(),
                 new Tridents(),
-                new NameTags()
+                new NameTags(),
+                new Logouts()
         );
 
         GUI_MANAGER.instantiateHUDGUI();
