@@ -1,12 +1,15 @@
 package com.phoenixclient.module;
 
 import com.phoenixclient.event.Event;
+import com.phoenixclient.event.events.PacketEvent;
 import com.phoenixclient.mixin.MixinHooks;
+import com.phoenixclient.util.ConsoleUtil;
 import com.phoenixclient.util.MotionUtil;
 import com.phoenixclient.util.actions.StopWatch;
 import com.phoenixclient.util.math.Angle;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.setting.SettingGUI;
+import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -97,14 +100,26 @@ public class ElytraFly extends Module {
             "Allows the player to continue flight even if the Elytra is broken",
             false);
 
+    //Rubberband Detector
+    private final SettingGUI<Boolean> rubberBandDetection = new SettingGUI<>(
+            this,
+            "RubberBand Detection",
+            "Detects if the player is rubberbanding and takes measures to negate it",
+            false).setDependency(mode,"Ground");
+
     private int step = 0;
     private int fireworkStep = 14;
     private final StopWatch watch = new StopWatch();
 
+    private final StopWatch rubberBandWatch = new StopWatch();
+    private boolean isRubberBanding = false;
+    private int rubberBandCount = 0;
+
     public ElytraFly() {
         super("ElytraFly", "Allows for different movement methods surrounding the Elytra", Category.MOTION, false, -1);
-        addSettings(mode, speedBoost, glideSpeedHold, speedCapHold, useRocketsHold, speedCapGround, pitchBounce, accelerationGround, speedFastFirework, brokenFly);
+        addSettings(mode, speedBoost, glideSpeedHold, speedCapHold, useRocketsHold, speedCapGround, pitchBounce, accelerationGround, speedFastFirework, brokenFly,rubberBandDetection);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE, this::onPlayerUpdate);
+        addEventSubscriber(Event.EVENT_PACKET, this::onPacket);
     }
 
     public void onPlayerUpdate(Event event) {
@@ -130,6 +145,24 @@ public class ElytraFly extends Module {
 
     }
 
+    public void onPacket(PacketEvent event) {
+        if (rubberBandDetection.get()) {
+            rubberBandWatch.start();
+            if (event.getPacket() instanceof ClientboundPlayerPositionPacket p) {
+                rubberBandWatch.restart();
+                rubberBandCount++;
+                if (rubberBandCount > 5) isRubberBanding = true;
+            }
+            if (rubberBandWatch.hasTimePassedMS(250)) {
+                isRubberBanding = false;
+            }
+        } else {
+            isRubberBanding = false;
+            rubberBandCount = 0;
+            rubberBandWatch.stop();
+        }
+    }
+
     @Override
     public void onEnabled() {
         if (updateDisableOnEnabled()) return;
@@ -138,6 +171,9 @@ public class ElytraFly extends Module {
                 if (MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem && useRocketsHold.get())
                     startUseItem();
                 watch.restart();
+            }
+            case "Firework" -> {
+                fireworkStep = 0;
             }
         }
     }
@@ -204,13 +240,11 @@ public class ElytraFly extends Module {
     public void ground() {
         if (MC.options.keyUp.isDown() && MC.player.inventoryMenu.getSlot(6).getItem().getItem().equals(Items.ELYTRA)) {
 
-            /* TODO: Implement this
-            if (rubberBanding) {
+            if (isRubberBanding) {
                 MixinHooks.keepElytraOnGround = false;
-                MC.player.setOnGround(true);
+                MC.player.stopFallFlying();
                 return;
             }
-            */
 
             if (!MC.player.isFallFlying()) {
                 MC.player.startFallFlying();

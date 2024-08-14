@@ -26,12 +26,11 @@ public class NotificationManager extends Module {
             false); //TODO: Maybe make this true? depending on if you like it or not
 
 
-    //TODO: Add Length Limiter. If the notification list exceeds a certain length, delete the first one in the list to make room
     public final SettingGUI<Integer> maximumNotifications = new SettingGUI<>(
             this,
             "Maximum Size",
             "The maximum notifications allowed in the list. If notification exceed, the top ones will be removed",
-            5).setSliderData(0,10,5); //TODO: IMPLEMENT THIS
+            5).setSliderData(0,10,1);
 
     public NotificationManager() {
         super("Notifications", "Notification manager for PhoenixClient. Disable to disable all notifications", Category.MANAGERS, true, -1);

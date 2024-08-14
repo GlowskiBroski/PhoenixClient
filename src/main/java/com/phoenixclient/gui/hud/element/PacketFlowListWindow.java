@@ -77,7 +77,10 @@ public class PacketFlowListWindow extends ListWindow {
             for (Packet<?> packet : removalQueue) packetList.remove(packet);
             printableList = currentList;//(LinkedHashMap<String, ListInfo>) currentList.clone();
 
+        } catch (NullPointerException e) {
+            packetList.clear();
         } catch (ConcurrentModificationException e) {
+
         }
     }
 

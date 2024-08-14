@@ -13,22 +13,34 @@ import net.minecraft.world.entity.Entity;
 
 import java.awt.*;
 
+import static com.phoenixclient.PhoenixClient.MC;
+
 public class SpeedWindow extends GuiWindow {
 
     private final SettingGUI<Boolean> label;
     public SettingGUI<String> mode;
+    public SettingGUI<String> units;
 
     public SpeedWindow(Screen screen) {
         super(screen, "SpeedWindow", "Displays the players current speed, in blocks (m) per second", Vector.NULL(),true);
         this.label = new SettingGUI<>(this, "Label", "Show the label", true);
         this.mode = new SettingGUI<>(this, "Mode", "Detects whether speed is in XY or XYZ", "2D").setModeData("2D", "3D");
-        addSettings(label, mode);
+        this.units = new SettingGUI<>(this, "Units", "The units that the speed is given in", "m/s").setModeData("m/s", "km/hr","mph");
+        addSettings(label, mode,units);
     }
 
     @Override
     protected void drawWindow(GuiGraphics graphics, Vector mousePos) {
         String label = (this.label.get() ? "Speed " : "");
-        String currentSpeed = String.format("%.2f", getEntitySpeed(Minecraft.getInstance().player, mode.get().equals("3D"))) + "m/s";
+
+        double rawSpeed = getEntitySpeed(MC.player,mode.get().equals("3D"));
+        double speed = switch (units.get()) {
+            case "km/hr" -> rawSpeed * 60 * 60 / 1000; //km/hr is 1000 blocks per hour
+            case "mph" -> rawSpeed * 2.23694; //mph is completely useless in minecraft
+            default -> rawSpeed; //m/s is blocks per second
+        };
+
+        String currentSpeed = String.format("%.2f", speed) + units.get();
 
         setSize(new Vector((int) DrawUtil.getFontTextWidth(label + currentSpeed) + 6, 12));
 
