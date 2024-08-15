@@ -10,7 +10,7 @@ The client began development on June 12th, 2024 and only has a few modules, but 
 Is the client safe? Yes. You are free to look through all of the code and assess for yourself :)
 
 # Installation
-  - The latest release is for 1.21 **NOT 1.20.6**. Make sure you install the correct version of fabric
+  - The latest release is for 1.21 **NOT 1.20.6** Yes, 2B2T allows you to use 1.21, even if its still on 1.20.6. Make sure you install the correct version of fabric
   - Download the fabric installer and install the latest version corresponding to the client version: https://fabricmc.net/use/installer/
      - Fabric API is NOT required for PhoenixClient 
   - Download the PhoenixClient.jar from the Releases tab. Place this into the `.minecraft/mods` folder
