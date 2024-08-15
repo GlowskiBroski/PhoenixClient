@@ -16,9 +16,8 @@ import static com.phoenixclient.PhoenixClient.MC;
 // No Warden Fog
 // No Pumpkin Overlay
 // No Chat Verification Message Notification - I hate it so much -- No Tips/MINE WOOD TO START SHIT
-// No Boss Bar
 
-public class AntiRender extends Module {
+public class NoRender extends Module {
 
     private final SettingGUI<Boolean> noBob = new SettingGUI<>(
             this,
@@ -68,9 +67,15 @@ public class AntiRender extends Module {
             "Removes the \"Chat Message Verification\" and \"Mine Wood\" notifications",
             true);
 
-    public AntiRender() {
-        super("AntiRender", "Disables rendering of certain things", Category.RENDER, true, -1);
-        addSettings(noBob, noHurtCam, noConfusion, noFireOverlay, noSuffocationHud, noCaveCulling, noFog,noTips);
+    private final SettingGUI<Boolean> noBossHealth = new SettingGUI<>(
+            this,
+            "No Boss Health",
+            "Removes the boss health bars",
+            false);
+
+    public NoRender() {
+        super("NoRender", "Disables rendering of certain things", Category.RENDER, true, -1);
+        addSettings(noBob, noHurtCam, noConfusion, noFireOverlay, noSuffocationHud, noCaveCulling, noFog,noTips,noBossHealth);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE,this::onPlayerUpdate);
     }
 
@@ -115,6 +120,18 @@ public class AntiRender extends Module {
         } else {
             noFog.runOnChange(() -> MixinHooks.noFog = noFog.get());
         }
+        if (noTips.get()) {
+            MixinHooks.noTipsWindow = true;
+            noTips.runOnChange(() -> {});
+        } else {
+            noTips.runOnChange(() -> MixinHooks.noTipsWindow = noTips.get());
+        }
+        if (noBossHealth.get()) {
+            MixinHooks.noBossHealth = true;
+            noBossHealth.runOnChange(() -> {});
+        } else {
+            noBossHealth.runOnChange(() -> MixinHooks.noBossHealth = noBossHealth.get());
+        }
     }
 
     @Override
@@ -129,6 +146,18 @@ public class AntiRender extends Module {
         MixinHooks.noFireHud = false;
         MixinHooks.noSuffocationHud = false;
         MixinHooks.noCaveCulling = false;
+        MixinHooks.noFog = false;
+        MixinHooks.noTipsWindow = false;
+        MixinHooks.noBossHealth = false;
     }
 
+    //TODO: Implement this, find a way to get around variable local assignment. Maybe use a container
+    private void runSettingChange(SettingGUI<Boolean> setting) {
+        if (setting.get()) {
+            MixinHooks.noTipsWindow = true;
+            setting.runOnChange(() -> {});
+        } else {
+            setting.runOnChange(() -> MixinHooks.noTipsWindow = setting.get());
+        }
+    }
 }

@@ -19,8 +19,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-//TODO: disable the default "punch a tree" tips panel it blocks the settings window
-
 public class PhoenixClient implements ModInitializer {
 
     public static final Minecraft MC = Minecraft.getInstance();
@@ -53,7 +51,7 @@ public class PhoenixClient implements ModInitializer {
                 new AutoSprint(),
                 new FastBridge(),
                 new FreeCam(),
-                new AntiRender(),
+                new NoRender(),
                 new Step(),
                 new ShulkerView(),
                 new Speed(),
@@ -75,7 +73,7 @@ public class PhoenixClient implements ModInitializer {
                 new EntityESP(),
                 new StorageESP(),
                 new AutoCrossbow(),
-                new Tridents(),
+                new TridentTravel(),
                 new NameTags(),
                 new Logouts()
         );

@@ -6,6 +6,7 @@
   "client": [
     "MixinAbstractClientPlayer",
     "MixinAbstractContainerScreen",
+    "MixinBossHealthOverlay",
     "MixinConnection",
     "MixinFogRenderer",
     "MixinGameRenderer",
@@ -19,7 +20,10 @@
     "MixinMouseHandler",
     "MixinOptionInstance",
     "MixinOptions",
-    "MixinPlayerModel"
+    "MixinPlayerModel",
+    "MixinRecipeToast",
+    "MixinSystemToast",
+    "MixinTutorialToast"
   ],
   "injectors": {
     "defaultRequire": 1

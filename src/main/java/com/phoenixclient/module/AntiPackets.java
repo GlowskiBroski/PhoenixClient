@@ -173,7 +173,7 @@ public class AntiPackets extends Module {
             ServerboundSwingPacket.class,
             ServerboundTeleportToEntityPacket.class,
             ServerboundUseItemOnPacket.class,
-            ServerboundUseItemPacket.class,
+            ServerboundUseItemPacket.class
     };
 
     private final SettingGUI<String> viewSettings = new SettingGUI<>(

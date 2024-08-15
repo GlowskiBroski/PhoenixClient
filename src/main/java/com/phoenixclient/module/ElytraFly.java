@@ -30,7 +30,7 @@ public class ElytraFly extends Module {
             this,
             "Mode",
             "Mode of ElytaFly",
-            "Firework").setModeData("Firework", "Boost", "Hold", "Ground", "Bounce")
+            "Firework").setModeData("Firework", "Boost", "Ground", "Bounce")
             .setModeDescriptions();
 
     //Boost
@@ -40,27 +40,6 @@ public class ElytraFly extends Module {
             "Speed of ElytaFly Boost Mode",
             1d)
             .setSliderData(.1, 2, .1).setDependency(mode, "Boost");
-
-    //Hold
-    private final SettingGUI<Double> glideSpeedHold = new SettingGUI<>(
-            this,
-            "Glide Speed",
-            "Glide speed of Hold mode",
-            0d)
-            .setSliderData(0, 2, .1).setDependency(mode, "Hold");
-
-    private final SettingGUI<Integer> speedCapHold = new SettingGUI<>(
-            this,
-            "Hold Speed Cap",
-            "Top speed of hold mode",
-            100)
-            .setSliderData(0, 200, 5).setDependency(mode, "Hold");
-
-    private final SettingGUI<Boolean> useRocketsHold = new SettingGUI<>(
-            this,
-            "Use Rockets",
-            "Automatically uses rockets every 2 seconds",
-            true).setDependency(mode, "Hold");
 
     //Ground
     private final SettingGUI<Integer> speedCapGround = new SettingGUI<>(
@@ -76,6 +55,12 @@ public class ElytraFly extends Module {
             "Acceleration for the speed mod",
             7)
             .setSliderData(1, 15, 1).setDependency(mode, "Ground");
+
+    private final SettingGUI<Boolean> fastFireworkGround = new SettingGUI<>(
+            this,
+            "Fast Firework",
+            "Adds Fast Firework mode capabilities to Ground when in the air. This is useful if you like to fly like an airplane",
+            false).setDependency(mode,"Ground");
 
     //Bounce
     private final SettingGUI<Integer> pitchBounce = new SettingGUI<>(
@@ -107,9 +92,7 @@ public class ElytraFly extends Module {
             "Detects if the player is rubberbanding and takes measures to negate it",
             false).setDependency(mode,"Ground");
 
-    private int step = 0;
     private int fireworkStep = 14;
-    private final StopWatch watch = new StopWatch();
 
     private final StopWatch rubberBandWatch = new StopWatch();
     private boolean isRubberBanding = false;
@@ -117,7 +100,7 @@ public class ElytraFly extends Module {
 
     public ElytraFly() {
         super("ElytraFly", "Allows for different movement methods surrounding the Elytra", Category.MOTION, false, -1);
-        addSettings(mode, speedBoost, glideSpeedHold, speedCapHold, useRocketsHold, speedCapGround, pitchBounce, accelerationGround, speedFastFirework, brokenFly,rubberBandDetection);
+        addSettings(mode, speedBoost, speedCapGround, pitchBounce, accelerationGround, speedFastFirework, brokenFly,rubberBandDetection,fastFireworkGround);
         addEventSubscriber(Event.EVENT_PLAYER_UPDATE, this::onPlayerUpdate);
         addEventSubscriber(Event.EVENT_PACKET, this::onPacket);
     }
@@ -129,10 +112,9 @@ public class ElytraFly extends Module {
 
         switch (mode.get()) {
             case "Boost" -> boost();
-            case "Hold" -> hold();
             case "Ground" -> ground();
             case "Bounce" -> bounce();
-            case "Firework" -> firework();
+            case "Firework" -> firework(speedFastFirework.get());
         }
 
         if (brokenFly.get()) {
@@ -151,7 +133,7 @@ public class ElytraFly extends Module {
             if (event.getPacket() instanceof ClientboundPlayerPositionPacket p) {
                 rubberBandWatch.restart();
                 rubberBandCount++;
-                if (rubberBandCount > 5) isRubberBanding = true;
+                if (rubberBandCount > 5) isRubberBanding = true; //If there are 5 set position packets, we are def rubberbanding
             }
             if (rubberBandWatch.hasTimePassedMS(250)) {
                 isRubberBanding = false;
@@ -166,31 +148,16 @@ public class ElytraFly extends Module {
     @Override
     public void onEnabled() {
         if (updateDisableOnEnabled()) return;
-        switch (mode.get()) {
-            case "Hold" -> {
-                if (MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem && useRocketsHold.get())
-                    startUseItem();
-                watch.restart();
-            }
-            case "Firework" -> {
-                fireworkStep = 0;
-            }
-        }
+        fireworkStep = 0;
     }
 
     @Override
     public void onDisabled() {
         if (MC.player == null) return;
+        MixinHooks.keepElytraOnGround = false;
         switch (mode.get()) {
-            case "Hold" -> {
-                if (MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem && useRocketsHold.get())
-                    startUseItem();
-                watch.restart();
-            }
-            case "Ground" -> MixinHooks.keepElytraOnGround = false;
             case "Bounce" -> {
                 MC.options.keyJump.setDown(false);
-                MixinHooks.keepElytraOnGround = false;
             }
         }
     }
@@ -204,33 +171,6 @@ public class ElytraFly extends Module {
         if (MC.player.isFallFlying()) {
             double speed = this.speedBoost.get() * (double) 1 / 10;
             MotionUtil.addEntityMotionInLookDirection(MC.player, speed);
-        }
-    }
-
-    private void hold() {
-        if (MC.player.isFallFlying()) {
-            MC.player.setXRot(0);
-
-            int speedLimit = speedCapHold.get();
-            float accSpeed = 1;
-            Angle yaw = new Angle(MC.player.getRotationVector().y, true);
-            if (MC.options.keyUp.isDown()) {
-                watch.start();
-                if (watch.hasTimePassedS(2) && MC.player.getMainHandItem().getItem() instanceof FireworkRocketItem) {
-                    if (useRocketsHold.get()) startUseItem();
-                    watch.restart();
-                }
-                //Add Auto Rocket Code Here, when W is down
-                MC.player.setDeltaMovement(new Vector(yaw, new Angle(0), .1 * step).getVec3());
-                if (step < speedLimit / 2) step += accSpeed;
-            } else {
-                step = 0;
-            }
-
-            if (MC.options.keyDown.isDown()) MC.player.setDeltaMovement(0, 0, 0);
-
-            MC.player.setDeltaMovement(MC.player.getDeltaMovement().x(), .4 / 20 + -glideSpeedHold.get() / 20, MC.player.getDeltaMovement().z());
-            if (MC.player.touchingUnloadedChunk()) MC.player.setDeltaMovement(0, 0, 0);
         }
     }
 
@@ -268,6 +208,9 @@ public class ElytraFly extends Module {
         } else {
             MixinHooks.keepElytraOnGround = false;
         }
+
+        if (fastFireworkGround.get()) firework(Math.clamp(speedCapGround.get(),0,100));
+
     }
 
     public void bounce() {
@@ -282,6 +225,7 @@ public class ElytraFly extends Module {
         }
     }
 
+    //This mode is kind of a combination between Ground mode and Bounce mode. Therefore, it is entirely deprecated by Ground mode
     @Deprecated
     public void bounceAlt() {
         MixinHooks.keepElytraOnGround = true;
@@ -337,7 +281,7 @@ public class ElytraFly extends Module {
     }
 
     //TODO: Find a better way to detect if a firework is active or not
-    public void firework() {
+    public void firework(double speed) {
         if (MC.player.isFallFlying()) {
             boolean fireworkActive = false;
             for (Entity entity : MC.level.entitiesForRendering()) {
@@ -352,74 +296,10 @@ public class ElytraFly extends Module {
                 Angle pitch = new Angle(MC.player.getRotationVector().x, true);
 
                 MC.player.setDeltaMovement(new Vector(yaw, pitch, .12 * fireworkStep).getVec3());
-                fireworkStep = Math.clamp(fireworkStep + 3, 0, (int) (speedFastFirework.get() / 2.38));
+                fireworkStep = Math.clamp(fireworkStep + 3, 0, (int) (speed / 2.38));
             } else {
                 fireworkStep = 14;
             }
-        }
-    }
-
-    //TODO: Replace this with a mixin accessor
-    private void startUseItem() {
-        if (MC.gameMode.isDestroying()) {
-            return;
-        }
-        //MC.rightClickDelay = 4;
-        if (MC.player.isHandsBusy()) {
-            return;
-        }
-        if (MC.hitResult == null) {
-            //LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
-        }
-        for (InteractionHand interactionHand : InteractionHand.values()) {
-            InteractionResult interactionResult3;
-            ItemStack itemStack = MC.player.getItemInHand(interactionHand);
-            if (!itemStack.isItemEnabled(MC.level.enabledFeatures())) {
-                return;
-            }
-            if (MC.hitResult != null) {
-                switch (MC.hitResult.getType()) {
-                    case ENTITY: {
-                        EntityHitResult entityHitResult = (EntityHitResult) MC.hitResult;
-                        Entity entity = entityHitResult.getEntity();
-                        if (!MC.level.getWorldBorder().isWithinBounds(entity.blockPosition())) {
-                            return;
-                        }
-                        InteractionResult interactionResult = MC.gameMode.interactAt(MC.player, entity, entityHitResult, interactionHand);
-                        if (!interactionResult.consumesAction()) {
-                            interactionResult = MC.gameMode.interact(MC.player, entity, interactionHand);
-                        }
-                        if (!interactionResult.consumesAction()) break;
-                        if (interactionResult.shouldSwing()) {
-                            MC.player.swing(interactionHand);
-                        }
-                        return;
-                    }
-                    case BLOCK: {
-                        BlockHitResult blockHitResult = (BlockHitResult) MC.hitResult;
-                        int i = itemStack.getCount();
-                        InteractionResult interactionResult2 = MC.gameMode.useItemOn(MC.player, interactionHand, blockHitResult);
-                        if (interactionResult2.consumesAction()) {
-                            if (interactionResult2.shouldSwing()) {
-                                MC.player.swing(interactionHand);
-                                if (!itemStack.isEmpty() && (itemStack.getCount() != i || MC.gameMode.hasInfiniteItems())) {
-                                    MC.gameRenderer.itemInHandRenderer.itemUsed(interactionHand);
-                                }
-                            }
-                            return;
-                        }
-                        if (interactionResult2 != InteractionResult.FAIL) break;
-                        return;
-                    }
-                }
-            }
-            if (itemStack.isEmpty() || !(interactionResult3 = MC.gameMode.useItem(MC.player, interactionHand)).consumesAction())
-                continue;
-            if (interactionResult3.shouldSwing()) {
-                MC.player.swing(interactionHand);
-            }
-            MC.gameRenderer.itemInHandRenderer.itemUsed(interactionHand);
-            return;
         }
     }
 

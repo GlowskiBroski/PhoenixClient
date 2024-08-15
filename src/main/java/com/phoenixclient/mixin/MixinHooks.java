@@ -14,7 +14,9 @@ public class MixinHooks {
 
     public static boolean noFireHud = false;
 
-    public static boolean noPush = false;
+    public static boolean noPushEntities = false;
+
+    public static boolean noPushWater = false; //TODO: Implement this
 
     public static boolean keepElytraOnGround = false;
 
@@ -27,4 +29,8 @@ public class MixinHooks {
     public static boolean showTrueDurability = false;
 
     public static boolean alwaysRiptideTrident = false;
+
+    public static boolean noTipsWindow = false; //TODO: You chose not to override AdvancementToast. Think about doing that. But maybe not
+
+    public static boolean noBossHealth = false;
 }
