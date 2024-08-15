@@ -24,11 +24,23 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 public class TridentTravel extends Module {
 
-    private final SettingGUI<String> mode = new SettingGUI<>(this, "Mode", "Mode of TridentTravel", "Timer").setModeData("Timer").setModeDescriptions("Automatically riptides every second interval while forward is held down");
+    private final SettingGUI<String> mode = new SettingGUI<>(
+            this,
+            "Mode",
+            "Mode of TridentTravel",
+            "Timer").setModeData("Timer").setModeDescriptions("Automatically riptides every second interval while forward is held down");
 
-    private final SettingGUI<Double> timerDelay = new SettingGUI<>(this, "Delay", "Delay interval between riptide", 1d).setSliderData(.5, 5, .1);
+    private final SettingGUI<Double> timerDelay = new SettingGUI<>(
+            this,
+            "Delay",
+            "Delay interval between riptide",
+            .8d).setSliderData(.5, 1.5, .1);
 
-    private final SettingGUI<Boolean> alwaysRiptide = new SettingGUI<>(this, "Always Riptide", "Allows the player to riptide anywhere", false);
+    private final SettingGUI<Boolean> alwaysRiptide = new SettingGUI<>(
+            this,
+            "Always Riptide",
+            "Allows the player to riptide anywhere",
+            false);
 
     private final StopWatch watch = new StopWatch();
 
@@ -43,11 +55,13 @@ public class TridentTravel extends Module {
         MixinHooks.alwaysRiptideTrident = alwaysRiptide.get();
         switch (mode.get()) {
             case "Timer" -> {
-                if (!MC.player.getMainHandItem().getItem().equals(Items.TRIDENT)) break;
-                watch.start();
-                MC.options.keyUse.setDown(true);
-                if (watch.hasTimePassedS(timerDelay.get())) {
-                    MC.options.keyUse.setDown(false);
+                if (MC.options.keyUp.isDown() && MC.player.getMainHandItem().getItem().equals(Items.TRIDENT)) {
+                    watch.start();
+                    MC.options.keyUse.setDown(true);
+                    if (watch.hasTimePassedS(timerDelay.get())) {
+                        MC.options.keyUse.setDown(false);
+                        watch.restart();
+                    }
                 }
             }
         }
