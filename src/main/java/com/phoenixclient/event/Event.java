@@ -36,6 +36,7 @@ public class Event {
     public void post(Object... args) {
         this.args = args;
 
+
         try {//TODO: This is a new queue system. Do more checking with this to see if its viable
             removalQueue.forEach((action) -> getActions().remove(action));
             removalQueue.clear();
@@ -44,7 +45,8 @@ public class Event {
         } catch (ConcurrentModificationException ignored) {
         }
 
-        for (EventAction event : getActions()) event.run();
+        ArrayList<EventAction> actionsCopy = (ArrayList<EventAction>) getActions().clone();
+        for (EventAction event : actionsCopy) event.run();
 
     }
 

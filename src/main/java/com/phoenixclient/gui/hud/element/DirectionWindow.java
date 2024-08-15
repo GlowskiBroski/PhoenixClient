@@ -68,11 +68,11 @@ public class DirectionWindow extends GuiWindow {
             case "Ordinal" -> {
                 Angle yaw = new Angle(MC.player.getYRot(),true).getSimplified();
                 if (yaw.getDegrees() > 360 - 22.5 || yaw.getDegrees() < 22.5) {
-                    coordinateDirection = "[-Z]";
+                    coordinateDirection = "[+Z]";
                     cardinalDirection = "South";
                 }
                 if (yaw.getDegrees() > 22.5 && yaw.getDegrees() < 90 - 22.5) {
-                    coordinateDirection = "[-Z,-X]";
+                    coordinateDirection = "[+Z,-X]";
                     cardinalDirection = "SW";
                 }
                 if (yaw.getDegrees() > 90 - 22.5 && yaw.getDegrees() < 90 + 22.5) {
@@ -80,15 +80,15 @@ public class DirectionWindow extends GuiWindow {
                     cardinalDirection = "West";
                 }
                 if (yaw.getDegrees() > 90 + 22.5 && yaw.getDegrees() < 180 - 22.5) {
-                    coordinateDirection = "[+Z,-X]";
+                    coordinateDirection = "[-Z,-X]";
                     cardinalDirection = "NW";
                 }
                 if (yaw.getDegrees() > 180 - 22.5 && yaw.getDegrees() < 180 + 22.5) {
-                    coordinateDirection = "[+Z]";
+                    coordinateDirection = "[-Z]";
                     cardinalDirection = "North";
                 }
                 if (yaw.getDegrees() > 180 + 22.5 && yaw.getDegrees() < 270 - 22.5) {
-                    coordinateDirection = "[+Z,+X]";
+                    coordinateDirection = "[-Z,+X]";
                     cardinalDirection = "NE";
                 }
                 if (yaw.getDegrees() > 270 - 22.5 && yaw.getDegrees() < 270 + 22.5) {
@@ -96,7 +96,7 @@ public class DirectionWindow extends GuiWindow {
                     cardinalDirection = "East";
                 }
                 if (yaw.getDegrees() > 270 + 22.5 && yaw.getDegrees() < 360 - 22.5) {
-                    coordinateDirection = "[-Z,+X]";
+                    coordinateDirection = "[+Z,+X]";
                     cardinalDirection = "SE";
                 }
             }
