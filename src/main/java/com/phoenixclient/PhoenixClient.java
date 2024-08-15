@@ -76,7 +76,8 @@ public class PhoenixClient implements ModInitializer {
                 new TridentTravel(),
                 new NameTags(),
                 new Logouts(),
-                new BabyMode()
+                new BabyMode(),
+                new SafeWalk()
         );
 
         GUI_MANAGER.instantiateHUDGUI();
