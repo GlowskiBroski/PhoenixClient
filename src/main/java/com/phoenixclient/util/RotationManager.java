@@ -3,6 +3,7 @@ package com.phoenixclient.util;
 import com.phoenixclient.event.Event;
 import com.phoenixclient.event.EventAction;
 import com.phoenixclient.util.actions.OnChange;
+import com.phoenixclient.util.math.Angle;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.setting.Container;
 import net.minecraft.client.model.geom.ModelPart;
@@ -62,6 +63,10 @@ public class RotationManager {
 
     public float getSpoofedPitch() {
         return spoofedPitch;
+    }
+
+    public float getSpoofedZ() {
+        return 0;//spoofedPitch;
     }
 
     public void stopSpoofing() {

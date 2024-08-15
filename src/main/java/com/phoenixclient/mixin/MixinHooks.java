@@ -33,4 +33,6 @@ public class MixinHooks {
     public static boolean noTipsWindow = false; //TODO: You chose not to override AdvancementToast. Think about doing that. But maybe not
 
     public static boolean noBossHealth = false;
+
+    public static boolean renderAsBaby = false;
 }

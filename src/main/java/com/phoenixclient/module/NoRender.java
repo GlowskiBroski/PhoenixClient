@@ -15,7 +15,6 @@ import static com.phoenixclient.PhoenixClient.MC;
 // Blindness - Maybe separate into AntiPotion
 // No Warden Fog
 // No Pumpkin Overlay
-// No Chat Verification Message Notification - I hate it so much -- No Tips/MINE WOOD TO START SHIT
 
 public class NoRender extends Module {
 

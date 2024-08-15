@@ -85,6 +85,7 @@ public class ShulkerView extends Module {
 
     public void onRenderScreen(RenderScreenEvent event) {
         updateHeldTooltip();
+        event.getGraphics().flush();
         updateChestView();
     }
 

@@ -46,6 +46,7 @@ public class InventoryWindow extends GuiWindow {
         //graphics.setColor(1,1,1,transparency.get() / 255f);
         //graphics.setColor(1,1,1,1f);
         renderInventoryItems(graphics, MC.player.inventoryMenu.getItems(),9,35,adjustedPos);
+        graphics.flush();
 
         graphics.setColor(1f,1f,1f,1f);
         graphics.pose().scale(1 / scale,1 / scale,1f);
