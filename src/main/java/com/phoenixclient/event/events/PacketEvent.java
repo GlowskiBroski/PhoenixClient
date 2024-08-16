@@ -4,9 +4,7 @@ import com.phoenixclient.event.Event;
 import net.minecraft.network.protocol.Packet;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public class PacketEvent extends Event {
-
-    private boolean cancelled = false;
+public class PacketEvent extends CancellableEvent {
 
     private Packet<?> packet;
     private Type type;
@@ -18,23 +16,8 @@ public class PacketEvent extends Event {
         super.post(args);
     }
 
-    public void updateCancelled(CallbackInfo ci) {
-        if (isCancelled()) {
-            setCancelled(false);
-            ci.cancel();
-        }
-    }
-
     public Packet<?> getPacket() {
         return packet;
-    }
-
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
-    }
-
-    public boolean isCancelled() {
-        return cancelled;
     }
 
     public Type getType() {

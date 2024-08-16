@@ -24,6 +24,8 @@ public class Event {
 
     public static final RenderLevelEvent EVENT_RENDER_LEVEL = new RenderLevelEvent();
 
+    public static final RenderNameTagEvent EVENT_RENDER_NAMETAG = new RenderNameTagEvent();
+
     // -------------------------------------------------------------------------------
 
     private final ArrayList<EventAction> eventActions = new ArrayList<>();

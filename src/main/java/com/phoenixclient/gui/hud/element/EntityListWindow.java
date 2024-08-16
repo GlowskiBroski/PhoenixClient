@@ -41,18 +41,21 @@ public class EntityListWindow extends ListWindow {
             String entityName = rawName.replaceFirst(String.valueOf(rawName.charAt(0)), String.valueOf(rawName.charAt(0)).toUpperCase()).replace("_"," ");
 
             Color entityColor = entity instanceof Player ? new Color(79, 105, 245) : Color.WHITE;
+            int mul = 1;
             if (!combineItems.get() && entity instanceof ItemEntity e) {
                 entityName = "Item: " + e.getName().getString();
                 entityColor = new Color(255, 86, 86);
                 if (entityName.toLowerCase().contains("shulker box")) entityColor = new Color(179, 86, 255);
-                }
+                mul = e.getItem().getCount();
+            }
+
 
             if (currentList.containsKey(entityName)) {
-                ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + 1) + ")",entityColor,Color.CYAN);
+                ListInfo count = new ListInfo("(" + (Integer.parseInt(currentList.get(entityName).tag().replace("(","").replace(")","")) + mul) + ")",entityColor,Color.CYAN);
                 currentList.put(entityName, count);
                 continue;
             }
-            currentList.putIfAbsent(entityName,new ListInfo("(1)",entityColor,Color.CYAN));
+            currentList.putIfAbsent(entityName,new ListInfo("(" + mul + ")",entityColor,Color.CYAN));
         }
 
         return forceAddedToBottom(currentList);

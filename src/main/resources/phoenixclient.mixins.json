@@ -23,7 +23,8 @@
     "MixinPlayerModel",
     "MixinRecipeToast",
     "MixinSystemToast",
-    "MixinTutorialToast"
+    "MixinTutorialToast",
+    "accessors.IMixinGameRenderer"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -32,6 +33,7 @@
     "MixinBannerItem",
     "MixinBlockCollisions",
     "MixinEntity",
+    "MixinEntityRenderer",
     "MixinItemStack",
     "MixinScreenEffectRenderer",
     "MixinServerboundMovePlayerPacket"

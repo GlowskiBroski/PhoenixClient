@@ -18,7 +18,7 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 public class NoRender extends Module {
 
-    private final SettingGUI<Boolean> noBob = new SettingGUI<>(
+    public final SettingGUI<Boolean> noBob = new SettingGUI<>(
             this,
             "No Bob",
             "Stops bobbing while walking",

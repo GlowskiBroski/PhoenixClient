@@ -11,9 +11,7 @@ import java.util.List;
 
 import static com.phoenixclient.PhoenixClient.MC;
 
-public class RenderItemTooltipEvent extends Event {
-
-    private boolean cancelled = false;
+public class RenderItemTooltipEvent extends CancellableEvent {
 
     private GuiGraphics graphics;
     private ItemStack item;
@@ -30,13 +28,6 @@ public class RenderItemTooltipEvent extends Event {
         super.post(args);
     }
 
-    public void updateCancelled(CallbackInfo ci) {
-        if (isCancelled()) {
-            setCancelled(false);
-            ci.cancel();
-        }
-    }
-
     public ItemStack getItemStack() {
         return item;
     }
@@ -51,15 +42,6 @@ public class RenderItemTooltipEvent extends Event {
 
     public GuiGraphics getGraphics() {
         return graphics;
-    }
-
-
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
     }
 
 }
