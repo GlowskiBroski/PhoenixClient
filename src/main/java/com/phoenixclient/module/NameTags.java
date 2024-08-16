@@ -9,10 +9,7 @@ import com.phoenixclient.event.events.RenderScreenEvent;
 import com.phoenixclient.mixin.mixins.accessors.IMixinGameRenderer;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
-import com.phoenixclient.util.render.ColorManager;
-import com.phoenixclient.util.render.Draw3DUtil;
-import com.phoenixclient.util.render.DrawUtil;
-import com.phoenixclient.util.render.TextBuilder;
+import com.phoenixclient.util.render.*;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.Camera;
 import net.minecraft.client.gui.GuiGraphics;
@@ -73,13 +70,10 @@ public class NameTags extends Module {
             false
     );
 
-    private float partialTicks = 0;
-
     public NameTags() {
         super("NameTags", "Draws Custom NameTags", Category.RENDER, false, -1);
         addSettings(items,players,passive,hostile,scaling,scale);
         addEventSubscriber(Event.EVENT_RENDER_HUD, this::onRenderHUD);
-        addEventSubscriber(Event.EVENT_RENDER_LEVEL, this::onLevelRender);
         addEventSubscriber(Event.EVENT_RENDER_NAMETAG, this::onRenderNameTag);
     }
 
@@ -94,7 +88,6 @@ public class NameTags extends Module {
 
             if (doItems || doHostile || doPassive) drawBasicNameTag(graphics,e);
             if (doPlayers) drawPlayerNameTag(graphics,(Player)e);
-            if (doHostile) drawBasicNameTag(graphics,e);
         }
     }
 
@@ -107,15 +100,12 @@ public class NameTags extends Module {
         if (doItems || doPlayers || doHostile || doPassive) event.setCancelled(true);
     }
 
-    public void onLevelRender(RenderLevelEvent event) {
-        partialTicks = event.getPartialTicks();
-    }
-
     private void drawBasicNameTag(GuiGraphics guiGraphics, Entity entity) {
         double height = entity.getBbHeight();
-        Vector screenPos = get2DProjection(Draw3DUtil.getLerpPos(entity, partialTicks).getAdded(0, height, 0));
+        ProjectionManager.Projection projection = PhoenixClient.getProjectionManager().get2DProjection(entity,new Vector(0,height,0));
+        Vector screenPos = projection.pos2D();
 
-        if (screenPos.getX() < 0 || screenPos.getY() < 0) return;
+        if (!projection.onScreen()) return;
 
         float scale = switch (scaling.get()) {
             case "Value" -> this.scale.get().floatValue();
@@ -149,8 +139,10 @@ public class NameTags extends Module {
     private void drawPlayerNameTag(GuiGraphics guiGraphics, Player player) {
         double height = player.getBbHeight();
 
-        Vector screenPos = get2DProjection(Draw3DUtil.getLerpPos(player, partialTicks).getAdded(0, height, 0));
-        if (screenPos.getX() < 0 || screenPos.getY() < 0) return;
+        ProjectionManager.Projection projection = PhoenixClient.getProjectionManager().get2DProjection(player,new Vector(0,height,0));
+        Vector screenPos = projection.pos2D();
+
+        if (!projection.onScreen()) return;
 
         float scale = switch (scaling.get()) {
             case "Value" -> this.scale.get().floatValue();
@@ -162,21 +154,21 @@ public class NameTags extends Module {
         guiGraphics.pose().scale(scale,scale,1);
         screenPos.multiply(1/scale);
 
-        boolean showHealth = true;
+        boolean showHealth = false;
         boolean showPing = true;
 
         String playerName = player.getDisplayName().getString();
 
         float playerHeath = player.getHealth();
         float maxHealth = player.getMaxHealth();
-        String healthString = " " + Math.round(playerHeath) + "/" + Math.round(maxHealth);
+        String healthString = showHealth ? " " + Math.round(playerHeath) + "/" + Math.round(maxHealth) : "";
 
         int ping = 0;
         if (MC.getConnection() != null) {
             PlayerInfo info = MC.getConnection().getPlayerInfo(player.getUUID());
             if (info != null) ping = info.getLatency();
         }
-        String pingString = " " + ping + "ms";
+        String pingString = showPing ? " " + ping + "ms" : "";
 
 
         //TODO: Add distance string?
@@ -218,41 +210,6 @@ public class NameTags extends Module {
          */
 
         guiGraphics.pose().scale(1/scale,1/scale,1);
-    }
-
-    public Vector get2DProjection(Vector position3D) {
-        Camera cam = MC.gameRenderer.getMainCamera();
-        Vector camPos = new Vector(cam.getPosition());
-        Quaternionf camRot = cam.rotation();
-        Quaternionf camRotConjugate = new Quaternionf(-camRot.x, -camRot.y, -camRot.z, camRot.w);
-
-        Vector relativePos = camPos.getSubtracted(position3D);
-        Vector3f rotatedPos = new Vector3f((float) relativePos.getX(), (float) relativePos.getY(), (float) relativePos.getZ()).rotate(camRotConjugate); //result3f
-
-        if (MC.options.bobView().get() && !((NoRender)PhoenixClient.getModule("NoRender")).noBob.get()) {
-            if (MC.getCameraEntity() instanceof Player player) {
-
-                float g = player.walkDist - player.walkDistO;
-                float h = -(player.walkDist + g * partialTicks);
-                float i = Mth.lerp(partialTicks, player.oBob, player.bob);
-
-                Vector3f inverseBob = new Vector3f((Mth.sin(h * (float) Math.PI) * i * 0.5F), (-Math.abs(Mth.cos(h * (float) Math.PI) * i)), 0.0f).mul(-1);
-                rotatedPos.rotate(Axis.XP.rotationDegrees(Math.abs(Mth.cos(h * (float)Math.PI - 0.2f) * i) * 5.0f));
-                rotatedPos.rotate(Axis.ZP.rotationDegrees(Mth.sin(h * (float)Math.PI) * i * 3.0f));
-                rotatedPos.add(inverseBob);
-            }
-        }
-
-        double FOV = ((IMixinGameRenderer)MC.gameRenderer).invokeGetFov(cam,partialTicks,true);
-        float scale = (float) (MC.getWindow().getGuiScaledHeight() / (2 * Math.tan(Math.toRadians(FOV / 2))));
-
-        Vector screenCenter = new Vector(MC.getWindow().getGuiScaledWidth(), MC.getWindow().getGuiScaledHeight()).getMultiplied(.5);
-
-        if (rotatedPos.z < 0) return new Vector(-32767, -32767);
-        return new Vector(-rotatedPos.x, rotatedPos.y)
-                .getMultiplied(1 / rotatedPos.z)
-                .getMultiplied(scale)
-                .getAdded(screenCenter);
     }
 
 

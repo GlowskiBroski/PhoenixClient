@@ -11,6 +11,7 @@ import com.phoenixclient.util.input.Key;
 import com.phoenixclient.util.input.Mouse;
 import com.phoenixclient.util.render.ColorManager;
 import com.phoenixclient.util.render.FontRenderer;
+import com.phoenixclient.util.render.ProjectionManager;
 import com.phoenixclient.util.setting.SettingManager;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
@@ -27,6 +28,7 @@ public class PhoenixClient implements ModInitializer {
     private static final SettingManager SETTING_MANAGER = new SettingManager(new CSVFile("PhoenixClient", "settings"));
     private static final ColorManager COLOR_MANAGER = new ColorManager(ColorManager.Theme.LIGHTBLUE);
     private static final RotationManager ROTATION_MANAGER = new RotationManager();
+    private static final ProjectionManager PROJECTION_MANAGER = new ProjectionManager();
 
     //Managers that act as modules
     private static final GuiManager GUI_MANAGER = new GuiManager();
@@ -77,7 +79,8 @@ public class PhoenixClient implements ModInitializer {
                 new NameTags(),
                 new Logouts(),
                 new BabyMode(),
-                new SafeWalk()
+                new SafeWalk(),
+                new Tracers()
         );
 
         GUI_MANAGER.instantiateHUDGUI();
@@ -92,6 +95,8 @@ public class PhoenixClient implements ModInitializer {
         GuiManager.GUI_OPEN_KEYBIND_ACTION.subscribe();
 
         ROTATION_MANAGER.updateSpoofedAngles.subscribe();
+
+        PROJECTION_MANAGER.partialTickUpdater.subscribe();
 
         //I'm worried this causes a performance impact. I've moved the animation calculations back to the render thread, which is now dependent on FPS
         //getGuiManager().startAnimationThread();
@@ -135,6 +140,10 @@ public class PhoenixClient implements ModInitializer {
 
     public static RotationManager getRotationManager() {
         return ROTATION_MANAGER;
+    }
+
+    public static ProjectionManager getProjectionManager() {
+        return PROJECTION_MANAGER;
     }
 
     public static FontRenderer getFontRenderer() {
