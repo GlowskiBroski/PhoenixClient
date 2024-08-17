@@ -1,5 +1,6 @@
 package com.phoenixclient.util.render;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.actions.DoOnce;
 import com.phoenixclient.util.math.Angle;
@@ -7,11 +8,24 @@ import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
+import net.minecraft.ReportedException;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.awt.*;
@@ -263,10 +277,90 @@ public class DrawUtil {
     // -------------------------- EXTRA -----------------------
 
     public static void drawItemStack(GuiGraphics graphics, ItemStack stack, Vector pos) {
+        /*
         int x = (int) Math.round(pos.getX());
         int y = (int) Math.round(pos.getY());
         graphics.renderItem(stack, x, y);
         graphics.renderItemDecorations(MC.font, stack, x, y);
+         */
+        renderItem(graphics,stack,pos.getX(),pos.getY());
+        renderItemDecorations(graphics,MC.font,stack,pos.getX(),pos.getY());
+
+    }
+
+    /**
+     * This method is taken from graphics, but modified to accept double values for x and y to stop jittering and be in line with other elements
+     * @param graphics
+     * @param itemStack
+     * @param x
+     * @param y
+     */
+    private static void renderItem(GuiGraphics graphics, ItemStack itemStack, double x, double y) {
+        int k = 0;
+        int l = 0;
+        LivingEntity livingEntity = MC.player;
+        Level level = MC.level;
+        
+        if (itemStack.isEmpty()) return;
+        BakedModel bakedModel = MC.getItemRenderer().getModel(itemStack, level, livingEntity, k);
+        graphics.pose().pushPose();
+        graphics.pose().translate((float)(x + 8), (float)(y + 8), (float)(150 + (bakedModel.isGui3d() ? l : 0)));
+        try {
+            boolean bl;
+            graphics.pose().scale(16.0f, -16.0f, 16.0f);
+            boolean bl2 = bl = !bakedModel.usesBlockLight();
+            if (bl) {
+                Lighting.setupForFlatItems();
+            }
+            MC.getItemRenderer().render(itemStack, ItemDisplayContext.GUI, false, graphics.pose(), graphics.bufferSource(), 0xF000F0, OverlayTexture.NO_OVERLAY, bakedModel);
+            graphics.flush();
+            if (bl) {
+                Lighting.setupFor3DItems();
+            }
+        } catch (Throwable throwable) {
+            CrashReport crashReport = CrashReport.forThrowable(throwable, "Rendering item");
+            CrashReportCategory crashReportCategory = crashReport.addCategory("Item being rendered");
+            crashReportCategory.setDetail("Item Type", () -> String.valueOf(itemStack.getItem()));
+            crashReportCategory.setDetail("Item Components", () -> String.valueOf(itemStack.getComponents()));
+            crashReportCategory.setDetail("Item Foil", () -> String.valueOf(itemStack.hasFoil()));
+            throw new ReportedException(crashReport);
+        }
+        graphics.pose().popPose();
+    }
+
+    public static void renderItemDecorations(GuiGraphics graphics, Font font, ItemStack itemStack, double x, double y) {
+        String string = null;
+        LocalPlayer localPlayer;
+        float f;
+        double n;
+        double m;
+        if (itemStack.isEmpty()) {
+            return;
+        }
+        graphics.pose().pushPose();
+        if (itemStack.getCount() != 1 || string != null) {
+            String string2 = string == null ? String.valueOf(itemStack.getCount()) : string;
+            graphics.pose().translate(0.0f, 0.0f, 200.0f);
+            font.drawInBatch(string2, (float)x + 19 - 2 - font.width(string2), (float)y + 6 + 3, 0xFFFFFF, true, graphics.pose().last().pose(), (MultiBufferSource)graphics.bufferSource(), Font.DisplayMode.NORMAL, 0, 0xF000F0, font.isBidirectional());
+            graphics.flush();
+        }
+        if (itemStack.isBarVisible()) {
+            int k = itemStack.getBarWidth();
+            int l = itemStack.getBarColor();
+            m = x + 2;
+            n = y + 13;
+            graphics.pose().translate(0,0,200);
+            drawRectangle(graphics,new Vector(m,n),new Vector(13, 2),new Color(-16777216));
+            drawRectangle(graphics,new Vector(m,n),new Vector(k, 1),new Color(l | 0xFF000000));
+            graphics.flush();
+        }
+        float f2 = f = (localPlayer = MC.player) == null ? 0.0f : localPlayer.getCooldowns().getCooldownPercent(itemStack.getItem(), MC.getTimer().getGameTimeDeltaPartialTick(true));
+        if (f > 0.0f) {
+            m = y + Mth.floor(16.0f * (1.0f - f));
+            n = m + Mth.ceil(16.0f * f);
+            drawRectangle(graphics,new Vector(x,m),new Vector(16,0),new Color(Integer.MAX_VALUE));
+        }
+        graphics.pose().popPose();
     }
 
 }
