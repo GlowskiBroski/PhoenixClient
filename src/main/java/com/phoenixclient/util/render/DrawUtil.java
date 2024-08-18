@@ -274,6 +274,20 @@ public class DrawUtil {
         RenderSystem.disableBlend();
     }
 
+    private void drawLine(GuiGraphics graphics, Vector pos1, Vector pos2, Color color) {
+        //Draw Direction Line
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        Matrix4f matrix = graphics.pose().last().pose();
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+
+        bufferBuilder.addVertex(matrix, (float) pos1.getX(),(float) pos1.getY(), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        bufferBuilder.addVertex(matrix, (float) pos2.getX(),(float) pos2.getY(), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+
+        BufferUploader.drawWithShader(bufferBuilder.build());
+
+    }
+
     // -------------------------- EXTRA -----------------------
 
     public static void drawItemStack(GuiGraphics graphics, ItemStack stack, Vector pos) {

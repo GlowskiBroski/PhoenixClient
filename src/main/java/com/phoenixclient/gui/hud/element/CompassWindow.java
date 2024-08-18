@@ -26,9 +26,21 @@ public class CompassWindow extends GuiWindow {
             "Mode of the compass",
             "Compass").setModeData("Compass","Coordinate");
 
+    private final SettingGUI<String> yScaleMode = new SettingGUI<>(
+            this,
+            "Y Scale",
+            "Y scaling of the compass",
+            "Custom").setModeData("Pitch","Custom");
+
+    private final SettingGUI<Double> yScaleValue = new SettingGUI<>(
+            this,
+            "Scale",
+            "Custom Y scaling of the compass",
+            1d).setSliderData(.4,1,.05);
+
     public CompassWindow(Screen screen) {
         super(screen, "CompassWindow","Displays the players cardinal/coordinate direction", new Vector(60, 60),false);
-        addSettings(mode);
+        addSettings(mode);//,yScaleValue,yScaleMode);
     }
 
     @Override
@@ -37,10 +49,20 @@ public class CompassWindow extends GuiWindow {
 
         double mul = 20;
 
+        double yScale = switch (yScaleMode.get()) {
+            case "Pitch" -> Math.clamp(Math.abs(MC.player.getXRot()) / 40,.4,1);
+            case "Custom" -> yScaleValue.get();
+            default -> throw new IllegalStateException("Unexpected value: " + yScaleMode.get());
+        };
+
         Vector north = new Angle(-MC.player.getYRot() + 90,true).getUnitVector().getMultiplied(mul);
+        north.setY(north.getY() * yScale);
         Vector east = new Angle(-MC.player.getYRot() + 180,true).getUnitVector().getMultiplied(mul);
+        east.setY(east.getY() * yScale);
         Vector south = new Angle(-MC.player.getYRot() + 270,true).getUnitVector().getMultiplied(mul);
+        south.setY(south.getY() * yScale);
         Vector west = new Angle(-MC.player.getYRot(),true).getUnitVector().getMultiplied(mul);
+        west.setY(west.getY() * yScale);
 
         String northString = "N";
         String eastString = "E";
@@ -62,13 +84,16 @@ public class CompassWindow extends GuiWindow {
             }
         }
 
-
         Vector northPos = center.getAdded(north).getSubtracted(DrawUtil.getFontTextWidth(northString)/2,DrawUtil.getFontTextHeight()/2);
         Vector eastPos = center.getAdded(east).getSubtracted(DrawUtil.getFontTextWidth(eastString)/2,DrawUtil.getFontTextHeight()/2);
         Vector southPos = center.getAdded(south).getSubtracted(DrawUtil.getFontTextWidth(southString)/2,DrawUtil.getFontTextHeight()/2);
         Vector westPos = center.getAdded(west).getSubtracted(DrawUtil.getFontTextWidth(westString)/2,DrawUtil.getFontTextHeight()/2);
 
         Color nullColor = drawBackground.get() ? Color.GRAY : Color.WHITE;
+
+        //float yRot = MC.player.getYRot();
+        //while (yRot > 180) yRot -= 180;
+        //while (yRot < -180) yRot += 360;
 
         Color northColor = northPos.getY() < center.getY() - 10 ? Color.GREEN : nullColor;
         Color eastColor = eastPos.getY() < center.getY() - 10 ? Color.GREEN : nullColor;
@@ -80,21 +105,8 @@ public class CompassWindow extends GuiWindow {
         TextBuilder.start(southString,southPos,southColor).draw(graphics);
         TextBuilder.start(westString,westPos,westColor).draw(graphics);
 
-
     }
 
-    private void drawLine(GuiGraphics graphics, Vector pos1, Vector pos2, Color color) {
-        //Draw Direction Line
-        RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        Matrix4f matrix = graphics.pose().last().pose();
-        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 
-        bufferBuilder.addVertex(matrix, (float) pos1.getX(),(float) pos1.getY(), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-        bufferBuilder.addVertex(matrix, (float) pos2.getX(),(float) pos2.getY(), 0).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-
-        BufferUploader.drawWithShader(bufferBuilder.build());
-
-    }
 
 }
