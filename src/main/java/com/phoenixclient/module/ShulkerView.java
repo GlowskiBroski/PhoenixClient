@@ -148,6 +148,15 @@ public class ShulkerView extends Module {
         graphics.pose().translate(0f, 0f, 232f);
         graphics.pose().scale(scale, scale, 1);
 
+        /*
+        Vector bP = pos.getSubtracted(2,2);
+        Vector bS = new Vector(176,80).getAdded(4,4).getAdded(0,12);
+        DrawUtil.drawRectangleRound(graphics,bP,bS,new Color(0,0,0,240));
+        DrawUtil.drawRectangleRound(graphics,bP,bS,Color.GRAY,true);
+        graphics.pose().translate(0,0,100);
+        TextBuilder.start("Hold LCTRL",pos.getAdded(new Vector(2,82)),Color.ORANGE).defaultFont().draw(graphics).nextAdj().text(": to view contents").color(Color.WHITE).defaultFont().draw(graphics);
+         */
+
         Color color = getShulkerFrameColor(hoveredItem);
         graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, transparency);
 

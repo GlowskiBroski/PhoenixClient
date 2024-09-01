@@ -77,9 +77,9 @@ public class CompassWindow extends GuiWindow {
                 westString = "W";
             }
             case "Coordinate" -> {
-                northString = "+Z";
+                northString = "-Z";
                 eastString = "+X";
-                southString = "-Z";
+                southString = "+Z";
                 westString = "-X";
             }
         }

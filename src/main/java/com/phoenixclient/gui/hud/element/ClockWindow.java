@@ -59,8 +59,11 @@ public class ClockWindow extends GuiWindow {
         DrawUtil.drawRectangleRound(graphics,getPos().getAdded(0,getSize().getY() - 12),new Vector(getSize().getX(),12),new Color(42, 147, 0));
 
         double timeToNext = MathUtil.roundDouble(isDay ? (.497 - dayPercentage) * 20 : (1 - dayPercentage) * 20,1);
-        String hint = !isDay ? "Day in: " + timeToNext + "min" : "Night in: " + timeToNext + "min";
-        TextBuilder.start(hint,getPos().getAdded(2,getSize().getY() - 5 - 3),Color.WHITE).scale(.5f).defaultFont().draw(graphics);
+        String dayTime = !isDay ? "Day in: " + timeToNext + "min" : "Night in: " + timeToNext + "min";
+        TextBuilder.start(dayTime,getPos().getAdded(2,getSize().getY() - 5 - 3),Color.WHITE).scale(.5f).defaultFont().draw(graphics);
+
+        int dayCount = (int) (MC.level.dayTime() / 24000);;
+        TextBuilder.start("D:" + dayCount,getPos().getAdded(getSize().getX() - DrawUtil.getDefaultTextWidth("D:" + dayCount,.5) - 1,2),Color.WHITE).scale(.5f).defaultFont().draw(graphics);
 
         //Draw Clock Outline
         if (drawBackground.get()) DrawUtil.drawRectangleRound(graphics,getPos(),getSize(),Color.GRAY,true);

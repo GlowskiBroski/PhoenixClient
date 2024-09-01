@@ -62,6 +62,7 @@ public class Draw3DUtil {
         float a = c.getAlpha() / 255f;
 
         GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_BLEND);
         levelPoseStack.pushPose();
 
         applyRenderPositionOffset(levelPoseStack,lerpPos);

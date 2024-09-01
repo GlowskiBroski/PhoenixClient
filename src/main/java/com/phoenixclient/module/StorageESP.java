@@ -12,6 +12,8 @@ import net.minecraft.world.phys.AABB;
 
 import java.awt.*;
 
+import static com.phoenixclient.PhoenixClient.MC;
+
 public class StorageESP extends Module {
 
     private final SettingGUI<String> mode = new SettingGUI<>(
@@ -69,9 +71,15 @@ public class StorageESP extends Module {
             false
     );
 
+    private final SettingGUI<String> distanceAlpha = new SettingGUI<>(
+            this,
+            "Distance Fade",
+            "Causes esp to fade in/out depending on the distance from storage",
+            "Normal").setModeData("Normal","Aggressive","None");
+
     public StorageESP() {
         super("StorageESP", "Draws a highlight around storage blocks", Category.RENDER, false, -1);
-        addSettings(mode, chests, shulkers, enderChests, hoppers, furnaces, dispensers, barrels);
+        addSettings(mode, chests, shulkers, enderChests, hoppers, furnaces, dispensers, barrels,distanceAlpha);
         addEventSubscriber(Event.EVENT_RENDER_LEVEL, this::onRender);
     }
 
@@ -91,10 +99,18 @@ public class StorageESP extends Module {
             boolean doDispensers = dispensers.get() && e instanceof DispenserBlockEntity;
 
             Vector pos = new Vector(e.getBlockPos()).getAdded(.5, 0, .5);
-            if (doChests || doBarrels) Draw3DUtil.drawOutlineBox(levelStack, chestBB, pos, new Color(171, 99, 0, 255));
-            if (doEnderChests) Draw3DUtil.drawOutlineBox(levelStack, chestBB, pos, new Color(156, 89, 211, 255));
-            if (doShulkers) Draw3DUtil.drawOutlineBox(levelStack, bb, pos, new Color(236, 0, 255, 255));
-            if (doHoppers || doFurnaces || doDispensers) Draw3DUtil.drawOutlineBox(levelStack, bb, pos, new Color(105, 105, 105, 255));
+
+            int alpha = switch (distanceAlpha.get()) {
+                case "Normal" -> (int)Math.clamp(new Vector(MC.player.position()).getSubtracted(pos).getMagnitude() * 8,0,255);
+                case "Aggressive" -> (int)Math.clamp(new Vector(MC.player.position()).getSubtracted(pos).getMagnitude(),0,255);
+                case "None" -> 255;
+                default -> throw new IllegalStateException("Unexpected value: " + distanceAlpha.get());
+            };
+
+            if (doChests || doBarrels) Draw3DUtil.drawOutlineBox(levelStack, chestBB, pos, new Color(171, 99, 0, alpha));
+            if (doEnderChests) Draw3DUtil.drawOutlineBox(levelStack, chestBB, pos, new Color(156, 89, 211, alpha));
+            if (doShulkers) Draw3DUtil.drawOutlineBox(levelStack, bb, pos, new Color(236, 0, 255, alpha));
+            if (doHoppers || doFurnaces || doDispensers) Draw3DUtil.drawOutlineBox(levelStack, bb, pos, new Color(105, 105, 105, alpha));
 
         }
     }
