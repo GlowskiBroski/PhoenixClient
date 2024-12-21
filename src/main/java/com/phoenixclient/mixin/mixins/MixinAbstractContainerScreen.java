@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +31,7 @@ public abstract class MixinAbstractContainerScreen {
 
     @Unique List<Component> containerItemList;
 
-    @Inject(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;renderTooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;II)V"), cancellable = true)
+    @Inject(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;renderTooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;IILnet/minecraft/resources/ResourceLocation;)V"), cancellable = true)
     private void onRenderItemTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, CallbackInfo ci) {
         RenderItemTooltipEvent event = Event.EVENT_RENDER_INVENTORY_ITEM_TOOLTIP;
         ItemStack item = hoveredSlot.getItem();
@@ -42,8 +43,8 @@ public abstract class MixinAbstractContainerScreen {
     }
 
 
-    @Redirect(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;renderTooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;II)V"))
-    private void getTooltipGuy(GuiGraphics instance, Font font, List<Component> list, Optional<TooltipComponent> optional, int i, int j) {
+    @Redirect(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;renderTooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;IILnet/minecraft/resources/ResourceLocation;)V"))
+    private void getTooltipGuy(GuiGraphics instance, Font font, List<Component> list, Optional<TooltipComponent> optional, int i, int j, ResourceLocation resourceLocation) {
         instance.renderTooltip(font, containerItemList, optional, i, j);
     }
 

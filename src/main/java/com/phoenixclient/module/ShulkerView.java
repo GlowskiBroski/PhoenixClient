@@ -158,7 +158,7 @@ public class ShulkerView extends Module {
          */
 
         Color color = getShulkerFrameColor(hoveredItem);
-        graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, transparency);
+        //graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, transparency);
 
         InventoryWindow.renderChestInventory(graphics, hoveredItem.getHoverName().getString(), pos.getMultiplied(1 / scale));
 

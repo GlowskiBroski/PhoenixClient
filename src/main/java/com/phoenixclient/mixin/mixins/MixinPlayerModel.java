@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -27,17 +28,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static com.phoenixclient.PhoenixClient.MC;
 
 @Mixin(PlayerModel.class)
-public abstract class MixinPlayerModel<T extends LivingEntity> extends HumanoidModel<T> {
-
-    @Shadow protected abstract Iterable<ModelPart> bodyParts();
+public abstract class MixinPlayerModel extends HumanoidModel<PlayerRenderState> {
 
     public MixinPlayerModel(ModelPart modelPart) {
         super(modelPart);
     }
 
-    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/PlayerModel;leftPants:Lnet/minecraft/client/model/geom/ModelPart;"))
-    protected void setupAnimationInject(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci) {
+    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/PlayerModel;leftPants:Lnet/minecraft/client/model/geom/ModelPart;"))
+    protected void setupAnimationInject(PlayerRenderState playerRenderState, CallbackInfo ci) {
         RotationManager rm = PhoenixClient.getRotationManager();
+        /*
         if (livingEntity.equals(MC.player) && rm.isSpoofing()) {
             float pitch = (float) new Angle(rm.getSpoofedPitch() - livingEntity.getXRot(),true).getRadians();
             float yaw = (float) new Angle(rm.getSpoofedYaw() - livingEntity.getYRot(),true).getRadians();
@@ -52,6 +52,7 @@ public abstract class MixinPlayerModel<T extends LivingEntity> extends HumanoidM
 
         if ((livingEntity instanceof Player) && MixinHooks.renderAsBaby) young = true;
 
+         */
     }
 
 }

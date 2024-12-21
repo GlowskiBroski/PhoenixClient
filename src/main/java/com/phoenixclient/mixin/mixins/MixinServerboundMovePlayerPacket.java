@@ -26,7 +26,7 @@ public class MixinServerboundMovePlayerPacket {
      * Enable rotation spoofing to all player packets
      */
     @Inject(method = "<init>", at = @At(value = "TAIL"))
-    private void constructor(double d, double e, double f, float g, float h, boolean bl, boolean bl2, boolean bl3, CallbackInfo ci) {
+    private void constructor(double d, double e, double f, float g, float h, boolean bl, boolean bl2, boolean bl3, boolean bl4, CallbackInfo ci) {
         RotationManager r = PhoenixClient.getRotationManager();
         if (r.isSpoofing()) {
             yRot = r.getSpoofedYaw();

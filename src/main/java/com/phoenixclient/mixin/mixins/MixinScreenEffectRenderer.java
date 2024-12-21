@@ -3,6 +3,7 @@ package com.phoenixclient.mixin.mixins;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.phoenixclient.mixin.MixinHooks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,7 +22,7 @@ public abstract class MixinScreenEffectRenderer {
     }
 
     @Inject(method = "renderFire", at = @At(value = "HEAD"), cancellable = true)
-    private static void onRenderFireTexture(Minecraft minecraft, PoseStack poseStack, CallbackInfo ci) {
+    private static void onRenderFireTexture(PoseStack poseStack, MultiBufferSource multiBufferSource, CallbackInfo ci) {
         if (MixinHooks.noFireHud) ci.cancel();
     }
 

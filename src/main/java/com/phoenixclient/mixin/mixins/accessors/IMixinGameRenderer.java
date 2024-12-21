@@ -20,6 +20,6 @@ import static com.phoenixclient.PhoenixClient.MC;
 public interface IMixinGameRenderer  {
 
     @Invoker("getFov")
-    double invokeGetFov(Camera camera, float f, boolean bl);
+    float invokeGetFov(Camera camera, float f, boolean bl);
 
 }
