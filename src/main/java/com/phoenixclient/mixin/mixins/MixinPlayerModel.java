@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
@@ -36,11 +37,14 @@ public abstract class MixinPlayerModel extends HumanoidModel<PlayerRenderState> 
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/PlayerModel;leftPants:Lnet/minecraft/client/model/geom/ModelPart;"))
     protected void setupAnimationInject(PlayerRenderState playerRenderState, CallbackInfo ci) {
+        if (true) return;
         RotationManager rm = PhoenixClient.getRotationManager();
-        /*
-        if (livingEntity.equals(MC.player) && rm.isSpoofing()) {
-            float pitch = (float) new Angle(rm.getSpoofedPitch() - livingEntity.getXRot(),true).getRadians();
-            float yaw = (float) new Angle(rm.getSpoofedYaw() - livingEntity.getYRot(),true).getRadians();
+
+
+
+        //if (livingEntity.equals(MC.player) && rm.isSpoofing()) {
+            float pitch = (float) new Angle(rm.getSpoofedPitch() - playerRenderState.xRot,true).getRadians();
+            float yaw = (float) new Angle(rm.getSpoofedYaw() - playerRenderState.yRot,true).getRadians();
 
             //for (ModelPart p : bodyParts()) p.yRot = yaw;
             //body.yRot = yaw;
@@ -48,11 +52,11 @@ public abstract class MixinPlayerModel extends HumanoidModel<PlayerRenderState> 
             head.yRot = yaw;
             head.xRot = pitch;
 
-        }
+        //}
 
-        if ((livingEntity instanceof Player) && MixinHooks.renderAsBaby) young = true;
+        //if ((livingEntity instanceof Player) && MixinHooks.renderAsBaby) young = true;
 
-         */
+
     }
 
 }

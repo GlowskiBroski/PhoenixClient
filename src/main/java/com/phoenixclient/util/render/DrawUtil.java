@@ -14,11 +14,13 @@ import net.minecraft.ReportedException;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -84,7 +86,7 @@ public class DrawUtil {
         float a = color.getAlpha() / 255f;
 
         RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
 
         Matrix4f matrix = graphics.pose().last().pose();
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(outlined ? VertexFormat.Mode.DEBUG_LINE_STRIP : VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);//.getBuilder();
@@ -107,7 +109,7 @@ public class DrawUtil {
 
     public static void drawRectangleRound(GuiGraphics graphics, Vector pos, Vector size, Color color, double radius, boolean outlined) {
         RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
 
         Matrix4f matrix = graphics.pose().last().pose();
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(outlined ? VertexFormat.Mode.DEBUG_LINE_STRIP : VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
@@ -168,7 +170,7 @@ public class DrawUtil {
         float texHeight = (float) textureSize.getY();
 
         RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(CoreShaders.POSITION_TEX);
         RenderSystem.setShaderTexture(0, texture);
 
         Matrix4f matrix = graphics.pose().last().pose();
@@ -202,7 +204,7 @@ public class DrawUtil {
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
 
         Matrix4f matrix = graphics.pose().last().pose();
 
@@ -250,7 +252,7 @@ public class DrawUtil {
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
 
         Matrix4f matrix = graphics.pose().last().pose();
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(outlined ? VertexFormat.Mode.DEBUG_LINE_STRIP : VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -277,7 +279,7 @@ public class DrawUtil {
     private void drawLine(GuiGraphics graphics, Vector pos1, Vector pos2, Color color) {
         //Draw Direction Line
         RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
         Matrix4f matrix = graphics.pose().last().pose();
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 
@@ -310,13 +312,15 @@ public class DrawUtil {
      * @param y
      */
     private static void renderItem(GuiGraphics graphics, ItemStack itemStack, double x, double y) {
+        graphics.renderItem(itemStack, (int) x, (int) y);
+        /*
         int k = 0;
         int l = 0;
         LivingEntity livingEntity = MC.player;
         Level level = MC.level;
         
         if (itemStack.isEmpty()) return;
-        BakedModel bakedModel = MC.getItemRenderer().getModel(itemStack, level, livingEntity, k);
+        //BakedModel bakedModel = MC.getItemRenderer().getModel(itemStack, level, livingEntity, k);
         graphics.pose().pushPose();
         graphics.pose().translate((float)(x + 8), (float)(y + 8), (float)(150 + (bakedModel.isGui3d() ? l : 0)));
         try {
@@ -340,6 +344,7 @@ public class DrawUtil {
             throw new ReportedException(crashReport);
         }
         graphics.pose().popPose();
+        */
     }
 
     public static void renderItemDecorations(GuiGraphics graphics, Font font, ItemStack itemStack, double x, double y) {
@@ -355,7 +360,7 @@ public class DrawUtil {
         if (itemStack.getCount() != 1 || string != null) {
             String string2 = string == null ? String.valueOf(itemStack.getCount()) : string;
             graphics.pose().translate(0.0f, 0.0f, 200.0f);
-            font.drawInBatch(string2, (float)x + 19 - 2 - font.width(string2), (float)y + 6 + 3, 0xFFFFFF, true, graphics.pose().last().pose(), (MultiBufferSource)graphics.bufferSource(), Font.DisplayMode.NORMAL, 0, 0xF000F0, font.isBidirectional());
+            font.drawInBatch(Component.translatable(string2), (float)x + 19 - 2 - font.width(string2), (float)y + 6 + 3, 0xFFFFFF, true, graphics.pose().last().pose(), (MultiBufferSource)MC.renderBuffers().bufferSource(), Font.DisplayMode.NORMAL, 0, 0xF000F0, font.isBidirectional());
             graphics.flush();
         }
         if (itemStack.isBarVisible()) {
@@ -368,7 +373,7 @@ public class DrawUtil {
             drawRectangle(graphics,new Vector(m,n),new Vector(k, 1),new Color(l | 0xFF000000));
             graphics.flush();
         }
-        float f2 = f = (localPlayer = MC.player) == null ? 0.0f : localPlayer.getCooldowns().getCooldownPercent(itemStack.getItem(), MC.getTimer().getGameTimeDeltaPartialTick(true));
+        float f2 = f = (localPlayer = MC.player) == null ? 0.0f : localPlayer.getCooldowns().getCooldownPercent(itemStack, MC.getDeltaTracker().getGameTimeDeltaPartialTick(true));
         if (f > 0.0f) {
             m = y + Mth.floor(16.0f * (1.0f - f));
             n = m + Mth.ceil(16.0f * f);

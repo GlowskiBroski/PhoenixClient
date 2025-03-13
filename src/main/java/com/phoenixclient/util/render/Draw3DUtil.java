@@ -7,7 +7,9 @@ import com.phoenixclient.module.StorageESP;
 import com.phoenixclient.util.math.Vector;
 import net.minecraft.client.Camera;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.ShaderProgram;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -70,7 +72,7 @@ public class Draw3DUtil {
         levelPoseStack.translate(lerpPos.getX(), lerpPos.getY(), lerpPos.getZ());
         levelPoseStack.scale((float) (bb.maxX - bb.minX), (float) (bb.maxY - bb.minY), (float) (bb.maxZ - bb.minZ));
 
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f matrix = levelPoseStack.last().pose();
 

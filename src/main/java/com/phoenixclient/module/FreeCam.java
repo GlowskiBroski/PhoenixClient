@@ -28,8 +28,6 @@ import static com.phoenixclient.PhoenixClient.MC;
 
 public class FreeCam extends Module {
 
-    //TODO: Smart cull doesnt seem to be working on interact mode?
-
     private final OnChange<Vector> onChangeView = new OnChange<>();
     private final OnChange<Vector> onChangeSpoofedView = new OnChange<>();
     public AbstractClientPlayer dummyPlayer;
@@ -99,7 +97,8 @@ public class FreeCam extends Module {
         }
 
         if (packet instanceof ClientboundPlayerPositionPacket c) {
-            if (dummyPlayer != null) dummyPlayer.setPos(new Vector(c.getX(), c.getY(), c.getZ()).getVec3());
+
+            //if (dummyPlayer != null) dummyPlayer.setPos(new Vector(c.getX(), c.getY(), c.getZ()).getVec3());
             event.setCancelled(true);
         }
         if (packet instanceof ServerboundMovePlayerPacket.PosRot
@@ -186,6 +185,7 @@ public class FreeCam extends Module {
         MixinHooks.noCaveCulling = false;
         MixinHooks.noClip = false;
         MixinHooks.noSuffocationHud = false;
+        MC.player.getAbilities().flying = false;
     }
 
 
@@ -241,7 +241,7 @@ public class FreeCam extends Module {
             dummyPlayer.setXRot(p);
 
             //After time, the server realizes we are "AFK", then the rotation packets are no longer accepted
-            onChangeView.run(lookVec, () -> MC.getConnection().send(interactRotationPacket = new ServerboundMovePlayerPacket.Rot(y, p, true)));
+            onChangeView.run(lookVec, () -> MC.getConnection().send(interactRotationPacket = new ServerboundMovePlayerPacket.Rot(y, p, true,false)));
         } else {
             float yS = PhoenixClient.getRotationManager().getSpoofedYaw();
             float pS = PhoenixClient.getRotationManager().getSpoofedPitch();
@@ -250,7 +250,7 @@ public class FreeCam extends Module {
             dummyPlayer.setXRot(pS);
 
             //It doesn't really matter what the angles are that I send here, as they are overwritten by the rotation manager
-            onChangeSpoofedView.run(new Vector(yS, pS), () -> MC.getConnection().send(interactRotationPacket = new ServerboundMovePlayerPacket.Rot(yS, pS, true)));
+            onChangeSpoofedView.run(new Vector(yS, pS), () -> MC.getConnection().send(interactRotationPacket = new ServerboundMovePlayerPacket.Rot(yS, pS, true,false)));
         }
     }
 

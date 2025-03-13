@@ -141,7 +141,6 @@ public class ShulkerView extends Module {
             }
         }
     }
-
     private void renderShulkerTooltip(ItemStack hoveredItem, Vector pos, float scale, float transparency) {
         if (hoveredItem == null) return;
         GuiGraphics graphics = new GuiGraphics(MC, MC.renderBuffers().bufferSource());
@@ -158,7 +157,7 @@ public class ShulkerView extends Module {
          */
 
         Color color = getShulkerFrameColor(hoveredItem);
-        //graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, transparency);
+        RenderSystem.setShaderColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, transparency);
 
         InventoryWindow.renderChestInventory(graphics, hoveredItem.getHoverName().getString(), pos.getMultiplied(1 / scale));
 

@@ -22,6 +22,8 @@ import java.util.List;
 
 public class PhoenixClient implements ModInitializer {
 
+    //TODO: 1.21.4 update - Fix MixinPlayerModel, MixinEntityRenderer, DrawUtil - renderItem(), 3D Rendering Boxes, ConsoleUtil Messages, Logo Window
+
     public static final Minecraft MC = Minecraft.getInstance();
     private static final LinkedHashMap<String,Module> MODULES_LIST = new LinkedHashMap<>(); //Key value pair: ModName, Module
 
@@ -80,8 +82,9 @@ public class PhoenixClient implements ModInitializer {
                 new Logouts(),
                 new BabyMode(),
                 new SafeWalk(),
-                new Tracers()
-        );
+                new Tracers(),
+                new AutoRespawn()
+                );
 
         GUI_MANAGER.instantiateHUDGUI();
         GUI_MANAGER.instantiateModuleGUI();

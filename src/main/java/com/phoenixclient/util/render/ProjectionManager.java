@@ -11,6 +11,7 @@ import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.texture.TextureUtil;
 import net.minecraft.client.Camera;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -49,7 +50,7 @@ public class ProjectionManager {
         Vector3f rotatedPos = new Vector3f((float) relativePos.getX(), (float) relativePos.getY(), (float) relativePos.getZ()).rotate(camRotConjugate);
 
         if (MC.options.bobView().get() && !((NoRender) PhoenixClient.getModule("NoRender")).noBob.get()) {
-            if (MC.getCameraEntity() instanceof Player player) {
+            if (MC.getCameraEntity() instanceof AbstractClientPlayer player) {
 
                 float g = player.walkDist - player.walkDistO;
                 float h = -(player.walkDist + g * partialTicks);

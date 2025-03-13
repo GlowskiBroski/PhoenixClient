@@ -1,5 +1,6 @@
 package com.phoenixclient.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.gui.module.element.ModuleMenu;
 import com.phoenixclient.gui.module.element.ModuleOptionsMenu;
@@ -42,11 +43,11 @@ public class GUI extends Screen {
 
         //SET FADE IN
         if (screenFadeIn < 1) screenFadeIn += .1f;
-        guiGraphics.setColor(1f,1f,1f,screenFadeIn);
+        RenderSystem.setShaderColor(1f,1f,1f,screenFadeIn);
 
         //DRAW BACKGROUND
         if (PhoenixClient.getGuiManager().blur.get()) {
-            MC.gameRenderer.processBlurEffect(200);
+            MC.gameRenderer.processBlurEffect();
             MC.getMainRenderTarget().bindWrite(false);
         }
         DrawUtil.drawRectangle(guiGraphics, Vector.NULL(), getSize(), new Color(0, 0, 0, 100));

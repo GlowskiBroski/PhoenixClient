@@ -1,10 +1,12 @@
 package com.phoenixclient.util.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.phoenixclient.util.actions.OnChange;
 import com.phoenixclient.util.math.Vector;
 import com.phoenixclient.util.render.texture.TextureUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
@@ -41,7 +43,7 @@ public class FontRenderer {
      */
     public void drawDynamicString(GuiGraphics graphics, String text, Vector pos, Color color) {
         if (font == null) {
-            MC.font.drawInBatch(text, ((float) pos.getX()), ((float) pos.getY()), color.hashCode(), false, graphics.pose().last().pose(), graphics.bufferSource(), net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
+            MC.font.drawInBatch(Component.translatable(text), ((float) pos.getX()), ((float) pos.getY()), color.hashCode(), false, graphics.pose().last().pose(), MC.renderBuffers().bufferSource(), net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
             graphics.flush();
             return;
         }
@@ -76,10 +78,10 @@ public class FontRenderer {
                 case "Arial" -> 2;
                 default -> 3;
             };
-            graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+            RenderSystem.setShaderColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
             if (color.getAlpha() <= 0) return;
             DrawUtil.drawTexturedRect(graphics, resourceLocation, pos.getSubtracted(0, yOff), new Vector(width / guiScale, height / guiScale));
-            graphics.setColor(1f,1f,1f,1f);
+            RenderSystem.setShaderColor(1f,1f,1f,1f);
             pos.add(new Vector(width / guiScale, 0));
         }
     }
@@ -94,7 +96,7 @@ public class FontRenderer {
      */
     public void drawStaticString(GuiGraphics graphics, String text, Vector pos, Color color) {
         if (getFont() == null) {
-            MC.font.drawInBatch(text, ((float) pos.getX()), ((float) pos.getY()), color.hashCode(), false, graphics.pose().last().pose(), graphics.bufferSource(), net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
+            MC.font.drawInBatch(Component.translatable(text), ((float) pos.getX()), ((float) pos.getY()), color.hashCode(), false, graphics.pose().last().pose(), MC.renderBuffers().bufferSource(), net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
             graphics.flush();
             return;
         }
@@ -126,9 +128,9 @@ public class FontRenderer {
             case "Arial" -> 2;
             default -> 3;
         };
-        graphics.setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+        RenderSystem.setShaderColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
         DrawUtil.drawTexturedRect(graphics, resourceLocation, pos.getSubtracted(0, yOff), new Vector(width / guiScale, height / guiScale));
-        graphics.setColor(1f,1f,1f,1f);
+        RenderSystem.setShaderColor(1f,1f,1f,1f);
     }
 
     protected BufferedImage getBufferedImage(String text) {

@@ -1,9 +1,11 @@
 package com.phoenixclient.util.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.util.math.MathUtil;
 import com.phoenixclient.util.math.Vector;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 import java.awt.*;
 
@@ -102,7 +104,7 @@ public class TextBuilder {
         graphics.pose().scale(scale, scale, 1);
         if (color.getAlpha() <= 0) return this;
         if (fontRenderer == null) {
-            MC.font.drawInBatch(text, ((float) pos.getX() * 1 / scale), ((float) pos.getY() * 1 / scale), color.hashCode(), shadow, graphics.pose().last().pose(), graphics.bufferSource(), net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
+            MC.font.drawInBatch(Component.translatable(text), ((float) pos.getX() * 1 / scale), ((float) pos.getY() * 1 / scale), color.hashCode(), shadow, graphics.pose().last().pose(), MC.renderBuffers().bufferSource(), net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH, 0, 15728880, MC.font.isBidirectional());
             graphics.flush();
         } else {
             int damp = 175;
@@ -117,7 +119,7 @@ public class TextBuilder {
             graphics.flush();
         }
         graphics.pose().scale(1 / scale, 1 / scale, 1);
-        graphics.setColor(1f,1f,1f,1f);
+        RenderSystem.setShaderColor(1f,1f,1f,1f);
         return this;
     }
 

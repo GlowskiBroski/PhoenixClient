@@ -49,9 +49,9 @@ public class HUDGUI extends GUI {
                 new ChunkTrailsWindow(this),
 
                 new CompassWindow(this),
-                new ClockWindow(this),
+                new ClockWindow(this)
 
-                new LogoWindow(this, Vector.NULL())
+                //new LogoWindow(this, Vector.NULL())
         );
 
         addGuiElements(windowList.toArray(new GuiWindow[0]));

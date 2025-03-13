@@ -52,7 +52,7 @@ public class TextureUtil {
                 int blue = bufferedColor.getBlue(bufferType);
                 int alpha = bufferedColor.getAlpha(bufferType);
                 int hash = alpha << 24 | blue << 16 | green << 8 | red;
-                image.setPixelRGBA(x,y,hash);
+                image.setPixel(x,y,hash);
             }
         }
         return image;

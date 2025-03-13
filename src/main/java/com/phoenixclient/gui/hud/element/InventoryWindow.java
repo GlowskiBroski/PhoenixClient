@@ -40,15 +40,16 @@ public class InventoryWindow extends GuiWindow {
 
         Vector adjustedPos = getPos().getAdded(1,1).getMultiplied(1/scale);
 
-        graphics.setColor(1,1,1,transparency.get() / 255f);
+        RenderSystem.setShaderColor(1f,1f,1f,transparency.get() / 255f);
+
         renderChestInventory(graphics,"Inventory",adjustedPos);
 
-        //graphics.setColor(1,1,1,transparency.get() / 255f);
-        //graphics.setColor(1,1,1,1f);
+        //RenderSystem.setShaderColor(1f,1f,1f,transparency.get() / 255f);
+        RenderSystem.setShaderColor(1f,1f,1f,1f);
         renderInventoryItems(graphics, MC.player.inventoryMenu.getItems(),9,35,adjustedPos);
         graphics.flush();
 
-        graphics.setColor(1f,1f,1f,1f);
+        RenderSystem.setShaderColor(1f,1f,1f, 1f);
         graphics.pose().scale(1 / scale,1 / scale,1f);
     }
 

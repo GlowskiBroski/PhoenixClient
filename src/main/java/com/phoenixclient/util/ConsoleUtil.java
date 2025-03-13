@@ -1,7 +1,10 @@
 package com.phoenixclient.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+
+import static com.phoenixclient.PhoenixClient.MC;
 
 public class ConsoleUtil {
 
@@ -9,7 +12,8 @@ public class ConsoleUtil {
 
     public static void sendMessage(String message) {
         try {
-            Minecraft.getInstance().player.sendSystemMessage(Component.translatable("\u00A7b" + PREFIX + "\u00A77" +  message));
+            //MC.getChatListener().handleSystemMessage(Component.translatable("\u00A7b" + PREFIX + "\u00A77" +  message), true);
+            MC.gui.getChat().addMessage(Component.translatable("\u00A7b" + PREFIX + "\u00A77" +  message));
         } catch (Exception e) {
             System.out.println("Could Not Send Message!");
         }

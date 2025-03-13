@@ -18,6 +18,7 @@ import com.phoenixclient.util.setting.Container;
 import com.phoenixclient.util.setting.SettingGUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
@@ -131,7 +132,7 @@ public class ChunkTrailsWindow extends GuiWindow {
 
         //Draw Direction Line
         RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
         Matrix4f matrix = graphics.pose().last().pose();
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP,DefaultVertexFormat.POSITION_COLOR);
         Color c = Color.BLUE;
@@ -287,9 +288,9 @@ public class ChunkTrailsWindow extends GuiWindow {
                 boolean isNew = loadedChunksMap.get(vec);
                 Color color = isNew ? Color.RED : Color.GREEN;
                 int hash = color.getAlpha() << 24 | color.getBlue() << 16 | color.getGreen() << 8 | color.getRed();
-                image.setPixelRGBA(x,y,hash);
+                image.setPixel(x,y,hash);
             } else {
-                image.setPixelRGBA(x,y,0);
+                image.setPixel(x,y,0);
             }
         }
         return new DynamicTexture(image);

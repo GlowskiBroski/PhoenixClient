@@ -25,7 +25,7 @@ public abstract class MixinMouseHandler {
 
 
     // THIS IS FOR INSIDE OF MENU SCREENS ONLY
-    @Inject(method = "onPress", at = @At(value = "INVOKE",target = "Lnet/minecraft/client/gui/screens/Screen;wrapScreenError(Ljava/lang/Runnable;Ljava/lang/String;Ljava/lang/String;)V"), cancellable = true)
+    @Inject(method = "onPress", at = @At(value = "INVOKE",target = "Lnet/minecraft/client/gui/screens/Screen;afterMouseAction()V"), cancellable = true)
     private void onPressMenu(long l, int i, int j, int k, CallbackInfo ci) {
         double x = this.xpos * (double) Minecraft.getInstance().getWindow().getGuiScaledWidth() / (double)Minecraft.getInstance().getWindow().getScreenWidth();
         double y = this.ypos * (double)Minecraft.getInstance().getWindow().getGuiScaledHeight() / (double)Minecraft.getInstance().getWindow().getScreenHeight();

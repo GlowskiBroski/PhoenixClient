@@ -1,5 +1,6 @@
 package com.phoenixclient.gui.hud.element;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.phoenixclient.PhoenixClient;
 import com.phoenixclient.gui.element.GuiWidget;
 import com.phoenixclient.gui.hud.HUDGUI;
@@ -46,7 +47,8 @@ public class WindowToggleMenu extends GuiWidget {
         setPos(new Vector(MC.getWindow().getGuiScaledWidth() / 2 - getSize().getX() / 2, MC.getWindow().getGuiScaledHeight() / 2 - getSize().getY() / 2));
         setTooltipVisible(false);
         setHoverHighlightVisible(false);
-        graphics.setColor(1, 1, 1, openFade / 255f);
+        RenderSystem.setShaderColor(1f,1f,1f,openFade / 255f);
+
 
         //Draw Main Background
         DrawUtil.drawRectangleRound(graphics, getPos(), getSize(), new Color(0, 0, 0, 175));
@@ -102,7 +104,7 @@ public class WindowToggleMenu extends GuiWidget {
             tog.setTooltipVisible(false);
             tog.setSize(new Vector(60, 20));
             tog.setPos(getPos().getAdded(x, y));
-            graphics.setColor(1, 1, 1, openFade / 255f);
+            RenderSystem.setShaderColor(1f,1f,1f,openFade / 255f);
             tog.draw(graphics, mousePos);
             x += 66;
             if (x >= 66 * 4 + 4) {
